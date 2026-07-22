@@ -2,6 +2,8 @@ import streamlit as st
 import datetime
 import sqlite3
 import pandas as pd
+import random
+import matplotlib.pyplot as plt
 
 # Sayfa Yapılandırması
 st.set_page_config(page_title="YKS Profesyonel Koçluk Platformu", page_icon="🎓", layout="wide")
@@ -111,6 +113,15 @@ conn.commit()
 
 KOC_SIFRE = "1234"
 
+MOTIVASYON_SOZLERI = [
+    "🔥 Gelecek, bugün ne yaptığına bağlıdır! İnan ve devam et.",
+    "🚀 Başarı, her gün tekrarlanan küçük çabaların toplamıdır!",
+    "🎓 Bugün atacağın her adım, hayalindeki üniversiteye bir yaklaşmadır!",
+    "💪 Zorluklar, başarının değerini artıran süslerdir. Pes etmek yok!",
+    "✨ Şimdi çalış, gelecekteki kendin seninle gurur duysun!",
+    "🎯 Hedefine giden yolda engel yoktur, sadece aşılacak basamaklar vardır!"
+]
+
 YKS_KONULAR = {
     "📖 Türkçe": [
         "Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", 
@@ -172,11 +183,12 @@ giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ 
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     st.title("👨‍🎓 Öğrenci Yönetim Paneli")
     
-    tab_giris, tab_gunluk, tab_deneme, tab_konular = st.tabs([
+    tab_giris, tab_gunluk, tab_deneme, tab_konular, tab_analiz = st.tabs([
         "🔑 GİRİŞ / KAYIT",
         "📝 GÜNLÜK DERS VE SORU TAKİBİ",
         "📊 DENEME SONUÇLARI VE KARNE YÜKLEME",
-        "🗺️ DERS DERS KONU DERECELENDİRME"
+        "🗺️ DERS DERS KONU DERECELENDİRME",
+        "📈 BAŞARI ANALİZİ & GRAFİKLER"
     ])
     
     with tab_giris:
@@ -210,6 +222,10 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     if not aktif_ogr:
         st.info("⚠️ İşlem yapmak için lütfen önce 'GİRİŞ / KAYIT' sekmesinden hesabınıza giriş yapın.")
     else:
+        # Rastgele Motivasyon Kartı
+        rastgele_soz = random.choice(MOTIVASYON_SOZLERI)
+        st.info(f"💡 **Günün Motivasyon Sözü:** *\"{rastgele_soz}\"*")
+
         # GÜNLÜK DERS & KONU BAZLI SORU GİRİŞİ
         with tab_gunluk:
             st.subheader(f"📝 Günlük Çalışma Girişi - Öğrenci: {aktif_ogr}")
@@ -254,6 +270,8 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
                     if t_s > 0:
                         try:
+                            # Aynı gün, ders ve konu için daha önce girilmiş kayıt varsa sil
+                            cursor.execute("DELETE FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ? AND ders = ? AND konu = ?", (aktif_ogr, str(tarih_giris), d_adi, k_adi))
                             cursor.execute("""
                             INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -261,9 +279,9 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                             conn.commit()
                             kaydedilen_ders_sayisi += 1
                         except sqlite3.OperationalError:
-                            # İşlem kilidini çöz ve sütunları tekrar eklemeyi dene
                             conn.rollback()
                             veritabani_hazirla_ve_onar()
+                            cursor.execute("DELETE FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ? AND ders = ? AND konu = ?", (aktif_ogr, str(tarih_giris), d_adi, k_adi))
                             cursor.execute("""
                             INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -271,7 +289,9 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                             conn.commit()
                             kaydedilen_ders_sayisi += 1
                 if kaydedilen_ders_sayisi > 0:
-                    st.success(f"Tüm ders ve konu verileriniz ({kaydedilen_ders_sayisi} ders) veritabanına başarıyla kaydedildi!")
+                    st.balloons()
+                    st.success("🎉 TEBRİKLER HEDEFİNE 1 ADIM DAHA YAKLAŞTIN! 🙌")
+                    st.toast("Çalışmaların başarıyla kaydedildi! Harika gidiyorsun.", icon="🚀")
                 else:
                     st.warning("Lütfen kaydetmeden önce en az bir dersten çözdüğünüz soru sayısını giriniz (0'dan büyük).")
 
@@ -290,7 +310,8 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 VALUES (?, ?, ?, ?, ?, ?)
                 """, (aktif_ogr, str(datetime.date.today()), yayin, d_tur, toplam_net, dosya_adi))
                 conn.commit()
-                st.success("Deneme sonucu başarıyla kaydedildi!")
+                st.balloons()
+                st.success("🎉 TEBRİKLER HEDEFİNE 1 ADIM DAHA YAKLAŞTIN! 🙌 Deneme başarın veritabanına eklendi.")
 
         # KONU DERECELENDİRME SEKMESİ
         with tab_konular:
@@ -318,6 +339,71 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     conn.commit()
             st.success("Konu puanlamalarınız başarıyla güncellendi.")
 
+        # BAŞARI ANALİZİ SEKMESİ (DAİRESEL GRAFİKLER)
+        with tab_analiz:
+            st.subheader(f"📈 Genel Başarı ve Soru Dağılım Analizi - {aktif_ogr}")
+            
+            df_analiz = pd.read_sql_query(
+                "SELECT ders, SUM(toplam_soru) as toplam, SUM(dogru) as d, SUM(yanlis) as y, SUM(bos) as b FROM gunluk_calisma WHERE ad_soyad = ? GROUP BY ders",
+                conn, params=(aktif_ogr,)
+            )
+            
+            if df_analiz.empty or df_analiz["toplam"].sum() == 0:
+                st.info("📊 Grafiksel analizinizin oluşması için lütfen 'Günlük Ders ve Soru Takibi' sekmesinden soru çözümlerinizi kaydedin.")
+            else:
+                col_g1, col_g2 = st.columns(2)
+                
+                # Grafik 1: Derslere Göre Çözülen Soru Dağılımı (Dairesel Pasta Grafiği)
+                with col_g1:
+                    st.markdown("#### 🍩 Derslere Göre Çözülen Soru Dağılımı")
+                    fig1, ax1 = plt.subplots(figsize=(6, 6))
+                    df_filtr = df_analiz[df_analiz["toplam"] > 0]
+                    
+                    # Pasta dilimlerini oluştur
+                    wedges, texts, autotexts = ax1.pie(
+                        df_filtr["toplam"], 
+                        labels=df_filtr["ders"], 
+                        autopct='%1.1f%%',
+                        startangle=140,
+                        wedgeprops=dict(width=0.4, edgecolor='w') # Halka grafik stili
+                    )
+                    plt.setp(autotexts, size=9, weight="bold", color="white")
+                    plt.setp(texts, size=10)
+                    ax1.axis('equal')
+                    st.pyplot(fig1)
+
+                # Grafik 2: Toplam Doğru, Yanlış, Boş Oranı (Dairesel Halka Grafiği)
+                with col_g2:
+                    st.markdown("#### 🎯 Toplam Doğru / Yanlış / Boş Isı Dağılımı")
+                    top_d = df_analiz["d"].sum()
+                    top_y = df_analiz["y"].sum()
+                    top_b = df_analiz["b"].sum()
+                    
+                    fig2, ax2 = plt.subplots(figsize=(6, 6))
+                    labels = ['Doğru 🟢', 'Yanlış 🔴', 'Boş 🟡']
+                    values = [top_d, top_y, top_b]
+                    colors = ['#2ecc71', '#e74c3c', '#f1c40f']
+                    
+                    wedges, texts, autotexts = ax2.pie(
+                        values, 
+                        labels=labels, 
+                        autopct='%1.1f%%',
+                        colors=colors,
+                        startangle=90,
+                        wedgeprops=dict(width=0.4, edgecolor='w')
+                    )
+                    plt.setp(autotexts, size=10, weight="bold", color="white")
+                    plt.setp(texts, size=11)
+                    ax2.axis('equal')
+                    st.pyplot(fig2)
+
+                st.write("---")
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("Toplam Çözülen Soru", f"{df_analiz['toplam'].sum()} Adet")
+                m2.metric("Toplam Doğru", f"{top_d} Adet")
+                m3.metric("Toplam Yanlış", f"{top_y} Adet")
+                m4.metric("Toplam Boş", f"{top_b} Adet")
+
 else:
     st.title("👨‍🏫 Koç Yönetim ve Analiz Paneli")
     koc_sifre_giris = st.sidebar.text_input("Koç Şifresi:", type="password")
@@ -340,10 +426,19 @@ else:
             
             # Günlük Ders & Konu Dağılımı Tablosu
             st.subheader("📚 Ders & Konu Bazlı Soru, Doğru, Yanlış, Boş Dağılımı")
-            df_gunluk = pd.read_sql_query("SELECT tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+            df_gunluk = pd.read_sql_query("SELECT id, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             
             if not df_gunluk.empty:
                 st.dataframe(df_gunluk, use_container_width=True)
+                
+                # Hatalı/Çift Girilen Kayıtları Silme Alanı
+                with st.expander("🗑️ Hatalı veya Çift Girilmiş Kayıtları Sil"):
+                    silinecek_id = st.selectbox("Silmek istediğiniz satırın ID numarasını seçin:", options=df_gunluk["id"].tolist())
+                    if st.button("❌ Seçilen Kaydı Sil", type="primary"):
+                        cursor.execute("DELETE FROM gunluk_calisma WHERE id = ?", (silinecek_id,))
+                        conn.commit()
+                        st.success(f"ID: {silinecek_id} olan kayıt başarıyla silindi!")
+                        st.rerun()
             else:
                 st.info("Bu öğrenci henüz günlük ders ve konu soru verisi girmedi.")
                 
