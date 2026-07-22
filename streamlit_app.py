@@ -28,16 +28,26 @@ st.markdown("""
         background-color: #ff4b4b !important;
         color: white !important;
     }
-    .motivasyon-kutusu {
-        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 16px;
+    .motivasyon-modal {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #be185d 100%);
+        color: #ffffff;
+        padding: 28px 22px;
+        border-radius: 18px;
+        font-weight: 800;
+        font-size: 26px;
+        line-height: 1.4;
         text-align: center;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
+        border: 2px solid #c084fc;
+        margin-bottom: 10px;
+    }
+    .motivasyon-baslik {
+        font-size: 13px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #f3e8ff;
+        margin-bottom: 8px;
+        font-weight: 700;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -180,9 +190,25 @@ giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ 
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     st.title("👨‍🎓 Öğrenci Yönetim Paneli")
     
-    # Günlük Motivasyon Kartı
-    motivasyon_sozu = random.choice(MOTIVASYON_SOZLERI)
-    st.markdown(f'<div class="motivasyon-kutusu">{motivasyon_sozu}</div>', unsafe_allow_html=True)
+    # Günlük Motivasyon Kartı (Kapatılabilir & Büyük Çarpıcı Font)
+    if "motivasyon_goster" not in st.session_state:
+        st.session_state["motivasyon_goster"] = True
+    if "motivasyon_sozu" not in st.session_state:
+        st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
+        
+    if st.session_state["motivasyon_goster"]:
+        m_col1, m_col2 = st.columns([0.88, 0.12])
+        with m_col1:
+            st.markdown(f'''
+            <div class="motivasyon-modal">
+                <div class="motivasyon-baslik">⚡ GÜNÜN MOTİVASYON MESAJI ⚡</div>
+                "{st.session_state['motivasyon_sozu']}"
+            </div>
+            ''', unsafe_allow_html=True)
+        with m_col2:
+            if st.button("❌ KAPAT", key="kapat_motivasyon", help="Motivasyon kartını kapat", use_container_width=True):
+                st.session_state["motivasyon_goster"] = False
+                st.rerun()
     
     tab_giris, tab_gunluk, tab_deneme, tab_konular, tab_analiz = st.tabs([
         "🔑 GİRİŞ / KAYIT",
@@ -223,7 +249,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     if not aktif_ogr:
         st.info("⚠️ İşlem yapmak için lütfen ilk sekmeden 'Giriş / Kayıt' yapın.")
     else:
-        # GÜNLÜK DERS & KONU BAZLI SORU GİRİŞİ
         with tab_gunluk:
             st.subheader(f"📝 Günlük Çalışma Girişi - Öğrenci: {aktif_ogr}")
             tarih_giris = st.date_input("Çalışma Tarihi", datetime.date.today())
@@ -287,7 +312,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 else:
                     st.warning("Lütfen en az bir dersten soru sayısı giriniz.")
 
-        # DENEME & KARNE SEKMESİ
         with tab_deneme:
             st.subheader("📊 Deneme Sonuçları & Karne Yükleme")
             yayin = st.text_input("Deneme Adı / Yayın:")
@@ -305,7 +329,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 st.balloons()
                 st.success("🎉 TEBRİKLER HEDEFİNE 1 ADIM DAHA YAKLAŞTIN!")
 
-        # KONU DERECELENDİRME SEKMESİ
         with tab_konular:
             st.subheader("🗺️ Ders Ders Konu Hakimiyet Puanlaması (1 - 5)")
             konu_sekmeleri = st.tabs(list(YKS_KONULAR.keys()))
@@ -331,7 +354,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     conn.commit()
             st.success("Konu puanlamalarınız kaydedildi.")
 
-        # BAŞARI ANALİZİ SEKMESİ (DAİRESEL GRAFİKLER)
         with tab_analiz:
             st.subheader(f"📈 Genel Başarı ve Soru Dağılım Analizi - {aktif_ogr}")
             
@@ -395,7 +417,6 @@ else:
             st.divider()
             st.header(f"📊 Öğrenci Analiz Raporu: {secilen_ogr}")
             
-            # GÜNLÜK ÇALIŞMA VE KONU DETAY TABLOSU
             st.subheader("📚 Ders & Konu Bazlı Soru, Doğru, Yanlış, Boş Dağılımı")
             df_gunluk = pd.read_sql_query("SELECT id, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             
@@ -412,7 +433,6 @@ else:
             else:
                 st.info("Bu öğrenci henüz günlük ders ve konu soru verisi girmedi.")
                 
-            # DENEMELER VE KARNELER
             st.subheader("📑 Kayıtlı Denemeler ve Karneler")
             df_deneme = pd.read_sql_query("SELECT tarih, yayin, tur, toplam_net, dosya_adi FROM denemeler WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             if not df_deneme.empty:
