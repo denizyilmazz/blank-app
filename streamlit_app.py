@@ -34,34 +34,34 @@ st.markdown("""
 conn = sqlite3.connect("yks_kocluk.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# Tablo 1: Öğrenci Bilgileri
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS ogrenciler (
-    ad_soyad TEXT PRIMARY KEY,
-    sifre TEXT
-)
-""")
+def veritabani_hazirla_ve_onar():
+    # Tablo 1: Öğrenci Bilgileri
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS ogrenciler (
+        ad_soyad TEXT PRIMARY KEY,
+        sifre TEXT
+    )
+    """)
 
-# Tablo 2: Günlük Çalışma
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS gunluk_calisma (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ad_soyad TEXT,
-    tarih TEXT,
-    ders TEXT,
-    konu TEXT,
-    toplam_soru INTEGER,
-    dogru INTEGER,
-    yanlis INTEGER,
-    bos INTEGER,
-    sure FLOAT,
-    verim INTEGER,
-    notlar TEXT
-)
-""")
+    # Tablo 2: Günlük Çalışma
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS gunluk_calisma (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ad_soyad TEXT,
+        tarih TEXT,
+        ders TEXT,
+        konu TEXT,
+        toplam_soru INTEGER,
+        dogru INTEGER,
+        yanlis INTEGER,
+        bos INTEGER,
+        sure FLOAT,
+        verim INTEGER,
+        notlar TEXT
+    )
+    """)
 
-# Otomatik Veritabanı Sütun Kontrolü ve Onarımı
-def veritabani_onar():
+    # Sütun Kontrolü ve Otomatik Onarım
     cursor.execute("PRAGMA table_info(gunluk_calisma)")
     mevcut_sutunlar = [row[1] for row in cursor.fetchall()]
     gerekli_sutunlar = {
@@ -78,11 +78,12 @@ def veritabani_onar():
         if sutun_adi not in mevcut_sutunlar:
             try:
                 cursor.execute(f"ALTER TABLE gunluk_calisma ADD COLUMN {sutun_adi} {sutun_tipi}")
+                conn.commit()
             except Exception:
                 pass
     conn.commit()
 
-veritabani_onar()
+veritabani_hazirla_ve_onar()
 
 # Tablo 3: Denemeler
 cursor.execute("""
@@ -257,16 +258,18 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                             INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
+                            conn.commit()
                             kaydedilen_ders_sayisi += 1
                         except sqlite3.OperationalError:
-                            # Hata durumunda veritabanını anında onarıp tekrar kaydetmeyi dener
-                            veritabani_onar()
+                            # İşlem kilidini çöz ve sütunları tekrar eklemeyi dene
+                            conn.rollback()
+                            veritabani_hazirla_ve_onar()
                             cursor.execute("""
                             INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
+                            conn.commit()
                             kaydedilen_ders_sayisi += 1
-                conn.commit()
                 if kaydedilen_ders_sayisi > 0:
                     st.success(f"Tüm ders ve konu verileriniz ({kaydedilen_ders_sayisi} ders) veritabanına başarıyla kaydedildi!")
                 else:
