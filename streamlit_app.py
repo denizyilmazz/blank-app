@@ -1,234 +1,438 @@
 import streamlit as st
 import datetime
 import pandas as pd
+import sqlite3
+import hashlib
 
-# Sayfa Ayarları
-st.set_page_config(page_title="YKS Çoklu Öğrenci Koçluk Platformu", page_icon="🎓", layout="wide")
+# Sayfa Yapılandırması
+st.set_page_config(
+    page_title="YKS Sayısal Koçluk Platformu",
+    page_icon="🎓",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Session State Hazırlığı (Veri Depolama)
-if "ogrenciler" not in st.session_state:
-    st.session_state["ogrenciler"] = {} # {ogr_id: {sifre, ad, konular, denemeler, gunluk}}
+# SQLite Veritabanı Bağlantı Fonksiyonu
+def get_db():
+    conn = sqlite3.connect("yks_kocluk.db", check_same_thread=False)
+    return conn
 
-# Koç Şifresi
-KOC_SIFRE = "1234"
+# Veritabanı Tablolarını İlklendirme
+def init_db():
+    conn = get_db()
+    c = conn.cursor()
+    # Öğrenciler Tablosu
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE,
+            password TEXT
+        )
+    ''')
+    # Günlük Çalışma Kaydı
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS daily_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            date TEXT,
+            sure REAL,
+            paragraf_prob INT,
+            mat_geo INT,
+            fen INT,
+            turkce_sos INT,
+            bos_yanlis INT,
+            verim INT,
+            notlar TEXT
+        )
+    ''')
+    # Deneme Netleri & Karne Kaydı
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS denemeler (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            deneme_turu TEXT,
+            deneme_adi TEXT,
+            mat REAL,
+            fiz REAL,
+            kim REAL,
+            biy REAL,
+            turk REAL,
+            sos REAL,
+            toplam_net REAL,
+            karne_adi TEXT,
+            tarih TEXT
+        )
+    ''')
+    # Konu Anlama Dereceleri (1-5 Puan)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS topic_ratings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            topic TEXT,
+            rating INT,
+            UNIQUE(student_id, subject, topic)
+        )
+    ''')
+    # Koç Ödevleri Tablosu
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS odevler (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            ders TEXT,
+            detay TEXT,
+            son_tarih TEXT,
+            durum TEXT DEFAULT 'Bekliyor'
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-# Tüm YKS Sayısal Müfredatı
-YKS_KONULAR = {
+init_db()
+
+YKS_KONULARI = {
     "📐 Matematik & Geometri": [
-        "Temel Kavramlar & Sayılar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK",
-        "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler",
-        "Çarpanlara Ayırma", "Oran - Orantı", "Problem Türleri (Sayı, Kesir, Yaş, Yüzde, Hız)",
-        "Mantık & Küme - Kartratezyen Çarpım", "Fonksiyonlar", "2. Dereceden Denklemler",
-        "Karmaşık Sayılar", "Polinomlar", "Parabol", "Permütasyon - Kombinasyon - Olasılık",
-        "Logaritma", "Diziler", "Trigonometri", "Limit & Süreklilik", "Türev & Uygulamaları",
-        "İntegral & Uygulamaları", "Doğruda ve Üçgende Açılar", "Özel Üçgenler (Dik, İkizkenar, Eşkenar)",
-        "Üçgende Alan & Açıortay & Kenarortay", "Üçgende Benzerlik", "Çokgenler & Dörtgenler",
+        "Temel Kavramlar & Sayı Basamakları", "Bölme-Bölünebilme & EBOB-EKOK",
+        "Rasyonel Sayılar & Basit Eşitsizlikler", "Mutlak Değer & Üslü-Köklü Sayılar",
+        "Çarpanlara Ayırma & Oran-Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)",
+        "Kümeler, Mantık & Fonksiyonlar", "Polinomlar & 2. Dereceden Denklemler",
+        "Karmaşık Sayılar & Parabol", "Permütasyon, Kombinasyon, Olasılık",
+        "Trigonometri (TYT & AYT)", "Logaritma & Diziler",
+        "Limit & Süreklilik", "Türev ve Uygulamaları", "İntegral ve Uygulamaları",
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler (Dik, İkizkenar, Eşkenar)",
+        "Üçgende Alan, Eşlik ve Benzerlik", "Çokgenler ve Dörtgenler",
         "Çember ve Daire", "Analitik Geometri", "Katı Cisimler (Prizma, Piramit, Küre)"
     ],
     "⚡ Fizik": [
-        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kütle Özkütle", "Hareket ve Kuvvet",
-        "İş, Güç ve Enerji", "Isı ve Sıcaklık", "Genleşme", "Basınç ve Kaldırma Kuvveti",
-        "Elektrostatik", "Elektrik Akımı ve Devreler", "Mıknatıs ve Manyetik Alan", "Optik (Yansıma, Kırılma, Mercekler)",
-        "Dalgalar (Yay, Su, Ses, Deprem)", "Vektörler & Bağıl Hareket", "Newton'un Hareket Yasaları",
-        "Atışlar", "Tork ve Denge", "Ağırlık Merkezi", "Basit Makineler", "Düzgün Çembersel Hareket",
-        "Basit Harmonik Hareket", "Açısal Momentum & Kütle Çekim", "Elektriksel Potansiyel & Kuvvet",
-        "Manyetizma ve İndüksiyon", "Alternatif Akım & Transformatörler", "Elektromanyetik Dalgalar",
-        "Fotoelektrik Olay & Compton", "Özel Görelilik", "Modern Fizik & Teknolojideki Uygulamaları"
+        "Fizik Bilimine Giriş & Madde Özellikleri", "Basınç ve Kaldırma Kuvveti",
+        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "İş, Güç ve Enerji",
+        "Elektrik ve Manyetizma", "Dalgalar & Optik",
+        "Vektörler, Tork ve Denge", "Bağıl Hareket & Newton'un Hareket Yasaları",
+        "Atışlar & Momentum", "Çembersel Hareket & Harmonik Hareket",
+        "Elektriksel Potansiyel & Manyetik Kuvvet", "Alternatif Akım & Transformatörler",
+        "Modern Fizik & Atom Fiziği"
     ],
     "🧪 Kimya": [
-        "Kimya Bilimi & Atomun Yapısı", "Periyodik Sistem", "Kimyasal Türler Arası Etkileşimler",
-        "Maddenin Halleri", "Doğa ve Kimya", "Mol Kavramı", "Kimyasal Tepkimeler ve Hesaplamalar",
-        "Karışımlar", "Asitler, Bazlar ve Tuzlar", "Kimya Her Yerde", "Modern Atom Teorisi",
-        "Gazlar", "Sıvı Çözeltiler ve Çözünürlük", "Tepkimelerde Enerji", "Tepkimelerde Hız",
-        "Kimyasal Denge", "Sulu Çözelti Dengeleri (KÇÇ & Asit-Baz)", "Kimya ve Elektrik (Pil & Elektroliz)",
-        "Karbon Kimyasına Giriş", "Organik Kimya (Akan, Alken, Alkin, Alkol, Ester vb.)"
+        "Kimya Bilimi & Atomun Yapısı", "Periyodik Sistem & Etkileşimler",
+        "Maddenin Halleri & Kimyanın Temel Kanunları", "Karışımlar, Asitler, Bazlar ve Tuzlar",
+        "Modern Atom Teorisi", "Gazlar & Gaz Yasaları",
+        "Sıvı Çözeltiler ve Çözünürlük", "Tepkimelerde Enerji & Hız",
+        "Kimyasal Denge & Asit-Baz Dengesi", "KÇÇ (Çözünürlük Dengesi)",
+        "Kimya ve Elektrik (Piller & Elektroliz)", "Karbon Kimyasına Giriş & Organik Kimya"
     ],
     "🧬 Biyoloji": [
-        "Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Zarından Madde Geçişleri",
-        "Canlıların Sınıflandırılması", "Hücre Bölünmeleri (Mitoz & Mayoz)", "Kalıtım ve İnsan Genetiği",
-        "Ekosistem Ekolojisi & Güncel Çevre Sorunları", "İnsan Fizyolojisi (Sinir, Duyu, Destek-Hareket)",
-        "Sindirimi Dolaşım, Solunum, Boşaltım Sistemleri", "Üreme Sistemi ve Gelişme",
-        "Komünite ve Popülasyon Ekolojisi", "Nükleik Asitler & Protein Sentezi", "Canlılarda Enerji Dönüşümleri (Fotosentez, Kemosentez, Solunum)",
-        "Bitki Biyolojisi (Dokular, Organlar, Taşıma, Büyüme)", "Canlılar ve Çevre"
+        "Yaşam Bilimi Biyoloji & Hücre", "Canlıların Sınıflandırılması",
+        "Hücre Bölünmeleri & Kalıtım", "Ekosistem Ekolojisi",
+        "İnsan Fizyolojisi / Sistemler (Sinir, Sindirim, Dolaşım vb.)",
+        "Komünite ve Popülasyon Ekolojisi", "Nükleik Asitler & Protein Sentezi",
+        "Canlılarda Enerji Dönüşümleri (Fotosentez, Solunum)", "Bitki Biyolojisi"
     ]
 }
 
-# --- YAN MENÜ: GİRİŞ PANELİ ---
-st.sidebar.title("🎓 YKS Koçluk Platformu")
-giris_turu = st.sidebar.radio("Giriş Türü Seçin:", ["👨‍🎓 Öğrenci Girişi / Kayıt", "👨‍🏫 Koç Girişi"])
+st.title("🎓 YKS Sayısal Koçluk ve Performans Platformu")
 
-# ----------------------------------------------------
-# 1. ÖĞRENCİ PANELİ
-# ----------------------------------------------------
-if giris_turu == "👨‍🎓 Öğrenci Girişi / Kayıt":
-    st.title("👨‍🎓 Öğrenci Paneli")
-    
-    tab_giris, tab_soru, tab_deneme, tab_konu = st.tabs([
-        "🔑 Giriş / Kayıt", "📝 Günlük Çalışma", "📊 Deneme & Karne Analizi", "🗺️ Konu Derecelendirme"
-    ])
-    
-    with tab_giris:
-        st.subheader("Öğrenci Hesabı")
-        ad_soyad = st.text_input("Adınız ve Soyadınız:").strip().title()
-        sifre = st.text_input("Şifreniz / PIN:", type="password")
+yks_tarihi = datetime.date(2027, 6, 20)
+bugun = datetime.date.today()
+kalan_gun = (yks_tarihi - bugun).days
+st.caption(f"📅 Bugün: {bugun.strftime('%d.%m.%Y')} | ⏳ YKS Maratonuna Kalan: **{max(kalan_gun, 0)} Gün**")
+st.divider()
+
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+    st.session_state["user_role"] = None
+    st.session_state["user_id"] = None
+    st.session_state["user_name"] = None
+
+if not st.session_state["logged_in"]:
+    st.sidebar.title("🔐 Kullanıcı Girişi")
+    giris_turu = st.sidebar.radio("Giriş Türü:", ["👨‍🎓 Öğrenci Girişi / Kayıt", "👨‍🏫 Koç Girişi"])
+
+    if giris_turu == "👨‍🎓 Öğrenci Girişi / Kayıt":
+        st.subheader("👨‍🎓 Öğrenci Paneli Girişi")
+        islem = st.tabs(["🔑 Giriş Yap", "📝 Yeni Hesap Oluştur"])
         
-        if st.button("Giriş Yap / Hesabı Aktif Et"):
-            if ad_soyad and sifre:
-                if ad_soyad not in st.session_state["ogrenciler"]:
-                    st.session_state["ogrenciler"][ad_soyad] = {
-                        "sifre": sifre,
-                        "konular": {},
-                        "denemeler": [],
-                        "gunluk": []
-                    }
-                    st.success(f"Hoş geldin {ad_soyad}! Yeni profilin başarıyla oluşturuldu.")
+        with islem[0]:
+            student_name = st.text_input("Ad Soyad:", key="login_name")
+            student_pin = st.text_input("Şifre / PIN:", type="password", key="login_pin")
+            if st.button("Giriş Yap", type="primary"):
+                conn = get_db()
+                c = conn.cursor()
+                hashed_pin = hashlib.sha256(student_pin.encode()).hexdigest()
+                c.execute("SELECT id, name FROM students WHERE name = ? AND password = ?", (student_name.strip().title(), hashed_pin))
+                res = c.fetchone()
+                conn.close()
+                if res:
+                    st.session_state["logged_in"] = True
+                    st.session_state["user_role"] = "Öğrenci"
+                    st.session_state["user_id"] = res[0]
+                    st.session_state["user_name"] = res[1]
+                    st.success(f"Hoş geldin, {res[1]}!")
+                    st.rerun()
                 else:
-                    if st.session_state["ogrenciler"][ad_soyad]["sifre"] == sifre:
-                        st.success(f"Hoş geldin {ad_soyad}! Başarıyla giriş yapıldı.")
-                    else:
-                        st.error("Hatalı şifre! Lütfen kontrol edin.")
-                st.session_state["aktif_ogrenci"] = ad_soyad
-            else:
-                st.warning("Lütfen adınız soyadınız ve şifrenizi girin.")
-                
-    aktif_ogr = st.session_state.get("aktif_ogrenci", None)
-    
-    if not aktif_ogr:
-        st.info("⚠️ İşlem yapmak için lütfen önce 'Giriş / Kayıt' sekmesinden hesabınıza giriş yapın.")
+                    st.error("❌ Ad Soyad veya Şifre hatalı!")
+                    
+        with islem[1]:
+            new_name = st.text_input("Adınız Soyadınız:", key="reg_name")
+            new_pin = st.text_input("Belirleyeceğiniz Şifre / PIN:", type="password", key="reg_pin")
+            if st.button("Kayıt Ol ve Giriş Yap"):
+                if new_name and new_pin:
+                    conn = get_db()
+                    c = conn.cursor()
+                    try:
+                        hashed_pin = hashlib.sha256(new_pin.encode()).hexdigest()
+                        formatted_name = new_name.strip().title()
+                        c.execute("INSERT INTO students (name, password) VALUES (?, ?)", (formatted_name, hashed_pin))
+                        conn.commit()
+                        student_id = c.lastrowid
+                        conn.close()
+                        st.session_state["logged_in"] = True
+                        st.session_state["user_role"] = "Öğrenci"
+                        st.session_state["user_id"] = student_id
+                        st.session_state["user_name"] = formatted_name
+                        st.success("✅ Hesabınız veritabanına kaydedildi!")
+                        st.rerun()
+                    except sqlite3.IntegrityError:
+                        st.error("⚠️ Bu isimde bir öğrenci zaten kayıtlı! Lütfen Giriş Yap sekmesini kullanın.")
+                else:
+                    st.warning("Lütfen tüm alanları doldurun.")
+
     else:
-        # GÜNLÜK ÇALIŞMA SEKMESİ
-        with tab_soru:
-            st.subheader(f"📝 Günlük Çalışma Girişi - ({aktif_ogr})")
+        st.subheader("👨‍🏫 Koç / Öğretmen Girişi")
+        koc_pin = st.text_input("Koç Giriş Şifresi:", type="password")
+        if st.button("Koç Paneline Giriş Yap", type="primary"):
+            if koc_pin == "1234":
+                st.session_state["logged_in"] = True
+                st.session_state["user_role"] = "Koç"
+                st.session_state["user_name"] = "Koç / Öğretmen"
+                st.success("Giriş Başarılı!")
+                st.rerun()
+            else:
+                st.error("❌ Hatalı Koç Şifresi! (Varsayılan: 1234)")
+
+else:
+    c_user, c_out = st.sidebar.columns([2, 1])
+    c_user.write(f"👤 **{st.session_state['user_name']}** ({st.session_state['user_role']})")
+    if c_out.button("Çıkış"):
+        st.session_state["logged_in"] = False
+        st.session_state["user_role"] = None
+        st.session_state["user_id"] = None
+        st.session_state["user_name"] = None
+        st.rerun()
+
+    st.sidebar.divider()
+
+    if st.session_state["user_role"] == "Öğrenci":
+        tab1, tab2, tab3, tab4 = st.tabs([
+            "📝 Günlük Çalışma Girişi", 
+            "📊 Deneme Netlerim & Karne", 
+            "🗺️ YKS Konu Anlama Derecem", 
+            "🎯 Ödevlerim & Koç Notları"
+        ])
+        
+        with tab1:
+            st.subheader("📝 Günlük Çalışma & Soru Sayısı Girişi")
             col1, col2 = st.columns(2)
             with col1:
                 tarih = st.date_input("Tarih", datetime.date.today())
                 sure = st.number_input("Çalışma Süresi (Saat)", 0.0, 16.0, 7.5, 0.5)
-                paragraf_prob = st.number_input("Paragraf & Problem (Soru)", 0, 200, 40)
-                mat_geo = st.number_input("TYT Mat & Geometri (Soru)", 0, 300, 50)
+                paragraf_prob = st.number_input("Paragraf & Problem (Soru)", 0, value=40, step=5)
+                mat_geo = st.number_input("TYT/AYT Mat & Geometri (Soru)", 0, value=60, step=5)
             with col2:
-                fen = st.number_input("TYT Fen Bilimleri (Soru)", 0, 200, 40)
-                turkce_sos = st.number_input("TYT Türkçe & Sosyal (Soru)", 0, 200, 30)
+                fen = st.number_input("Fizik, Kimya, Biyoloji (Soru)", 0, value=50, step=5)
+                turkce_sos = st.number_input("Türkçe & Sosyal (Soru)", 0, value=30, step=5)
+                bos_yanlis = st.number_input("Yapılamayan / Boş Soru Sayısı", 0, value=5, step=1)
                 verim = st.slider("Günün Verim Puanı (1-10)", 1, 10, 8)
-            notlar = st.text_area("Zorlandığın konular / Koçuna iletmek istediğin not:")
+                
+            notlar = st.text_area("Zorlandığın konular / Koçuna iletmek istediğin mesaj:")
             
-            if st.button("🚀 Günlük Raporu Kaydet"):
+            if st.button("🚀 Günlük Raporu Kaydet", type="primary", use_container_width=True):
+                conn = get_db()
+                c = conn.cursor()
+                c.execute('''
+                    INSERT INTO daily_logs (student_id, date, sure, paragraf_prob, mat_geo, fen, turkce_sos, bos_yanlis, verim, notlar)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (st.session_state["user_id"], str(tarih), sure, paragraf_prob, mat_geo, fen, turkce_sos, bos_yanlis, verim, notlar))
+                conn.commit()
+                conn.close()
                 toplam = paragraf_prob + mat_geo + fen + turkce_sos
-                veri = {"tarih": tarih, "sure": sure, "toplam_soru": toplam, "verim": verim, "not": notlar}
-                st.session_state["ogrenciler"][aktif_ogr]["gunluk"].append(veri)
-                st.success(f"Tebrikler {aktif_ogr}! {toplam} soru kaydı koç paneline iletildi.")
+                st.success(f"✅ Rapor veritabanına kaydedildi! Toplam Soru: **{toplam}**")
 
-        # DENEME & KARNE YÜKLEME SEKMESİ
-        with tab_deneme:
-            st.subheader("📊 Deneme Sonucu Kaydı & PDF/Görsel Karne Yükleme")
-            st.caption("Deneme sonuçlarını ve karne dosyanı yükle, sistem otomatik eksik analizi çıkarsın.")
-            
-            yayin = st.text_input("Deneme Yayını / Adı (Örn: 3D TYT Genəl Deneme-1):")
-            d_turu = st.selectbox("Deneme Türü:", ["TYT Denemesi", "AYT Sayısal Denemesi", "Matematik Branş Denemesi", "Fen Branş Denemesi"])
+        with tab2:
+            st.subheader("📊 Deneme Net Kaydı & Karne Yükleme")
+            d_turu = st.selectbox("Deneme Türü", ["TYT Denemesi", "AYT Sayısal Denemesi"])
+            d_adi = st.text_input("Deneme Yayını / Adı", placeholder="Örn: 3D Yayınları Türkiye Geneli-1")
             
             c1, c2, c3 = st.columns(3)
             with c1:
-                mat_net = st.number_input("Matematik Neti:", 0.0, 40.0, 28.5)
-                fiz_net = st.number_input("Fizik Neti:", 0.0, 14.0, 9.0)
+                mat = st.number_input("Matematik Net", 0.0, 40.0, 30.0, 0.25)
+                fiz = st.number_input("Fizik Net", 0.0, 14.0, 10.0, 0.25)
             with c2:
-                kim_net = st.number_input("Kimya Neti:", 0.0, 14.0, 10.5)
-                biy_net = st.number_input("Biyoloji Neti:", 0.0, 14.0, 8.0)
+                kim = st.number_input("Kimya Net", 0.0, 13.0, 10.0, 0.25)
+                biy = st.number_input("Biyoloji Net", 0.0, 13.0, 10.0, 0.25)
             with c3:
-                turk_net = st.number_input("Türkçe Neti (Varsa):", 0.0, 40.0, 31.0)
-                sos_net = st.number_input("Sosyal Neti (Varsa):", 0.0, 20.0, 13.0)
-                
-            toplam_net = mat_net + fiz_net + kim_net + biy_net + turk_net + sos_net
-            st.metric("Hesaplanan Toplam Net:", f"{toplam_net:.2f}")
-            
-            # PDF / Görsel Yükleyici
-            karne_dosyasi = st.file_uploader("📄 Deneme Karnesi / Fotoğrafı Yükle (PDF, PNG, JPG):", type=["pdf", "png", "jpg", "jpeg"])
-            
-            if karne_dosyasi is not None:
-                st.info(f"📎 **Yüklenen Dosya:** `{karne_dosyasi.name}` (Koç kontrolüne hazır)")
+                turkce = st.number_input("Türkçe Net", 0.0, 40.0, 32.0, 0.25)
+                sos_net = st.number_input("Sosyal Net", 0.0, 20.0, 12.0, 0.25)
 
-            if st.button("📥 Denemeyi ve Karneyi Kaydet"):
-                deneme_kayit = {
-                    "tarih": datetime.date.today(),
-                    "yayin": yayin,
-                    "tur": d_turu,
-                    "toplam_net": toplam_net,
-                    "detay": {"Matematik": mat_net, "Fizik": fiz_net, "Kimya": kim_net, "Biyoloji": biy_net},
-                    "dosya_adi": karne_dosyasi.name if karne_dosyasi else "Dosya Yüklenmedi"
-                }
-                st.session_state["ogrenciler"][aktif_ogr]["denemeler"].append(deneme_kayit)
-                st.success("Deneme sonucu ve analizi başarıyla kaydedildi!")
+            if d_turu == "TYT Denemesi":
+                toplam_net = turkce + mat + fiz + kim + biy + sos_net
+            else:
+                toplam_net = mat + fiz + kim + biy
                 
-                # Otomatik Eksik Analiz Motoru
-                st.divider()
-                st.subheader("💡 Sistem Otomatik Eksik Analiz Raporu")
-                
-                if mat_net < 30 and d_turu == "TYT Denemesi":
-                    st.warning("⚠️ **Matematik Uyarısı:** Netin 30'un altında. Problem ve Geometri ivmesini artırmalı, süre yönetimini gözden geçirmelisin.")
-                if fiz_net < 10:
-                    st.warning("⚠️ **Fizik Uyarısı:** Fizik netin hedef seviyenin gerisinde. Optik ve Elektrik konularında konu tekrarları yapman önerilir.")
-                if toplam_net >= 90:
-                    st.balloons()
-                    st.success("🌟 **Mükemmel Performans:** Net seviyen Sayısal İlk 5.000 hedefiyle tam uyumlu gidiyor!")
+            st.metric("🎯 Hesaplanan Toplam Net", f"{toplam_net:.2f}")
+            
+            karne = st.file_uploader("📄 Deneme Karnesi / Fotoğrafı Yükle (PDF, PNG, JPG):", type=["pdf", "png", "jpg", "jpeg"])
+            karne_adi = karne.name if karne is not None else "Dosya Yok"
 
-        # KONU DERECELENDİRME SEKMESİ
-        with tab_konu:
+            if st.button("📈 Deneme Netini ve Karneyi Kaydet", type="primary"):
+                conn = get_db()
+                c = conn.cursor()
+                c.execute('''
+                    INSERT INTO denemeler (student_id, deneme_turu, deneme_adi, mat, fiz, kim, biy, turk, sos, toplam_net, karne_adi, tarih)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (st.session_state["user_id"], d_turu, d_adi, mat, fiz, kim, biy, turkce, sos_net, toplam_net, karne_adi, str(datetime.date.today())))
+                conn.commit()
+                conn.close()
+                st.success("✅ Deneme sonucu veritabanına başarıyla aktarıldı!")
+
+            st.divider()
+            st.markdown("##### 📜 Geçmiş Deneme Sonuçlarım")
+            conn = get_db()
+            df_deneme = pd.read_sql_query("SELECT deneme_turu as 'Tür', deneme_adi as 'Deneme', toplam_net as 'Toplam Net', karne_adi as 'Karne Dosyası', tarih as 'Tarih' FROM denemeler WHERE student_id = ?", conn, params=(st.session_state["user_id"],))
+            conn.close()
+            if not df_deneme.empty:
+                st.dataframe(df_deneme, use_container_width=True)
+            else:
+                st.info("Henüz kaydedilmiş bir deneme bulunmuyor.")
+
+        with tab3:
             st.subheader("🗺️ YKS Konu Anlama Derecelendirmesi")
-            st.info("Her ders için kendini 1 (Çok Eksiğim Var) ile 5 (Tamamen Ustalaştım) arasında puanla.")
-            
-            for ders, konular in YKS_KONULAR.items():
-                with st.expander(f"📚 {ders} Konuları"):
-                    for kn in konular:
-                        mevcut_puan = st.session_state["ogrenciler"][aktif_ogr]["konular"].get(kn, 3)
-                        yeni_puan = st.select_slider(
-                            f"**{kn}**",
-                            options=[1, 2, 3, 4, 5],
-                            value=mevcut_puan,
-                            format_func=lambda x: {1: "1 - Çok Zayıf 🔴", 2: "2 - Eksikler Var 🟠", 3: "3 - Orta 🟡", 4: "4 - İyi 🟢", 5: "5 - Tam Usta 🔵"}[x],
-                            key=f"{aktif_ogr}_{kn}"
-                        )
-                        st.session_state["ogrenciler"][aktif_ogr]["konular"][kn] = yeni_puan
-            st.success("Konu hakimiyet durumların güncellendi!")
+            st.info("💡 Konuları 1 (Çok Eksiğim Var) ile 5 (Tam Ustalaştım) arasında puanlayın. Koçunuz veritabanından eksiklerinizi anlık görecektir.")
 
-# ----------------------------------------------------
-# 2. KOÇ PANELİ
-# ----------------------------------------------------
-else:
-    st.title("👨‍🏫 Koç Analiz ve Takip Paneli")
-    koc_sifre_giris = st.sidebar.text_input("Koç Şifresi:", type="password")
-    
-    if koc_sifre_giris != KOC_SIFRE:
-        st.warning("🔒 Koç paneline erişmek için sol menüden koç şifrenizi girin. (Varsayılan: 1234)")
+            conn = get_db()
+            c = conn.cursor()
+            c.execute("SELECT subject, topic, rating FROM topic_ratings WHERE student_id = ?", (st.session_state["user_id"],))
+            existing_ratings = {(row[0], row[1]): row[2] for row in c.fetchall()}
+            conn.close()
+
+            ders_tabs = st.tabs(list(YKS_KONULARI.keys()))
+
+            for i, (ders_adi, konular) in enumerate(YKS_KONULARI.items()):
+                with ders_tabs[i]:
+                    st.markdown(f"### {ders_adi}")
+                    updated_ratings = {}
+                    
+                    for konu in konular:
+                        col_k, col_p = st.columns([3, 2])
+                        col_k.write(f"• **{konu}**")
+                        curr_val = existing_ratings.get((ders_adi, konu), 3)
+                        rating = col_p.select_slider(
+                            f"{konu} Puanı",
+                            options=[1, 2, 3, 4, 5],
+                            value=curr_val,
+                            key=f"rating_{ders_adi}_{konu}",
+                            label_visibility="collapsed"
+                        )
+                        updated_ratings[konu] = rating
+                    
+                    if st.button(f"💾 {ders_adi} Puanlarımı Kaydet", key=f"btn_{ders_adi}"):
+                        conn = get_db()
+                        c = conn.cursor()
+                        for konu, rat in updated_ratings.items():
+                            c.execute('''
+                                INSERT INTO topic_ratings (student_id, subject, topic, rating)
+                                VALUES (?, ?, ?, ?)
+                                ON CONFLICT(student_id, subject, topic) DO UPDATE SET rating=excluded.rating
+                            ''', (st.session_state["user_id"], ders_adi, konu, rat))
+                        conn.commit()
+                        conn.close()
+                        st.success(f"✅ {ders_adi} puanlarınız kaydedildi!")
+
+        with tab4:
+            st.subheader("🎯 Koçunuzdan Gelen Ödevler ve Notlar")
+            conn = get_db()
+            df_odev = pd.read_sql_query("SELECT ders as 'Ders', detay as 'Ödev Tanımı', son_tarih as 'Son Tarih', durum as 'Durum' FROM odevler WHERE student_id = ?", conn, params=(st.session_state["user_id"],))
+            conn.close()
+            
+            if not df_odev.empty:
+                st.dataframe(df_odev, use_container_width=True)
+            else:
+                st.info("Atanmış aktif bir ödeviniz bulunmuyor.")
+
     else:
-        st.success("🔓 Koç Paneli Yetkisi Doğrulandı.")
+        st.header("👨‍🏫 Koç / Öğretmen Veritabanı Takip Paneli")
         
-        tum_ogrenciler = list(st.session_state["ogrenciler"].keys())
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT id, name FROM students ORDER BY name ASC")
+        students_list = c.fetchall()
+        conn.close()
         
-        if not tum_ogrenciler:
-            st.info("Henüz sisteme kayıtlı bir öğrenci bulunmuyor.")
+        if not students_list:
+            st.warning("⚠️ Veritabanında henüz kayıtlı öğrenci bulunmuyor. Öğrencinizden kayıt olmasını isteyin.")
         else:
-            secilen_ogr = st.selectbox("🔍 İncelemek İstediğiniz Öğrenciyi Seçin:", tum_ogrenciler)
-            ogr_veri = st.session_state["ogrenciler"][secilen_ogr]
+            student_dict = {name: sid for sid, name in students_list}
+            selected_student_name = st.selectbox("📊 İncelemek İstediğiniz Öğrenciyi Seçin:", list(student_dict.keys()))
+            selected_student_id = student_dict[selected_student_name]
             
             st.divider()
-            st.header(f"📊 Öğrenci Raporu: {secilen_ogr}")
             
-            k1, k2, k3 = st.columns(3)
-            k1.metric("Toplam Girilen Çalışma", f"{len(ogr_veri['gunluk'])} Gün")
-            k2.metric("Girilmiş Deneme Sayısı", f"{len(ogr_veri['denemeler'])} Adet")
+            ktab1, ktab2, ktab3 = st.tabs([
+                "📊 Çalışma & Net Analizi", 
+                "⚠️ Zayıf Olduğu Konular (1 ve 2 Puanlar)", 
+                "🎯 Ödev Tanımla"
+            ])
             
-            # Kırmızı Alarm Veren Zayıf Konular (1 veya 2 Puan Alanlar)
-            zayif_konular = [k for k, v in ogr_veri["konular"].items() if v in [1, 2]]
-            k3.metric("🔴 Acil Müdahale Gereken Konu", f"{len(zayif_konular)} Konu")
-            
-            # Zayıf Konular Listesi
-            if zayif_konular:
-                with st.expander("🚨 Öğrencinin 1 ve 2 Puan Verdiği Zayıf Konular (Ödev Listesi)"):
-                    for zk in zayif_konular:
-                        st.write(f"- ⚠️ **{zk}** (Puan: {ogr_veri['konular'][zk]})")
-            
-            # Deneme Karneleri ve Dosyalar
-            st.subheader("📑 Yüklenen Denemeler ve Karne Dosyaları")
-            if ogr_veri["denemeler"]:
-                df_deneme = pd.DataFrame(ogr_veri["denemeler"])
-                st.dataframe(df_deneme[["tarih", "yayin", "tur", "toplam_net", "dosya_adi"]], use_container_width=True)
-            else:
-                st.info("Öğrenci henüz deneme sonucu veya karne dosyası yüklememiş.")
+            # KOÇ TAB 1: GENEL METRİKLER
+            with ktab1:
+                st.subheader(f"📈 {selected_student_name} - Canlı Performans Özeti")
+                
+                conn = get_db()
+                df_logs = pd.read_sql_query("SELECT * FROM daily_logs WHERE student_id = ? ORDER BY date DESC", conn, params=(selected_student_id,))
+                df_deneme = pd.read_sql_query("SELECT * FROM denemeler WHERE student_id = ? ORDER BY id DESC", conn, params=(selected_student_id,))
+                conn.close()
+                
+                m1, m2, m3, m4 = st.columns(4)
+                toplam_soru = df_logs["paragraf_prob"].sum() + df_logs["mat_geo"].sum() + df_logs["fen"].sum() + df_logs["turkce_sos"].sum() if not df_logs.empty else 0
+                ort_sure = df_logs["sure"].mean() if not df_logs.empty else 0.0
+                ort_verim = df_logs["verim"].mean() if not df_logs.empty else 0.0
+                son_net = df_deneme["toplam_net"].iloc[0] if not df_deneme.empty else 0.0
+                
+                m1.metric("Toplam Soru", f"{toplam_soru} Soru")
+                m2.metric("Ort. Çalışma", f"{ort_sure:.1f} Saat")
+                m3.metric("Ort. Verim", f"{ort_verim:.1f} / 10")
+                m4.metric("Son Deneme Neti", f"{son_net:.2f}")
+                
+                st.divider()
+                st.write("### 📜 Günlük Çalışma Dökümü")
+                if not df_logs.empty:
+                    st.dataframe(df_logs[["date", "sure", "paragraf_prob", "mat_geo", "fen", "turkce_sos", "bos_yanlis", "verim", "notlar"]], use_container_width=True)
+                else:
+                    st.info("Öğrenci henüz günlük çalışma kaydı girmemiş.")
+
+            # KOÇ TAB 2: ZAYIF KONULAR
+            with ktab2:
+                st.subheader(f"⚠️ {selected_student_name} - Acil Müdahale Gereken Konular")
+                conn = get_db()
+                df_ratings = pd.read_sql_query("SELECT subject as 'Ders', topic as 'Konu', rating as 'Puan' FROM topic_ratings WHERE student_id = ? AND rating IN (1, 2) ORDER BY rating ASC", conn, params=(selected_student_id,))
+                conn.close()
+                
+                if not df_ratings.empty:
+                    st.error(f"🔴 Bu öğrencinin **{len(df_ratings)}** konuda eksik uyarısı bulunmaktadır!")
+                    st.dataframe(df_ratings, use_container_width=True)
+                else:
+                    st.success("✅ Öğrenci 1 veya 2 puan verdiği kritik bir zayıf konu işaretlememiş.")
+
+            # KOÇ TAB 3: ÖDEV VERME
+            with ktab3:
+                st.subheader(f"🎯 {selected_student_name} İçin Yeni Ödev Ekle")
+                o_ders = st.selectbox("Ders", ["Matematik", "Geometri", "Fizik", "Kimya", "Biyoloji", "Paragraf/Problem"])
+                o_detay = st.text_area("Ödev Açıklaması / Kitap - Test Detayı")
+                o_tarih = st.date_input("Son Teslim Tarihi", datetime.date.today() + datetime.timedelta(days=7))
+                
+                if st.button("➕ Ödevi Kaydet ve Öğrenciye Gönder", type="primary"):
+                    conn = get_db()
+                    c = conn.cursor()
+                    c.execute("INSERT INTO odevler (student_id, ders, detay, son_tarih) VALUES (?, ?, ?, ?)", (selected_student_id, o_ders, o_detay, str(o_tarih)))
+                    conn.commit()
+                    conn.close()
+                    st.success("✅ Ödev veritabanına eklendi ve öğrencinin paneline aktarıldı!")
