@@ -3,9 +3,10 @@ import datetime
 import sqlite3
 import pandas as pd
 
+# Sayfa Yapılandırması
 st.set_page_config(page_title="YKS Profesyonel Koçluk Platformu", page_icon="🎓", layout="wide")
 
-# Özel Sekme Tasarımları ve Görsel İyileştirmeler (CSS)
+# Custom CSS ile Sekmeleri Belirginleştirme
 st.markdown("""
 <style>
     .stTabs [data-baseweb="tab-list"] {
@@ -33,7 +34,7 @@ st.markdown("""
 conn = sqlite3.connect("yks_kocluk.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# Tablo 1: Öğrenci Giriş Bilgileri
+# Tablo 1: Öğrenci Bilgileri
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
 )
 """)
 
-# Tablo 2: Günlük Çalışma ve Soru Verileri
+# Tablo 2: Günlük Çalışma
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS gunluk_calisma (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,31 +60,31 @@ CREATE TABLE IF NOT EXISTS gunluk_calisma (
 )
 """)
 
-# Veritabanı Otomatik Sütun Onarım ve Yama Sistemi (Eski Veritabanı Çakışmalarını Önler)
-cursor.execute("PRAGMA table_info(gunluk_calisma)")
-mevcut_sutunlar = [row[1] for row in cursor.fetchall()]
+# Otomatik Veritabanı Sütun Kontrolü ve Onarımı
+def veritabani_onar():
+    cursor.execute("PRAGMA table_info(gunluk_calisma)")
+    mevcut_sutunlar = [row[1] for row in cursor.fetchall()]
+    gerekli_sutunlar = {
+        "konu": "TEXT",
+        "toplam_soru": "INTEGER",
+        "dogru": "INTEGER",
+        "yanlis": "INTEGER",
+        "bos": "INTEGER",
+        "sure": "FLOAT",
+        "verim": "INTEGER",
+        "notlar": "TEXT"
+    }
+    for sutun_adi, sutun_tipi in gerekli_sutunlar.items():
+        if sutun_adi not in mevcut_sutunlar:
+            try:
+                cursor.execute(f"ALTER TABLE gunluk_calisma ADD COLUMN {sutun_adi} {sutun_tipi}")
+            except Exception:
+                pass
+    conn.commit()
 
-gerekli_sutunlar = {
-    "konu": "TEXT",
-    "toplam_soru": "INTEGER",
-    "dogru": "INTEGER",
-    "yanlis": "INTEGER",
-    "bos": "INTEGER",
-    "sure": "FLOAT",
-    "verim": "INTEGER",
-    "notlar": "TEXT"
-}
+veritabani_onar()
 
-for sutun_adi, sutun_tipi in gerekli_sutunlar.items():
-    if sutun_adi not in mevcut_sutunlar:
-        try:
-            cursor.execute(f"ALTER TABLE gunluk_calisma ADD COLUMN {sutun_adi} {sutun_tipi}")
-        except sqlite3.OperationalError:
-            pass
-
-conn.commit()
-
-# Tablo 3: Deneme Sonuçları
+# Tablo 3: Denemeler
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS denemeler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -96,7 +97,7 @@ CREATE TABLE IF NOT EXISTS denemeler (
 )
 """)
 
-# Tablo 4: Konu Puanları (1 - 5 Puanlama)
+# Tablo 4: Konu Puanları
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS konu_puanlari (
     ad_soyad TEXT,
@@ -157,7 +158,7 @@ YKS_KONULAR = {
     ],
     "🧬 Biyoloji": [
         "Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", 
-        "Ekoloji", "İnsan Fizyolojisi (Sistemler)", "Gensa Bilgi & Protein Sentezi", 
+        "Ekoloji", "İnsan Fizyologisı (Sistemler)", "Gensa Bilgi & Protein Sentezi", 
         "Fotosentez & Solunum", "Bitki Biyolojisi"
     ]
 }
@@ -208,6 +209,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     if not aktif_ogr:
         st.info("⚠️ İşlem yapmak için lütfen önce 'GİRİŞ / KAYIT' sekmesinden hesabınıza giriş yapın.")
     else:
+        # GÜNLÜK DERS & KONU BAZLI SORU GİRİŞİ
         with tab_gunluk:
             st.subheader(f"📝 Günlük Çalışma Girişi - Öğrenci: {aktif_ogr}")
             tarih_giris = st.date_input("Çalışma Tarihi", datetime.date.today())
@@ -247,15 +249,30 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     ders_verileri[ders_adi] = (secilen_konu, toplam_s, dogru_s, yanlis_s, bos_s)
 
             if st.button("🚀 Tüm Ders ve Konu Çalışmalarını Kaydet", type="primary"):
+                kaydedilen_ders_sayisi = 0
                 for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
                     if t_s > 0:
-                        cursor.execute("""
-                        INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, sure_giris, verim_giris, not_giris))
+                        try:
+                            cursor.execute("""
+                            INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
+                            kaydedilen_ders_sayisi += 1
+                        except sqlite3.OperationalError:
+                            # Hata durumunda veritabanını anında onarıp tekrar kaydetmeyi dener
+                            veritabani_onar()
+                            cursor.execute("""
+                            INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
+                            kaydedilen_ders_sayisi += 1
                 conn.commit()
-                st.success("Tüm ders ve konu detaylı verileriniz veritabanına başarıyla kaydedildi!")
+                if kaydedilen_ders_sayisi > 0:
+                    st.success(f"Tüm ders ve konu verileriniz ({kaydedilen_ders_sayisi} ders) veritabanına başarıyla kaydedildi!")
+                else:
+                    st.warning("Lütfen kaydetmeden önce en az bir dersten çözdüğünüz soru sayısını giriniz (0'dan büyük).")
 
+        # DENEME & KARNE SEKMESİ
         with tab_deneme:
             st.subheader("📊 Deneme Sonuçları & Karne Yükleme")
             yayin = st.text_input("Deneme Adı / Yayın:")
@@ -272,6 +289,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 conn.commit()
                 st.success("Deneme sonucu başarıyla kaydedildi!")
 
+        # KONU DERECELENDİRME SEKMESİ
         with tab_konular:
             st.subheader("🗺️ Ders Ders Konu Hakimiyet Puanlaması (1 - 5)")
             konu_sekmeleri = st.tabs(list(YKS_KONULAR.keys()))
