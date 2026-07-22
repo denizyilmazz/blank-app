@@ -59,12 +59,29 @@ CREATE TABLE IF NOT EXISTS gunluk_calisma (
 )
 """)
 
-# Otomatik Veritabanı Yaması: Eski veritabanına 'konu' sütununu güvenle ekler (Çakışmayı önler)
-try:
-    cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN konu TEXT")
-    conn.commit()
-except sqlite3.OperationalError:
-    pass  # Sütun zaten ekliyse hatayı yoksay
+# Veritabanı Otomatik Sütun Onarım ve Yama Sistemi (Eski Veritabanı Çakışmalarını Önler)
+cursor.execute("PRAGMA table_info(gunluk_calisma)")
+mevcut_sutunlar = [row[1] for row in cursor.fetchall()]
+
+gerekli_sutunlar = {
+    "konu": "TEXT",
+    "toplam_soru": "INTEGER",
+    "dogru": "INTEGER",
+    "yanlis": "INTEGER",
+    "bos": "INTEGER",
+    "sure": "FLOAT",
+    "verim": "INTEGER",
+    "notlar": "TEXT"
+}
+
+for sutun_adi, sutun_tipi in gerekli_sutunlar.items():
+    if sutun_adi not in mevcut_sutunlar:
+        try:
+            cursor.execute(f"ALTER TABLE gunluk_calisma ADD COLUMN {sutun_adi} {sutun_tipi}")
+        except sqlite3.OperationalError:
+            pass
+
+conn.commit()
 
 # Tablo 3: Deneme Sonuçları
 cursor.execute("""
@@ -92,7 +109,6 @@ conn.commit()
 
 KOC_SIFRE = "1234"
 
-# Ayrı Ayrı Tüm YKS Sayısal & Sözel Dersleri ve Konu Haritası
 YKS_KONULAR = {
     "📖 Türkçe": [
         "Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", 
