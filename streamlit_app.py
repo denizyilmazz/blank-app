@@ -3,10 +3,9 @@ import datetime
 import sqlite3
 import pandas as pd
 
-# Sayfa Yapılandırması
 st.set_page_config(page_title="YKS Profesyonel Koçluk Platformu", page_icon="🎓", layout="wide")
 
-# Custom CSS ile Sekmeleri Belirginleştirme
+# Özel Sekme Tasarımları ve Görsel İyileştirmeler (CSS)
 st.markdown("""
 <style>
     .stTabs [data-baseweb="tab-list"] {
@@ -31,11 +30,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- VERİTABANI BAĞLANTISI ---
 conn = sqlite3.connect("yks_kocluk.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# Tabloları Oluştur
+# Tablo 1: Öğrenci Giriş Bilgileri
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
@@ -43,6 +41,7 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
 )
 """)
 
+# Tablo 2: Günlük Çalışma ve Soru Verileri
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS gunluk_calisma (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,6 +59,14 @@ CREATE TABLE IF NOT EXISTS gunluk_calisma (
 )
 """)
 
+# Otomatik Veritabanı Yaması: Eski veritabanına 'konu' sütununu güvenle ekler (Çakışmayı önler)
+try:
+    cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN konu TEXT")
+    conn.commit()
+except sqlite3.OperationalError:
+    pass  # Sütun zaten ekliyse hatayı yoksay
+
+# Tablo 3: Deneme Sonuçları
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS denemeler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,6 +79,7 @@ CREATE TABLE IF NOT EXISTS denemeler (
 )
 """)
 
+# Tablo 4: Konu Puanları (1 - 5 Puanlama)
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS konu_puanlari (
     ad_soyad TEXT,
@@ -84,29 +92,65 @@ conn.commit()
 
 KOC_SIFRE = "1234"
 
-# Tüm Dersler ve Konuları
+# Ayrı Ayrı Tüm YKS Sayısal & Sözel Dersleri ve Konu Haritası
 YKS_KONULAR = {
-    "📖 Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
-    "📜 Tarih": ["Tarih Bilimine Giriş", "İlk Çağ Uygarlıkları", "İslam Öncesi Türk Tarihi", "İslam Tarihi ve Uygarlığı", "Türk İslam Devletleri", "Osmanlı Devleti Kuruluş & Yükselme", "Osmanlı Kültür ve Medeniyeti", "20. Yüzyıl Başlarında Osmanlı", "Milli Mücadele & İnkılap Tarihi", "Atatürkçülük ve İlkeler"],
-    "🌍 Coğrafya": ["Doğa ve İnsan", "Dünya'nın Şekli ve Hareketleri", "Coğrafi Konum & Harita Bilgisi", "İklim Bilgisi & İklim Tipleri", "Yerin Şekillenmesi (İç ve Dış Kuvvetler)", "Türkiye'nin Yerşekilleri", "Beşeri Sistemler & Nüfus", "Afetler ve Çevre"],
-    "🧠 Felsefe": ["Felsefeyi Tanıma", "Felsefi Düşünce & Sorgulama", "Bilgi Felsefesi (Epistemoloji)", "Varlık Felsefesi (Ontoloji)", "Ahlak Felsefesi (Etik)", "Sanat Felsefesi", "Siyaset Felsefesi", "Din Felsefesi", "Bilim Felsefesi"],
-    "🕌 Din Kültürü": ["İnanç & Allah İnancı", "İbadet ve Esasları", "Ahlak ve Değerler", "Hz. Muhammed (S.A.V.) ve Gençlik", "Vahiy ve Akıl", "İslam ve Bilim", "Dünya Dinleri"],
-    "📐 Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Permütasyon - Kombinasyon - Olasılık", "Logaritma", "Diziler", "Trigonometri", "Limit & Süreklilik", "Türev", "İntegral"],
-    "📏 Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan & Benzerlik", "Çokgenler & Dörtgenler", "Çember ve Daire", "Analitik Geometri", "Katı Cisimler"],
-    "⚡ Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kuvvet ve Hareket", "İş, Güç, Enerji", "Isı ve Sıcaklık", "Basınç ve Kaldırma Kuvveti", "Elektrostatik & Elektrik", "Optik", "Dalgalar", "Atışlar & Tork", "Çembersel Hareket", "Harmonik Hareket", "Modern Fizik"],
-    "🧪 Kimya": ["Kimya Bilimi & Atom", "Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Mol Kavramı & Tepkimeler", "Karışımlar", "Asit, Baz, Tuz", "Gazlar", "Çözeltiler", "Enerji, Hız ve Denge", "Elektrokimya", "Organik Kimya"],
-    "🧬 Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji", "İnsan Fizyolojisi (Sistemler)", "Gensa Bilgi & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"]
+    "📖 Türkçe": [
+        "Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", 
+        "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"
+    ],
+    "📜 Tarih": [
+        "Tarih Bilimine Giriş", "İlk Çağ Uygarlıkları", "İslam Öncesi Türk Tarihi", 
+        "İslam Tarihi ve Uygarlığı", "Türk İslam Devletleri", "Osmanlı Devleti Kuruluş & Yükselme", 
+        "Osmanlı Kültür ve Medeniyeti", "20. Yüzyıl Başlarında Osmanlı", "Milli Mücadele & İnkılap Tarihi", 
+        "Atatürkçülük ve İlkeler"
+    ],
+    "🌍 Coğrafya": [
+        "Doğa ve İnsan", "Dünya'nın Şekli ve Hareketleri", "Coğrafi Konum & Harita Bilgisi", 
+        "İklim Bilgisi & İklim Tipleri", "Yerin Şekillenmesi (İç ve Dış Kuvvetler)", "Türkiye'nin Yerşekilleri", 
+        "Beşeri Sistemler & Nüfus", "Afetler ve Çevre"
+    ],
+    "🧠 Felsefe": [
+        "Felsefeyi Tanıma", "Felsefi Düşünce & Sorgulama", "Bilgi Felsefesi (Epistemoloji)", 
+        "Varlık Felsefesi (Ontoloji)", "Ahlak Felsefesi (Etik)", "Sanat Felsefesi", 
+        "Siyaset Felsefesi", "Din Felsefesi", "Bilim Felsefesi"
+    ],
+    "🕌 Din Kültürü": [
+        "İnanç & Allah İnancı", "İbadet ve Esasları", "Ahlak ve Değerler", 
+        "Hz. Muhammed (S.A.V.) ve Gençlik", "Vahiy ve Akıl", "İslam ve Bilim", "Dünya Dinleri"
+    ],
+    "📐 Matematik": [
+        "Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", 
+        "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", 
+        "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", 
+        "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Permütasyon - Kombinasyon - Olasılık", 
+        "Logaritma", "Diziler", "Trigonometri", "Limit & Süreklilik", "Türev", "İntegral"
+    ],
+    "📏 Geometri": [
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan & Benzerlik", 
+        "Çokgenler & Dörtgenler", "Çember ve Daire", "Analitik Geometri", "Katı Cisimler"
+    ],
+    "⚡ Fizik": [
+        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kuvvet ve Hareket", "İş, Güç, Enerji", 
+        "Isı ve Sıcaklık", "Basınç ve Kaldırma Kuvveti", "Elektrostatik & Elektrik", "Optik", 
+        "Dalgalar", "Atışlar & Tork", "Çembersel Hareket", "Harmonik Hareket", "Modern Fizik"
+    ],
+    "🧪 Kimya": [
+        "Kimya Bilimi & Atom", "Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", 
+        "Mol Kavramı & Tepkimeler", "Karışımlar", "Asit, Baz, Tuz", "Gazlar", "Çözeltiler", 
+        "Enerji, Hız ve Denge", "Elektrokimya", "Organik Kimya"
+    ],
+    "🧬 Biyoloji": [
+        "Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", 
+        "Ekoloji", "İnsan Fizyolojisi (Sistemler)", "Gensa Bilgi & Protein Sentezi", 
+        "Fotosentez & Solunum", "Bitki Biyolojisi"
+    ]
 }
 
 DERSLER = list(YKS_KONULAR.keys())
 
-# --- SOL MENÜ ---
 st.sidebar.title("🎓 YKS Koçluk Sistemi")
 giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ GİRİŞİ", "👨‍🏫 KOÇ GİRİŞİ"])
 
-# ----------------------------------------------------
-# 1. ÖĞRENCİ PANELİ
-# ----------------------------------------------------
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     st.title("👨‍🎓 Öğrenci Yönetim Paneli")
     
@@ -132,23 +176,22 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 if user is None:
                     cursor.execute("INSERT INTO ogrenciler (ad_soyad, sifre) VALUES (?, ?)", (ad_soyad, sifre))
                     conn.commit()
-                    st.success(f"Hoş geldin {ad_soyad}! Profilin oluşturuldu.")
+                    st.success(f"Hoş geldin {ad_soyad}! Profilin başarıyla oluşturuldu.")
                     st.session_state["aktif_ogrenci"] = ad_soyad
                 else:
                     if user[0] == sifre:
                         st.success(f"Başarıyla giriş yapıldı! Hoş geldin {ad_soyad}.")
                         st.session_state["aktif_ogrenci"] = ad_soyad
                     else:
-                        st.error("Hatalı şifre! Lütfen kontrol edin.")
+                        st.error("Hatalı şifre! Lütfen şifrenizi kontrol edin.")
             else:
-                st.warning("Lütfen ad, soyad ve şifre giriniz.")
+                st.warning("Lütfen ad, soyad ve şifrenizi eksiksiz giriniz.")
                 
     aktif_ogr = st.session_state.get("aktif_ogrenci", None)
     
     if not aktif_ogr:
-        st.info("⚠️ İşlem yapmak için lütfen ilk sekmeden giriş yapın.")
+        st.info("⚠️ İşlem yapmak için lütfen önce 'GİRİŞ / KAYIT' sekmesinden hesabınıza giriş yapın.")
     else:
-        # GÜNLÜK DERS & KONU BAZLI SORU GİRİŞİ
         with tab_gunluk:
             st.subheader(f"📝 Günlük Çalışma Girişi - Öğrenci: {aktif_ogr}")
             tarih_giris = st.date_input("Çalışma Tarihi", datetime.date.today())
@@ -166,7 +209,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 with ders_sekmeleri[idx]:
                     st.markdown(f"#### {ders_adi} Çalışma Detayları")
                     
-                    # Konu Seçimi
                     secilen_konu = st.selectbox(
                         f"Çalıştığınız Konuyu Seçin ({ders_adi}):",
                         options=["Genel Soru Çözümü / Karma"] + YKS_KONULAR[ders_adi],
@@ -196,9 +238,8 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, sure_giris, verim_giris, not_giris))
                 conn.commit()
-                st.success("Tüm ders ve konu detaylı verileriniz başarıyla veritabanına kaydedildi!")
+                st.success("Tüm ders ve konu detaylı verileriniz veritabanına başarıyla kaydedildi!")
 
-        # DENEME & KARNE SEKMESİ
         with tab_deneme:
             st.subheader("📊 Deneme Sonuçları & Karne Yükleme")
             yayin = st.text_input("Deneme Adı / Yayın:")
@@ -215,7 +256,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 conn.commit()
                 st.success("Deneme sonucu başarıyla kaydedildi!")
 
-        # KONU DERECELENDİRME SEKMESİ
         with tab_konular:
             st.subheader("🗺️ Ders Ders Konu Hakimiyet Puanlaması (1 - 5)")
             konu_sekmeleri = st.tabs(list(YKS_KONULAR.keys()))
@@ -239,11 +279,8 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                         ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?
                         """, (aktif_ogr, kn, yeni_p, yeni_p))
                     conn.commit()
-            st.success("Konu puanlamalarınız kaydedildi.")
+            st.success("Konu puanlamalarınız başarıyla güncellendi.")
 
-# ----------------------------------------------------
-# 2. KOÇ PANELİ
-# ----------------------------------------------------
 else:
     st.title("👨‍🏫 Koç Yönetim ve Analiz Paneli")
     koc_sifre_giris = st.sidebar.text_input("Koç Şifresi:", type="password")
@@ -264,7 +301,7 @@ else:
             st.divider()
             st.header(f"📊 Öğrenci Analiz Raporu: {secilen_ogr}")
             
-            # GÜNLÜK ÇALIŞMA VE KONU DETAY TABLOSU
+            # Günlük Ders & Konu Dağılımı Tablosu
             st.subheader("📚 Ders & Konu Bazlı Soru, Doğru, Yanlış, Boş Dağılımı")
             df_gunluk = pd.read_sql_query("SELECT tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             
@@ -273,7 +310,7 @@ else:
             else:
                 st.info("Bu öğrenci henüz günlük ders ve konu soru verisi girmedi.")
                 
-            # DENEMELER VE KARNELER
+            # Denemeler
             st.subheader("📑 Kayıtlı Denemeler ve Karneler")
             df_deneme = pd.read_sql_query("SELECT tarih, yayin, tur, toplam_net, dosya_adi FROM denemeler WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             if not df_deneme.empty:
@@ -281,7 +318,7 @@ else:
             else:
                 st.info("Bu öğrenci henüz deneme kaydetmedi.")
                 
-            # ZAYIF KONULAR ALARMI
+            # Zayıf Konular Alarmı
             st.subheader("🚨 Acil Müdahale Gereken Zayıf Konular (1 ve 2 Puan Verilenler)")
             df_zayif = pd.read_sql_query("SELECT konu_adi, puan FROM konu_puanlari WHERE ad_soyad = ? AND puan IN (1, 2)", conn, params=(secilen_ogr,))
             if not df_zayif.empty:
