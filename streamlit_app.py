@@ -428,4 +428,3 @@ else:
                 st.dataframe(df_zayif, use_container_width=True)
             else:
                 st.success("Öğrencinin acil müdahale gerektiren (1 veya 2 puanlık) konusu bulunmuyor.")
-```
