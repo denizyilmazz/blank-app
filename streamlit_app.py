@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS gunluk_calisma (
     ad_soyad TEXT,
     tarih TEXT,
     ders TEXT,
+    konu TEXT,
     toplam_soru INTEGER,
     dogru INTEGER,
     yanlis INTEGER,
@@ -83,20 +84,7 @@ conn.commit()
 
 KOC_SIFRE = "1234"
 
-# Ayrı Ayrı Tüm Ders Listesi (Sosyal Bölündü)
-DERSLER = [
-    "📐 Matematik",
-    "📏 Geometri",
-    "⚡ Fizik",
-    "🧪 Kimya",
-    "🧬 Biyoloji",
-    "📖 Türkçe",
-    "📜 Tarih",
-    "🌍 Coğrafya",
-    "🧠 Felsefe",
-    "🕌 Din Kültürü"
-]
-
+# Tüm Dersler ve Konuları
 YKS_KONULAR = {
     "📖 Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
     "📜 Tarih": ["Tarih Bilimine Giriş", "İlk Çağ Uygarlıkları", "İslam Öncesi Türk Tarihi", "İslam Tarihi ve Uygarlığı", "Türk İslam Devletleri", "Osmanlı Devleti Kuruluş & Yükselme", "Osmanlı Kültür ve Medeniyeti", "20. Yüzyıl Başlarında Osmanlı", "Milli Mücadele & İnkılap Tarihi", "Atatürkçülük ve İlkeler"],
@@ -110,6 +98,8 @@ YKS_KONULAR = {
     "🧬 Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji", "İnsan Fizyolojisi (Sistemler)", "Gensa Bilgi & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"]
 }
 
+DERSLER = list(YKS_KONULAR.keys())
+
 # --- SOL MENÜ ---
 st.sidebar.title("🎓 YKS Koçluk Sistemi")
 giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ GİRİŞİ", "👨‍🏫 KOÇ GİRİŞİ"])
@@ -120,7 +110,6 @@ giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ 
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     st.title("👨‍🎓 Öğrenci Yönetim Paneli")
     
-    # BELİRGİN VE BÜYÜK ANA SEKMELER
     tab_giris, tab_gunluk, tab_deneme, tab_konular = st.tabs([
         "🔑 GİRİŞ / KAYIT",
         "📝 GÜNLÜK DERS VE SORU TAKİBİ",
@@ -159,7 +148,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     if not aktif_ogr:
         st.info("⚠️ İşlem yapmak için lütfen ilk sekmeden giriş yapın.")
     else:
-        # GÜNLÜK DERS & SORU GİRİŞİ (HER DERS AYRI SEKMELERDE)
+        # GÜNLÜK DERS & KONU BAZLI SORU GİRİŞİ
         with tab_gunluk:
             st.subheader(f"📝 Günlük Çalışma Girişi - Öğrenci: {aktif_ogr}")
             tarih_giris = st.date_input("Çalışma Tarihi", datetime.date.today())
@@ -168,15 +157,22 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             not_giris = st.text_area("Bugün zorlandığın detaylar / Koçuna iletmek istediğin not:")
             
             st.write("---")
-            st.write("### 📚 Ders Ders Soru Analizi Girişi")
+            st.write("### 📚 Ders ve Konu Bazlı Soru Analizi Girişi")
             
-            # DERS SEKMELERİ
             ders_sekmeleri = st.tabs(DERSLER)
-            
             ders_verileri = {}
+
             for idx, ders_adi in enumerate(DERSLER):
                 with ders_sekmeleri[idx]:
-                    st.markdown(f"#### {ders_adi} Soru Detayları")
+                    st.markdown(f"#### {ders_adi} Çalışma Detayları")
+                    
+                    # Konu Seçimi
+                    secilen_konu = st.selectbox(
+                        f"Çalıştığınız Konuyu Seçin ({ders_adi}):",
+                        options=["Genel Soru Çözümü / Karma"] + YKS_KONULAR[ders_adi],
+                        key=f"konu_select_{ders_adi}"
+                    )
+                    
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
                         toplam_s = st.number_input(f"Toplam Soru ({ders_adi})", 0, 500, 0, key=f"top_{ders_adi}")
@@ -190,17 +186,17 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     if dogru_s + yanlis_s + bos_s > toplam_s:
                         st.error(f"⚠️ {ders_adi}: Doğru + Yanlış + Boş sayısı Toplam Soru sayısından fazla olamaz!")
                     
-                    ders_verileri[ders_adi] = (toplam_s, dogru_s, yanlis_s, bos_s)
+                    ders_verileri[ders_adi] = (secilen_konu, toplam_s, dogru_s, yanlis_s, bos_s)
 
-            if st.button("🚀 Tüm Ders Çalışmalarını Kaydet ve Koça Gönder", type="primary"):
-                for d_adi, (t_s, d_s, y_s, b_s) in ders_verileri.items():
+            if st.button("🚀 Tüm Ders ve Konu Çalışmalarını Kaydet", type="primary"):
+                for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
                     if t_s > 0:
                         cursor.execute("""
-                        INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """, (aktif_ogr, str(tarih_giris), d_adi, t_s, d_s, y_s, b_s, sure_giris, verim_giris, not_giris))
+                        INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, sure_giris, verim_giris, not_giris))
                 conn.commit()
-                st.success("Tüm ders verilerin başarıyla veritabanına kaydedildi!")
+                st.success("Tüm ders ve konu detaylı verileriniz başarıyla veritabanına kaydedildi!")
 
         # DENEME & KARNE SEKMESİ
         with tab_deneme:
@@ -268,14 +264,14 @@ else:
             st.divider()
             st.header(f"📊 Öğrenci Analiz Raporu: {secilen_ogr}")
             
-            # GÜNLÜK ÇALIŞMA DETAY TABLOSU
-            st.subheader("📚 Ders Ders Soru, Doğru, Yanlış, Boş Dağılımı")
-            df_gunluk = pd.read_sql_query("SELECT tarih, ders, toplam_soru, dogru, yanlis, bos, sure, verim, notlar FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+            # GÜNLÜK ÇALIŞMA VE KONU DETAY TABLOSU
+            st.subheader("📚 Ders & Konu Bazlı Soru, Doğru, Yanlış, Boş Dağılımı")
+            df_gunluk = pd.read_sql_query("SELECT tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             
             if not df_gunluk.empty:
                 st.dataframe(df_gunluk, use_container_width=True)
             else:
-                st.info("Bu öğrenci henüz günlük ders ve soru verisi girmedi.")
+                st.info("Bu öğrenci henüz günlük ders ve konu soru verisi girmedi.")
                 
             # DENEMELER VE KARNELER
             st.subheader("📑 Kayıtlı Denemeler ve Karneler")
