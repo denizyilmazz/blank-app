@@ -126,7 +126,6 @@ st.markdown("""
 SISTEM_YONETICI_KATILIM_KODU = "YKS2026KOC"
 DB_FILE = "yks_kocluk.db"
 
-# 🔑 ŞİFRE HASLEME VE DOĞRULAMA (PBKDF2 SHA256)
 def make_hash(password: str) -> str:
     salt = "YKS_PRO_SECURE_SALT_2026"
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
@@ -138,7 +137,6 @@ def verify_hash(password: str, hashed_password: str) -> bool:
         return True
     return make_hash(password) == hashed_password
 
-# 💾 GÜNLÜK VERİTABANI YEDEKLEME SİSTEMİ
 def veritabani_gunluk_yedekle():
     try:
         if os.path.exists(DB_FILE):
@@ -159,6 +157,18 @@ MOTIVASYON_SOZLERI = [
     "💪 Zorluklar, potansiyelini keşfetmen için var olan basamaklardır. Pes etmek yok!",
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!",
     "🎯 Zirveye giden yolda engel yoktur, sadece kararlılıkla aşılacak hedefler vardır!"
+]
+
+# 81 İL LİSTESİ
+ILLER_LISTESI = [
+    "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
+    "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur",
+    "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Düzce", "Edirne", "Elazığ", "Erzincan",
+    "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Iğdır", "Isparta", "İstanbul",
+    "İzmir", "Kahramanmaraş", "Karabük", "Karaman", "Kars", "Kastamonu", "Kayseri", "Kırıkkale", "Kırklareli", "Kırşehir",
+    "Kilis", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Mardin", "Mersin", "Muğla", "Muş",
+    "Nevşehir", "Niğde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas",
+    "Şanlıurfa", "Şırnak", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Uşak", "Van", "Yalova", "Yozgat", "Zonguldak"
 ]
 
 # 🏛️ YÖK ATLAS (YKS) VERİTABANI
@@ -191,45 +201,72 @@ YOK_ATLAS_VERILERI = {
         "Endüstri Mühendisliği (Burslu)": {"taban_sira": "950", "tavan_sira": "65", "taban_net": 111.0, "tavan_net": 118.0},
         "Hukuk Fakültesi (Burslu)": {"taban_sira": "150", "tavan_sira": "8", "taban_net": 109.0, "tavan_net": 116.5}
     },
-    "Koç Üniversitesi": {
-        "Tıp Fakültesi (Burslu)": {"taban_sira": "75", "tavan_sira": "1", "taban_net": 116.5, "tavan_net": 120.0},
-        "Bilgisayar Mühendisliği (Burslu)": {"taban_sira": "110", "tavan_sira": "3", "taban_net": 116.0, "tavan_net": 120.0}
-    },
     "Hacettepe Üniversitesi": {
         "Tıp Fakültesi (Türkçe)": {"taban_sira": "1.350", "tavan_sira": "45", "taban_net": 110.5, "tavan_net": 118.5},
-        "Tıp Fakültesi (İngilizce)": {"taban_sira": "850", "tavan_sira": "18", "taban_net": 112.0, "tavan_net": 119.0},
-        "Diş Hekimliği": {"taban_sira": "18.500", "tavan_sira": "8.200", "taban_net": 93.5, "tavan_net": 104.0},
-        "Eczacılık": {"taban_sira": "32.000", "tavan_sira": "15.000", "taban_net": 86.5, "tavan_net": 98.0},
         "Bilgisayar Mühendisliği": {"taban_sira": "3.400", "tavan_sira": "420", "taban_net": 106.0, "tavan_net": 115.0}
-    },
-    "İstanbul Üniversitesi": {
-        "İstanbul Tıp Fakültesi (Çapa)": {"taban_sira": "2.100", "tavan_sira": "150", "taban_net": 109.0, "tavan_net": 117.5},
-        "Cerrahpaşa Tıp Fakültesi": {"taban_sira": "2.400", "tavan_sira": "210", "taban_net": 108.5, "tavan_net": 117.0},
-        "Hukuk Fakültesi": {"taban_sira": "3.800", "tavan_sira": "450", "taban_net": 98.5, "tavan_net": 110.0},
-        "Diş Hekimliği": {"taban_sira": "22.000", "tavan_sira": "11.000", "taban_net": 91.5, "tavan_net": 101.5}
-    },
-    "Yıldız Teknik Üniversitesi (YTÜ)": {
-        "Bilgisayar Mühendisliği": {"taban_sira": "4.800", "tavan_sira": "850", "taban_net": 104.5, "tavan_net": 113.5},
-        "Yazılım Mühendisliği": {"taban_sira": "5.900", "tavan_sira": "1.100", "taban_net": 103.0, "tavan_net": 112.0},
-        "Yapay Zeka Mühendisliği": {"taban_sira": "4.100", "tavan_sira": "650", "taban_net": 105.5, "tavan_net": 114.0},
-        "Endüstri Mühendisliği": {"taban_sira": "9.500", "tavan_sira": "2.100", "taban_net": 98.5, "tavan_net": 109.5},
-        "Makine Mühendisliği": {"taban_sira": "18.000", "tavan_sira": "5.200", "taban_net": 93.5, "tavan_net": 104.0}
     }
 }
 
-# 🏫 LGS NİTELİKLİ LİSELER VERİTABANI
-LGS_LISE_VERILERI = {
-    "Galatasaray Lisesi (İstanbul)": {"taban_puan": "500.0", "yuzdelik": "%0.04", "taban_net": 88.5},
-    "İstanbul Lisesi (Erkek Lisesi)": {"taban_puan": "498.5", "yuzdelik": "%0.06", "taban_net": 87.5},
-    "Kabataş Erkek Lisesi (Almanca/İngilizce)": {"taban_puan": "496.0", "yuzdelik": "%0.11", "taban_net": 86.5},
-    "Ankara Fen Lisesi": {"taban_puan": "495.0", "yuzdelik": "%0.13", "taban_net": 86.0},
-    "Atatürk Fen Lisesi (İstanbul)": {"taban_puan": "492.5", "yuzdelik": "%0.22", "taban_net": 84.5},
-    "İzmir Fen Lisesi": {"taban_puan": "494.0", "yuzdelik": "%0.16", "taban_net": 85.5},
-    "Cağaloğlu Anadolu Lisesi": {"taban_puan": "489.0", "yuzdelik": "%0.38", "taban_net": 83.0},
-    "Kadıköy Anadolu Lisesi": {"taban_puan": "487.5", "yuzdelik": "%0.47", "taban_net": 82.5},
-    "Hüseyin Avni Sözen Anadolu Lisesi": {"taban_puan": "485.0", "yuzdelik": "%0.58", "taban_net": 81.0},
-    "Nitelikli Fen Liseleri (Genel Taban)": {"taban_puan": "450.0", "yuzdelik": "%2.50", "taban_net": 72.0},
-    "Nitelikli Anadolu Liseleri (Genel Taban)": {"taban_puan": "410.0", "yuzdelik": "%6.00", "taban_net": 62.0}
+# 🏫 İLLERE GÖRE LGS NİTELİKLİ LİSELER VERİTABANI
+LGS_IL_LISELERI = {
+    "İstanbul": {
+        "Galatasaray Lisesi": {"taban_puan": "500.0", "yuzdelik": "%0.04", "taban_net": 88.5},
+        "İstanbul Lisesi (Erkek Lisesi)": {"taban_puan": "498.5", "yuzdelik": "%0.06", "taban_net": 87.5},
+        "Kabataş Erkek Lisesi": {"taban_puan": "496.0", "yuzdelik": "%0.11", "taban_net": 86.5},
+        "Atatürk Fen Lisesi": {"taban_puan": "492.5", "yuzdelik": "%0.22", "taban_net": 84.5},
+        "Cağaloğlu Anadolu Lisesi": {"taban_puan": "489.0", "yuzdelik": "%0.38", "taban_net": 83.0},
+        "Kadıköy Anadolu Lisesi": {"taban_puan": "487.5", "yuzdelik": "%0.47", "taban_net": 82.5},
+        "Hüseyin Avni Sözen Anadolu Lisesi": {"taban_puan": "485.0", "yuzdelik": "%0.58", "taban_net": 81.0},
+        "Beşiktaş Sakıp Sabancı Anadolu Lisesi": {"taban_puan": "482.0", "yuzdelik": "%0.75", "taban_net": 79.5}
+    },
+    "Ankara": {
+        "Ankara Fen Lisesi": {"taban_puan": "495.0", "yuzdelik": "%0.13", "taban_net": 86.0},
+        "Prof. Dr. Aziz Sancar Fen Lisesi": {"taban_puan": "488.5", "yuzdelik": "%0.40", "taban_net": 82.5},
+        "Atatürk Anadolu Lisesi": {"taban_puan": "483.0", "yuzdelik": "%0.70", "taban_net": 80.0},
+        "Gazi Anadolu Lisesi": {"taban_puan": "478.0", "yuzdelik": "%1.10", "taban_net": 78.0},
+        "Ankara Cumhuriyet Fen Lisesi": {"taban_puan": "475.0", "yuzdelik": "%1.35", "taban_net": 76.5}
+    },
+    "İzmir": {
+        "İzmir Fen Lisesi": {"taban_puan": "494.0", "yuzdelik": "%0.16", "taban_net": 85.5},
+        "İzmir Atatürk Lisesi": {"taban_puan": "484.0", "yuzdelik": "%0.65", "taban_net": 80.5},
+        "Bornova Anadolu Lisesi": {"taban_puan": "479.5", "yuzdelik": "%1.00", "taban_net": 78.5},
+        "Buca İnci-Özer Tırnaklı Fen Lisesi": {"taban_puan": "482.0", "yuzdelik": "%0.78", "taban_net": 79.5}
+    },
+    "Bursa": {
+        "Tofaş Fen Lisesi": {"taban_puan": "491.0", "yuzdelik": "%0.30", "taban_net": 84.0},
+        "Bursa Anadolu Lisesi": {"taban_puan": "476.0", "yuzdelik": "%1.25", "taban_net": 77.0},
+        "Nilüfer IMKB Fen Lisesi": {"taban_puan": "483.0", "yuzdelik": "%0.72", "taban_net": 80.0}
+    },
+    "Antalya": {
+        "Antalya Yusuf Ziya Öner Fen Lisesi": {"taban_puan": "490.0", "yuzdelik": "%0.35", "taban_net": 83.5},
+        "Adem-Tolunay Anadolu Lisesi": {"taban_puan": "472.0", "yuzdelik": "%1.60", "taban_net": 75.0}
+    },
+    "Adana": {
+        "Adana Fen Lisesi": {"taban_puan": "489.5", "yuzdelik": "%0.36", "taban_net": 83.0},
+        "Adana Anadolu Lisesi": {"taban_puan": "468.0", "yuzdelik": "%2.00", "taban_net": 73.5}
+    },
+    "Kocaeli": {
+        "Kocaeli Fen Lisesi": {"taban_puan": "488.0", "yuzdelik": "%0.45", "taban_net": 82.5},
+        "Muammer Dereli Fen Lisesi": {"taban_puan": "477.0", "yuzdelik": "%1.15", "taban_net": 77.5}
+    },
+    "Konya": {
+        "Meram Fen Lisesi": {"taban_puan": "489.0", "yuzdelik": "%0.38", "taban_net": 83.0},
+        "Konya Karatay Fen Lisesi": {"taban_puan": "481.0", "yuzdelik": "%0.85", "taban_net": 79.0}
+    },
+    "Gaziantep": {
+        "Vehbi Dinçerler Fen Lisesi": {"taban_puan": "486.0", "yuzdelik": "%0.52", "taban_net": 81.5},
+        "Gaziantep Fen Lisesi": {"taban_puan": "482.0", "yuzdelik": "%0.78", "taban_net": 79.5}
+    },
+    "Kayseri": {
+        "Kayseri Fen Lisesi": {"taban_puan": "488.0", "yuzdelik": "%0.45", "taban_net": 82.5},
+        "Sümer Fen Lisesi": {"taban_puan": "480.0", "yuzdelik": "%0.92", "taban_net": 78.5}
+    }
+}
+
+GENEL_DEFAULT_LISE = {
+    "İl Nitelikli Fen Lisesi (Genel Taban)": {"taban_puan": "450.0", "yuzdelik": "%2.50", "taban_net": 72.0},
+    "İl Nitelikli Anadolu Lisesi (Genel Taban)": {"taban_puan": "410.0", "yuzdelik": "%6.00", "taban_net": 62.0},
+    "İl Nitelikli Proje İmam Hatip / Meslek Lisesi": {"taban_puan": "370.0", "yuzdelik": "%12.00", "taban_net": 52.0}
 }
 
 # 📖 DERS & KONU SÖZLÜKLERİ
@@ -256,7 +293,6 @@ LGS_KONULAR = {
 }
 
 POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
-POPULE_LISELER = list(LGS_LISE_VERILERI.keys())
 
 def sifre_gecerli_mi(sifre):
     if len(sifre) < 6:
@@ -313,6 +349,7 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
     sifre TEXT,
     sinav_turu TEXT DEFAULT 'YKS (TYT)',
+    hedef_il TEXT DEFAULT 'İstanbul',
     koc_adi TEXT DEFAULT '',
     hedef_uni TEXT DEFAULT '',
     hedef_bolum TEXT DEFAULT '',
@@ -389,6 +426,7 @@ if cursor.fetchone()[0] == 0:
 # Şema Güvencesi Migrasyonları
 for tbl, col, col_def in [
     ("ogrenciler", "sinav_turu", "TEXT DEFAULT 'YKS (TYT)'"),
+    ("ogrenciler", "hedef_il", "TEXT DEFAULT 'İstanbul'"),
     ("ogrenciler", "koc_adi", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_uni", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_bolum", "TEXT DEFAULT ''"),
@@ -448,7 +486,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
         "🔑 GİRİŞ / KAYIT",
         "🎯 HEDEF OKUL TAKİBİ",
         "📅 HAFTALIK DERS PROGRAMI",
-        "📝 GÜNLÜK ÇALIŞMA Takibi",
+        "📝 GÜNLÜK ÇALIŞMA",
         "📊 DENEMELER & GELİŞİM",
         "🗺️ KONU HAKİMİYETİ"
     ])
@@ -463,7 +501,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             col1, col2, col3, col4 = st.columns(4)
             with col1: ad_soyad = st.text_input("Adınız ve Soyadınız:").strip().title()
             with col2: sifre = st.text_input("Şifreniz / PIN:", type="password")
-            with col3: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınıf / Sınav:", ["YKS (TYT)", "LGS (8. Sınıf)"])
+            with col3: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav:", ["YKS (TYT)", "LGS (8. Sınıf)"])
             with col4: secilen_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
             ogr_giris_btn = st.form_submit_button("Giriş Yap / Hesabı Oluştur", type="primary", use_container_width=True)
             
@@ -492,8 +530,10 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     if not aktif_ogr:
         st.info("ℹ️ İşlem yapmak için lütfen ilk sekmeden 'Giriş / Kayıt' yapın.")
     else:
-        cursor.execute("SELECT sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
-        ogr_sinav = cursor.fetchone()[0] or "YKS (TYT)"
+        cursor.execute("SELECT sinav_turu, hedef_il FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+        r_info = cursor.fetchone()
+        ogr_sinav = r_info[0] if r_info else "YKS (TYT)"
+        m_il = r_info[1] if (r_info and r_info[1]) else "İstanbul"
         
         st.sidebar.success(f"👤 Aktif Öğrenci: **{aktif_ogr}** ({ogr_sinav})")
         
@@ -501,21 +541,20 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
         cursor.execute("SELECT program_guncellendi_mi FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
         p_row = cursor.fetchone()
         if p_row and p_row[0] == 1:
-            st.warning("🔔 **DERS PROGRAMI GÜNCELLEMESİ:** Koçunuz haftalık ders programınızda yeni düzenlemeler yaptı! Aşağıdaki 'Haftalık Ders Programı' sekmesinden inceleyebilirsiniz.")
+            st.warning("🔔 **DERS PROGRAMI GÜNCELLEMESİ:** Koçunuz haftalık ders programınızda yeni düzenlemeler yaptı! 'Haftalık Ders Programı' sekmesinden inceleyebilirsiniz.")
             if st.button("✅ Programı İnceledim / Bildirimi Kapat", type="secondary"):
                 cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 0 WHERE ad_soyad = ?", (aktif_ogr,))
                 conn.commit()
                 st.rerun()
 
-        # Dinamik Dersler ve Konular Sözlüğü
         AKTIF_KONULAR = TYT_KONULAR if ogr_sinav == "YKS (TYT)" else LGS_KONULAR
         AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
 
-        # --- TAB 2: HEDEF TAKİBİ (YKS VEYA LGS DİNAMİK) ---
+        # --- TAB 2: HEDEF TAKİBİ (İLLERE GÖRE DİNAMİK LGS / YKS) ---
         with tab_hedef:
-            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 {ogr_sinav} Hedef Okul Takip Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
-            cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
-            h_data = cursor.fetchone() or ("", "", 100.0)
+            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 {ogr_sinav} Hedef Okul Takip Area — {aktif_ogr}</h3>", unsafe_allow_html=True)
+            cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net, hedef_il FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+            h_data = cursor.fetchone() or ("", "", 100.0, "İstanbul")
 
             if ogr_sinav == "YKS (TYT)":
                 secilen_uni = st.selectbox("🏛️ Hedeflenen Üniversite:", POPULE_UNIVERSITELER, index=POPULE_UNIVERSITELER.index(h_data[0]) if h_data[0] in POPULE_UNIVERSITELER else 0)
@@ -524,6 +563,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 
                 atlas_bilgi = YOK_ATLAS_VERILERI[secilen_uni][secilen_bolum]
                 otomatik_taban_net = atlas_bilgi["taban_net"]
+                secilen_il = "Türkiye Genel"
                 
                 st.markdown(f"""
                 <div class="target-card">
@@ -536,21 +576,32 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                secilen_uni = st.selectbox("🏫 Hedeflenen Lise:", POPULE_LISELER, index=POPULE_LISELER.index(h_data[0]) if h_data[0] in POPULE_LISELER else 0)
-                secilen_bolum = "Lise Hedefi"
-                lise_bilgi = LGS_LISE_VERILERI[secilen_uni]
-                otomatik_taban_net = lise_bilgi["taban_net"]
+                # 81 İL SEÇİMLİ LGS MODÜLÜ
+                secilen_il = st.selectbox("🗺️ Hedeflediğiniz İli Seçin (81 İl):", ILLER_LISTESI, index=ILLER_LISTESI.index(h_data[3]) if h_data[3] in ILLER_LISTESI else 39)
+                
+                # Seçilen İlin Liselerini Hazırlama
+                il_liseleri_dict = LGS_IL_LISELERI.get(secilen_il, GENEL_DEFAULT_LISE)
+                il_lise_listesi = list(il_liseleri_dict.keys()) + ["✏️ Diğer / Manuel Lise Gir"]
+                
+                secilen_uni = st.selectbox(f"🏫 {secilen_il} İline Ait Nitelikli Liseler:", il_lise_listesi)
+                secilen_bolum = "LGS Lise Hedefi"
 
-                st.markdown(f"""
-                <div class="target-card">
-                    <h4 style="margin-top:0; color:#0284c7;">🏫 LGS Nitelikli Lise Verileri ({secilen_uni})</h4>
-                    <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:10px;">
-                        <div><strong>📉 LGS Taban Puan:</strong> {lise_bilgi['taban_puan']} Puan</div>
-                        <div><strong>📊 Yüzdelik Dilim:</strong> {lise_bilgi['yuzdelik']}</div>
-                        <div><strong>🎯 Gerekli Toplam LGS Net:</strong> {lise_bilgi['taban_net']} Net / 90</div>
+                if secilen_uni in il_liseleri_dict:
+                    lise_bilgi = il_liseleri_dict[secilen_uni]
+                    otomatik_taban_net = lise_bilgi["taban_net"]
+                    st.markdown(f"""
+                    <div class="target-card">
+                        <h4 style="margin-top:0; color:#0284c7;">🏫 LGS Nitelikli Lise Verileri ({secilen_il} - {secilen_uni})</h4>
+                        <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:10px;">
+                            <div><strong>📉 LGS Taban Puan:</strong> {lise_bilgi['taban_puan']} Puan</div>
+                            <div><strong>📊 Yüzdelik Dilim:</strong> {lise_bilgi['yuzdelik']}</div>
+                            <div><strong>🎯 Gerekli Toplam LGS Net:</strong> {lise_bilgi['taban_net']} Net / 90</div>
+                        </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
+                else:
+                    secilen_uni = st.text_input("Manuel Lise Adını Giriniz:", value="Özel Hedef Lise")
+                    otomatik_taban_net = 70.0
 
             with st.form("hedef_kaydet_form"):
                 col_h1, col_h2 = st.columns(2)
@@ -558,7 +609,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 with col_h2: ozel_hedef_net = st.number_input("Kendi Net Hedefinizi Özelleştirin:", 10.0, 120.0, float(otomatik_taban_net), 1.0)
                 
                 if st.form_submit_button("🎯 Hedefimi Kaydet", type="primary", use_container_width=True):
-                    cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ? WHERE ad_soyad = ?", (secilen_uni, secilen_bolum, float(ozel_hedef_net), aktif_ogr))
+                    cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ?, hedef_il = ? WHERE ad_soyad = ?", (secilen_uni, secilen_bolum, float(ozel_hedef_net), secilen_il, aktif_ogr))
                     conn.commit()
                     st.success("🎉 Hedef kaydedildi!")
                     st.rerun()
@@ -571,7 +622,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             hedef_net_val = float(h_data[2]) if (h_data[2] and h_data[2] > 0) else otomatik_taban_net
 
             st.divider()
-            st.markdown("<h4 style='font-weight:700; font-size:17px;'>🏆 En Yüksek ve En Düşük Denemelerinize Göre Hedef Analizi</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='font-weight:700; font-size:17px; color:#0f172a;'>🏆 En Yüksek ve En Düşük Denemelerinize Göre Hedef Analizi</h4>", unsafe_allow_html=True)
             
             if max_net > 0:
                 st.markdown("<h5 style='font-weight:700; color:#0284c7; margin-top:15px;'>🔥 En Yüksek Deneme Performansı (Zirve)</h5>", unsafe_allow_html=True)
@@ -739,14 +790,13 @@ else:
             secilen_label = st.selectbox("🔍 Yönetilecek Öğrenciyi Seçin:", list(ogr_dict.keys()))
             secilen_ogr = ogr_dict[secilen_label]
             
-            cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
+            cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_il FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
             k_info = cursor.fetchone()
             s_turu = k_info[0] if k_info else "YKS (TYT)"
             
-            # Seçilen Öğrenciye Uygun Dersler
             K_DERSLER = list(TYT_KONULAR.keys()) if s_turu == "YKS (TYT)" else list(LGS_KONULAR.keys())
 
-            st.info(f"🎓 **Öğrenci Kategori:** `{s_turu}` | **Hedef:** {k_info[1] if k_info else ''} - {k_info[2] if k_info else ''} (Hedef Net: {k_info[3] if k_info else ''})")
+            st.info(f"🎓 **Öğrenci Kategori:** `{s_turu}` | **Hedef Okul:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''}")
 
             st.divider()
             st.markdown(f"### 📅 {secilen_ogr} ({s_turu}) İçin Haftalık Ders Programı Düzenleme")
@@ -823,7 +873,7 @@ else:
                             <p style="color: #64748b; font-size: 12px;"><strong>Tarih:</strong> {datetime.date.today().strftime('%d.%m.%Y')} | <strong>Kategori:</strong> {s_turu}</p>
                         </div>
                         <p><strong>👨‍🎓 Öğrenci:</strong> {secilen_ogr}</p>
-                        <p><strong>🎯 Hedef Okul:</strong> {k_info[1] if k_info else ''}</p>
+                        <p><strong>🎯 Hedef Okul:</strong> {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''})</p>
                         <p><strong>📑 Deneme:</strong> {deneme_row['yayin']} | <strong>Net:</strong> {deneme_row['toplam_net']}</p>
                         <p><strong>🚨 Zayıf Konular:</strong> {z_str}</p>
                         <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px;">
