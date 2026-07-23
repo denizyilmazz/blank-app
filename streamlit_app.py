@@ -373,6 +373,7 @@ for tbl, col, col_def in [
     except Exception:
         pass
 
+# Sadece TYT Müfredat Sözlüğü
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Mantık & Küme", "Permütasyon - Kombinasyon - Olasılık"],
@@ -535,45 +536,42 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             hedef_net_val = float(h_data[2]) if (h_data[2] and h_data[2] > 0) else otomatik_taban_net
 
             st.divider()
-            st.markdown("<h4 style='font-weight:700; font-size:16px; color:#334155;'>🏆 En Yüksek ve En Düşük Denemelerinize Göre Hedef Analizi</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='font-weight:700; font-size:17px; color:#0f172a;'>🏆 En Yüksek ve En Düşük Denemelerinize Göre Hedef Analizi</h4>", unsafe_allow_html=True)
             
             if max_net > 0:
-                hedef_sub_tab1, hedef_sub_tab2 = st.tabs([
-                    "🔥 EN YÜKSEK DENEME PERFORMANSI (ZİRVE)",
-                    "🛡️ EN DÜŞÜK DENEME PERFORMANSI (TABAN)"
-                ])
+                # 🥇 1. BÖLÜM: EN YÜKSEK DENEME PERFORMANSI (ZİRVE)
+                st.markdown("<h5 style='font-weight:700; color:#0284c7; margin-top:15px;'>🔥 En Yüksek Deneme Performansı (Zirve)</h5>", unsafe_allow_html=True)
+                oran_max = min(1.0, max_net / hedef_net_val)
+                yuzde_max = oran_max * 100
+                st.markdown(f"**YÖK Atlas Hedef Net:** `{hedef_net_val}` Net | **En Yüksek Deneme Netiniz:** `{max_net}` Net")
+                st.progress(oran_max)
+                st.markdown(f"📈 **En Yüksek Nete Göre Hedefe Ulaşma Oranı: %{yuzde_max:.1f}**")
+                
+                fark_max = hedef_net_val - max_net
+                if fark_max <= 0:
+                    st.balloons()
+                    st.success(f"🔥 İNANILMAZ! En yüksek deneme netin ({max_net} Net) ile {secilen_uni} hedefini aştın! Potansiyelin burada, hep burayı hedefle!")
+                elif fark_max <= 10:
+                    st.info(f"🚀 Zirve performansın hedefine ramak kala! Hedefe sadece **{fark_max:.1f} Net** kaldı. Sen bu neti yapabiliyorsun, başarmak elinde!")
+                else:
+                    st.info(f"💪 En yüksek netine göre hedefe ulaşmak için **{fark_max:.1f} Net** gerekiyor. Zirveni daha da yukarı taşımak için eksikleri kapatmaya devam!")
 
-                # 🥇 EN YÜKSEK DENEME SEKMESİ
-                with hedef_sub_tab1:
-                    oran_max = min(1.0, max_net / hedef_net_val)
-                    yuzde_max = oran_max * 100
-                    st.markdown(f"**YÖK Atlas Hedef Net:** `{hedef_net_val}` Net | **En Yüksek Deneme Netiniz:** `{max_net}` Net")
-                    st.progress(oran_max)
-                    st.markdown(f"📈 **En Yüksek Nete Göre Hedefe Ulaşma Oranı: %{yuzde_max:.1f}**")
-                    
-                    fark_max = hedef_net_val - max_net
-                    if fark_max <= 0:
-                        st.balloons()
-                        st.success(f"🔥 İNANILMAZ! En yüksek deneme netin ({max_net} Net) ile {secilen_uni} hedefini aştın! Potansiyelin burada, hep burayı hedefle!")
-                    elif fark_max <= 10:
-                        st.info(f"🚀 Zirve performansın hedefine ramak kala! Hedefe sadece **{fark_max:.1f} Net** kaldı. Sen bu neti yapabiliyorsun, başarmak elinde!")
-                    else:
-                        st.info(f"💪 En yüksek netine göre hedefe ulaşmak için **{fark_max:.1f} Net** gerekiyor. Zirveni daha da yukarı taşımak için eksikleri kapatmaya devam!")
+                st.markdown("<br/>", unsafe_allow_html=True)
 
-                # 🛡️ EN DÜŞÜK DENEME SEKMESİ
-                with hedef_sub_tab2:
-                    oran_min = min(1.0, min_net / hedef_net_val)
-                    yuzde_min = oran_min * 100
-                    st.markdown(f"**YÖK Atlas Hedef Net:** `{hedef_net_val}` Net | **En Düşük Deneme Netiniz:** `{min_net}` Net")
-                    st.progress(oran_min)
-                    st.markdown(f"📈 **En Düşük Nete Göre Hedef Ulaşma Oranı: %{yuzde_min:.1f}**")
-                    
-                    fark_min = hedef_net_val - min_net
-                    if fark_min <= 0:
-                        st.balloons()
-                        st.success(f"🛡️ MÜKEMMEL! En kötü günündeki deneme netin ({min_net} Net) bile {secilen_uni} hedefini karşılıyor! Sisteminiz çok sağlam!")
-                    else:
-                        st.warning(f"⚠️ En düşük denemendeki taban netin ile hedef arasındaki fark: **{fark_min:.1f} Net**. Kötü geçen sınav günlerinde bile netini korumak için dip net seviyeni yukarı çekmeliyiz!")
+                # 🛡️ 2. BÖLÜM: EN DÜŞÜK DENEME PERFORMANSI (TABAN)
+                st.markdown("<h5 style='font-weight:700; color:#475569;'>🛡️ En Düşük Deneme Performansı (Taban)</h5>", unsafe_allow_html=True)
+                oran_min = min(1.0, min_net / hedef_net_val)
+                yuzde_min = oran_min * 100
+                st.markdown(f"**YÖK Atlas Hedef Net:** `{hedef_net_val}` Net | **En Düşük Deneme Netiniz:** `{min_net}` Net")
+                st.progress(oran_min)
+                st.markdown(f"📈 **En Düşük Nete Göre Hedef Ulaşma Oranı: %{yuzde_min:.1f}**")
+                
+                fark_min = hedef_net_val - min_net
+                if fark_min <= 0:
+                    st.balloons()
+                    st.success(f"🛡️ MÜKEMMEL! En kötü günündeki deneme netin ({min_net} Net) bile {secilen_uni} hedefini karşılıyor! Sisteminiz çok sağlam!")
+                else:
+                    st.warning(f"⚠️ En düşük denemendeki taban netin ile hedef arasındaki fark: **{fark_min:.1f} Net**. Kötü geçen sınav günlerinde bile netini korumak için dip net seviyeni yukarı çekmeliyiz!")
 
             else:
                 st.info("ℹ️ Henüz kaydedilmiş bir deneme sonucunuz bulunmuyor. Denemelerinizi girdikçe en yüksek ve en düşük netlerinize göre analizler burada görüntülenecektir.")
