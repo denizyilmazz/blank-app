@@ -5,6 +5,9 @@ import pandas as pd
 import random
 import base64
 import re
+import hashlib
+import os
+import shutil
 
 st.set_page_config(
     page_title="YKS Pro Koçluk Platformu",
@@ -121,6 +124,34 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 SISTEM_YONETICI_KATILIM_KODU = "YKS2026KOC"
+DB_FILE = "yks_kocluk.db"
+
+# 🔑 ŞİFRE HASLEME VE DOĞRULAMA (PBKDF2 SHA256)
+def make_hash(password: str) -> str:
+    salt = "YKS_PRO_SECURE_SALT_2026"
+    return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
+
+def verify_hash(password: str, hashed_password: str) -> bool:
+    if not hashed_password:
+        return False
+    # Eski açık metin şifrelerle uyumluluk kontrolü
+    if password == hashed_password:
+        return True
+    return make_hash(password) == hashed_password
+
+# 💾 GÜNLÜK VERİTABANI YEDEKLEME SİSTEMİ
+def veritabani_gunluk_yedekle():
+    try:
+        if os.path.exists(DB_FILE):
+            os.makedirs("backups", exist_ok=True)
+            bugun = datetime.date.today().strftime("%Y%m%d")
+            yedek_dosya = os.path.join("backups", f"yks_kocluk_backup_{bugun}.db")
+            if not os.path.exists(yedek_dosya):
+                shutil.copy2(DB_FILE, yedek_dosya)
+    except Exception as e:
+        st.warning(f"Otomatik yedekleme uyarısı: {e}")
+
+veritabani_gunluk_yedekle()
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -245,9 +276,10 @@ def halka_grafik_html(baslik, veri_listesi):
 </div>
 </div>'''
 
-# Veritabanı Bağlantısı ve Tablo Tanımları
-conn = sqlite3.connect("yks_kocluk.db", check_same_thread=False)
+# Veritabanı Güvenli Bağlantı (WAL Mode)
+conn = sqlite3.connect(DB_FILE, check_same_thread=False)
 cursor = conn.cursor()
+cursor.execute("PRAGMA journal_mode=WAL;")
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ogrenciler (
@@ -310,7 +342,7 @@ conn.commit()
 # Varsayılan Koç Hesabı
 cursor.execute("SELECT COUNT(*) FROM koclar")
 if cursor.fetchone()[0] == 0:
-    cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", "Koc123!"))
+    cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", make_hash("Koc123!")))
     conn.commit()
 
 # Veritabanı Şema Güvencesi
@@ -328,7 +360,6 @@ for tbl, col, col_def in [
     except Exception:
         pass
 
-# Sadece TYT Müfredat Sözlüğü
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Mantık & Küme", "Permütasyon - Kombinasyon - Olasılık"],
@@ -404,12 +435,12 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 cursor.execute("SELECT sifre, koc_adi FROM ogrenciler WHERE ad_soyad = ?", (ad_soyad,))
                 user = cursor.fetchone()
                 if user is None:
-                    cursor.execute("INSERT INTO ogrenciler (ad_soyad, sifre, koc_adi) VALUES (?, ?, ?)", (ad_soyad, sifre, secilen_koc))
+                    cursor.execute("INSERT INTO ogrenciler (ad_soyad, sifre, koc_adi) VALUES (?, ?, ?)", (ad_soyad, make_hash(sifre), secilen_koc))
                     conn.commit()
                     st.success(f"🎉 Hoş geldin {ad_soyad}! Profilin ({secilen_koc} koçluğunda) oluşturuldu.")
                     st.session_state["aktif_ogrenci"] = ad_soyad
                 else:
-                    if user[0] == sifre:
+                    if verify_hash(sifre, user[0]):
                         cursor.execute("UPDATE ogrenciler SET koc_adi = ? WHERE ad_soyad = ?", (secilen_koc, ad_soyad))
                         conn.commit()
                         st.success(f"🔓 Başarıyla giriş yapıldı! Hoş geldin {ad_soyad}.")
@@ -438,7 +469,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             mevcut_bolumler = list(YOK_ATLAS_VERILERI[secilen_uni].keys())
             secilen_bolum = st.selectbox("🎓 Hedeflenen Bölümü Seçin:", mevcut_bolumler, index=mevcut_bolumler.index(h_data[1]) if h_data[1] in mevcut_bolumler else 0)
             
-            # YÖK Atlas Verisini Çekme
             atlas_bilgi = YOK_ATLAS_VERILERI[secilen_uni][secilen_bolum]
             otomatik_taban_net = atlas_bilgi["taban_net"]
             
@@ -467,7 +497,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     st.success(f"🎉 Hedefiniz ({secilen_uni} - {secilen_bolum}) başarıyla kaydedildi!")
                     st.rerun()
 
-            # Hedefe Yaklaşma Hesaplaması ve İlerleme Çubuğu
             cursor.execute("SELECT toplam_net FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC LIMIT 1", (aktif_ogr,))
             son_d = cursor.fetchone()
             son_net = son_d[0] if son_d else 0.0
@@ -492,7 +521,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 else:
                     st.warning(f"💪 {h_data[0]} - {h_data[1]} hedefinin taban netine ulaşmak için **{fark:.1f} Net** daha artış yapmalıyız. Adım adım ilerliyoruz!")
             else:
-                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor. Deneme sonucunu girdikçe hedefe ne kadar yaklaştığın burada otomatik hesaplanacaktır!")
+                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor.")
 
         # --- TAB 3: DERS PROGRAMI ---
         with tab_program:
@@ -700,7 +729,7 @@ else:
             if giris_btn:
                 cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_adi_giris,))
                 row = cursor.fetchone()
-                if row and row[0] == k_sifre_giris:
+                if row and verify_hash(k_sifre_giris, row[0]):
                     st.session_state["aktif_koc"] = k_adi_giris
                     st.success(f"🔓 Hoş geldiniz Sayın Koç {k_adi_giris}!")
                     st.rerun()
@@ -732,7 +761,7 @@ else:
                     if not gecerli:
                         st.error(f"⚠️ {mesaj}")
                     else:
-                        cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", (yeni_k_adi, yeni_k_sifre))
+                        cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", (yeni_k_adi, make_hash(yeni_k_sifre)))
                         conn.commit()
                         st.success(f"🎉 Koç hesabı ({yeni_k_adi}) başarıyla oluşturuldu!")
 
@@ -748,12 +777,12 @@ else:
             if sifre_guncelle_btn:
                 cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (s_k_adi,))
                 row = cursor.fetchone()
-                if not row or row[0] != eski_sifre:
+                if not row or not verify_hash(eski_sifre, row[0]):
                     st.error("Mevcut şifre hatalı!")
                 elif yeni_sifre != yeni_sifre_tekrar:
                     st.error("Yeni şifreler uyuşmuyor!")
                 else:
-                    cursor.execute("UPDATE koclar SET sifre = ? WHERE kullanici_adi = ?", (yeni_sifre, s_k_adi))
+                    cursor.execute("UPDATE koclar SET sifre = ? WHERE kullanici_adi = ?", (make_hash(yeni_sifre), s_k_adi))
                     conn.commit()
                     st.success("🎉 Şifreniz güncellendi!")
 
@@ -776,7 +805,6 @@ else:
         else:
             secilen_ogr = st.selectbox(f"🔍 Öğrenci Seçin ({len(ogrenciler)} Kayıtlı Öğrenci):", ogrenciler)
             
-            # Öğrenci YÖK Atlas Hedef Bilgisi Özeti
             cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
             h_info = cursor.fetchone()
             if h_info and h_info[0]:
