@@ -78,7 +78,7 @@ st.markdown("""
         box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.35) !important;
     }
 
-    /* Motivasyon ve Kart Tasarımları */
+    /* Kart Tasarımları */
     .hero-motivation-card {
         background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
         color: #ffffff;
@@ -134,7 +134,6 @@ def make_hash(password: str) -> str:
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password:
         return False
-    # Eski açık metin şifrelerle uyumluluk kontrolü
     if password == hashed_password:
         return True
     return make_hash(password) == hashed_password
@@ -149,7 +148,7 @@ def veritabani_gunluk_yedekle():
             if not os.path.exists(yedek_dosya):
                 shutil.copy2(DB_FILE, yedek_dosya)
     except Exception as e:
-        st.warning(f"Otomatik yedekleme uyarısı: {e}")
+        pass
 
 veritabani_gunluk_yedekle()
 
@@ -288,7 +287,8 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
     koc_adi TEXT DEFAULT '',
     hedef_uni TEXT DEFAULT '',
     hedef_bolum TEXT DEFAULT '',
-    hedef_net FLOAT DEFAULT 100.0
+    hedef_net FLOAT DEFAULT 100.0,
+    program_guncellendi_mi INTEGER DEFAULT 0
 )
 """)
 
@@ -337,6 +337,18 @@ CREATE TABLE IF NOT EXISTS konu_puanlari (
     PRIMARY KEY (ad_soyad, konu_adi)
 )
 """)
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS haftalik_program (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ad_soyad TEXT,
+    gun TEXT,
+    saat_araligi TEXT,
+    aktivite_turu TEXT,
+    ders TEXT,
+    detay_aciklama TEXT
+)
+""")
 conn.commit()
 
 # Varsayılan Koç Hesabı
@@ -351,6 +363,7 @@ for tbl, col, col_def in [
     ("ogrenciler", "hedef_uni", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_bolum", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_net", "FLOAT DEFAULT 100.0"),
+    ("ogrenciler", "program_guncellendi_mi", "INTEGER DEFAULT 0"),
     ("gunluk_calisma", "konu", "TEXT DEFAULT 'Genel Soru Çözümü / Karma'"),
     ("denemeler", "koc_notu", "TEXT DEFAULT ''")
 ]:
@@ -360,6 +373,7 @@ for tbl, col, col_def in [
     except Exception:
         pass
 
+# Sadece TYT Müfredat Sözlüğü
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Mantık & Küme", "Permütasyon - Kombinasyon - Olasılık"],
@@ -374,6 +388,15 @@ TYT_KONULAR = {
 }
 
 DERSLER = list(TYT_KONULAR.keys())
+GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
+AKTIVITE_TURLERI = [
+    "🧠 Konu Anlatımı & Çalışma",
+    "✏️ Soru Çözümü & Etüt",
+    "📐 Matematik Özel Ders",
+    "📝 TYT Genel Denemesi",
+    "🎯 TYT Branş Denemesi",
+    "☕ Dinlenme / Serbest Zaman"
+]
 
 st.sidebar.markdown("""
 <div style="text-align: center; padding: 10px 0 20px 0;">
@@ -389,10 +412,8 @@ giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ 
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🎓 Öğrenci Yönetim Paneli</h1>", unsafe_allow_html=True)
     
-    if "motivasyon_goster" not in st.session_state:
-        st.session_state["motivasyon_goster"] = True
-    if "motivasyon_sozu" not in st.session_state:
-        st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
+    if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
+    if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
         
     if st.session_state["motivasyon_goster"]:
         m_col1, m_col2 = st.columns([0.9, 0.1])
@@ -457,6 +478,16 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     else:
         st.sidebar.success(f"👤 Aktif Öğrenci: **{aktif_ogr}**")
         
+        # 🔔 PROGRAM GÜNCELLEME UYARISI BİLDİRİMİ
+        cursor.execute("SELECT program_guncellendi_mi FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+        p_row = cursor.fetchone()
+        if p_row and p_row[0] == 1:
+            st.warning("🔔 **DERS PROGRAMI GÜNCELLEMESİ:** Sorumlu koçunuz haftalık ders programınızda yeni düzenlemeler yaptı! Aşağıdaki 'Haftalık Ders Programı' sekmesinden inceleyebilirsiniz.")
+            if st.button("✅ Programı İnceledim / Bildirimi Kapat", type="secondary"):
+                cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 0 WHERE ad_soyad = ?", (aktif_ogr,))
+                conn.commit()
+                st.rerun()
+
         # --- TAB 2: YÖK ATLAS HEDEF TAKİBİ ---
         with tab_hedef:
             st.markdown(f"<h3 style='font-weight:700; font-size:18px; color:#1e293b;'>🎯 YÖK Atlas Üniversite & Bölüm Hedef Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
@@ -521,35 +552,32 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 else:
                     st.warning(f"💪 {h_data[0]} - {h_data[1]} hedefinin taban netine ulaşmak için **{fark:.1f} Net** daha artış yapmalıyız. Adım adım ilerliyoruz!")
             else:
-                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor.")
+                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor. Deneme sonucunu girdikçe hedefe ne kadar yaklaştığın burada otomatik hesaplanacaktır!")
 
-        # --- TAB 3: DERS PROGRAMI ---
+        # --- TAB 3: DERS PROGRAMI (KOÇ TARAFINDAN GİRİLEN) ---
         with tab_program:
-            st.markdown("<h3 style='font-weight:700; font-size:18px; color:#1e293b;'>📅 Haftalık TYT Ders Çalışma & Özel Ders Takvimi</h3>", unsafe_allow_html=True)
-            st.caption("Pazartesi, Çarşamba ve Cuma günleri 14:00 - 15:00 saatleri arasına Matematik Özel Dersi sabitlenmiştir.")
+            st.markdown("<h3 style='font-weight:700; font-size:18px; color:#1e293b;'>📅 Sorumlu Koçunuz Tarafından Hazırlanan Haftalık Ders Programı</h3>", unsafe_allow_html=True)
             
-            program_data = {
-                "Gün": ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"],
-                "14:00 - 15:00 Özel Ders": [
-                    "📐 Matematik Özel Ders 🧠",
-                    "--- Serbest Soru Çözümü ---",
-                    "📐 Matematik Özel Ders 🧠",
-                    "--- Serbest Soru Çözümü ---",
-                    "📐 Matematik Özel Ders 🧠",
-                    "--- Konu Tekrar Saatleri ---",
-                    "--- Dinlenme Günü ---"
-                ],
-                "Sadece TYT Odaklı Çalışma Programı": [
-                    "📖 TYT Türkçe Paragraf & 📐 TYT Matematik Problem Etüdü",
-                    "⚡ TYT Fizik Madde ve Kuvvet & 🧪 TYT Kimya Atom/Periyodik Sistem",
-                    "📐 TYT Matematik Özel Ders Tekrarı & 🧬 TYT Biyoloji Hücre",
-                    "📜 TYT Tarih İlk Çağ Uygarlıkları & 🌍 TYT Coğrafya İklim Bilgisi",
-                    "📐 TYT Matematik Özel Ders & 📖 TYT Türkçe Dil Bilgisi",
-                    "📝 TYT Genel Denemesi Çözümü & Deneme Yanlış Analizi",
-                    "☕ Haftalık Genel Tekrar, Dinlenme & Gelecek Hafta Planlaması"
-                ]
-            }
-            st.table(pd.DataFrame(program_data))
+            df_prog = pd.read_sql_query("SELECT gun, saat_araligi, aktivite_turu, ders, detay_aciklama FROM haftalik_program WHERE ad_soyad = ? ORDER BY id ASC", conn, params=(aktif_ogr,))
+            
+            if df_prog.empty:
+                st.info("ℹ️ Sorumlu koçunuz henüz size özel bir çalışma programı tanımlamadı. Koçunuz programı girdiğinde doğrudan burada görüntülenecektir.")
+            else:
+                st.dataframe(df_prog, use_container_width=True)
+                
+                # PDF / Çıktı Alma Alanı
+                html_table = df_prog.to_html(index=False, classes="styled-table")
+                html_prog_page = f"""
+                <div style="font-family: Arial, sans-serif; padding:25px; border:2px solid #0284c7; border-radius:12px; background:#fff; color:#0f172a;">
+                    <h2 style="color:#0284c7; text-align:center; margin-bottom:5px;">🎓 {aktif_ogr} - HAFTALIK YKS DERS PROGRAMI</h2>
+                    <p style="text-align:center; color:#64748b; font-size:13px; margin-top:0;">Tarih: {datetime.date.today().strftime('%d.%m.%Y')}</p>
+                    <hr style="border:1px solid #e2e8f0; margin-bottom:20px;"/>
+                    {html_table}
+                </div>
+                """
+                b64_p = base64.b64encode(html_prog_page.encode('utf-8')).decode('utf-8')
+                href_p = f'<a href="data:text/html;charset=utf-8;base64,{b64_p}" download="{aktif_ogr}_Haftalik_Ders_Programi.html" style="display:inline-block; padding:10px 20px; background-color:#10b981; color:white; text-decoration:none; border-radius:10px; font-weight:bold;">📄 Haftalık Programı Yazdır / PDF İndir</a>'
+                st.markdown(href_p, unsafe_allow_html=True)
 
         # --- TAB 4: GÜNLÜK ÇALIŞMA ---
         with tab_gunluk:
@@ -803,13 +831,52 @@ else:
         if not ogrenciler:
             st.info(f"👨‍🏫 Sayın Koç {aktif_koc_adi}, sistemde henüz kayıtlı öğrenciniz bulunmuyor.")
         else:
-            secilen_ogr = st.selectbox(f"🔍 Öğrenci Seçin ({len(ogrenciler)} Kayıtlı Öğrenci):", ogrenciler)
+            secilen_ogr = st.selectbox(f"🔍 Yönetilecek Öğrenciyi Seçin ({len(ogrenciler)} Kayıtlı Öğrenci):", ogrenciler)
             
             cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
             h_info = cursor.fetchone()
             if h_info and h_info[0]:
                 st.info(f"🎯 **Öğrenci YÖK Atlas Hedefi:** {h_info[0]} - {h_info[1]} (Hedef Taban Net: {h_info[2]})")
             
+            st.divider()
+            st.markdown(f"### 📅 {secilen_ogr} İçin Haftalık Ders Programı Oluşturma & Düzenleme")
+            
+            with st.expander("➕ Programa Yeni Etüt / Ders / Deneme Saati Ekle", expanded=True):
+                with st.form("prog_ekle_form"):
+                    cp1, cp2, cp3 = st.columns(3)
+                    with cp1: p_gun = st.selectbox("Gün:", GUNLER)
+                    with cp2: p_saat = st.text_input("Saat Aralığı (Ör: 14:00 - 15:00):", value="14:00 - 15:00")
+                    with cp3: p_aktivite = st.selectbox("Aktivite Türü:", AKTIVITE_TURLERI)
+                    
+                    cp4, cp5 = st.columns(2)
+                    with cp4: p_ders = st.selectbox("İlgili Ders:", DERSLER + ["--- Genel / Yok ---"])
+                    with cp5: p_detay = st.text_input("Konu Anlatımı / Soru Sayısı / Detay Açıklama:", placeholder="Ör: Paragraf 40 Soru + Matematik Problem")
+                    
+                    if st.form_submit_button("➕ Bu Aktiviteyi Program Tablosuna Ekle", type="primary", use_container_width=True):
+                        cursor.execute("""
+                        INSERT INTO haftalik_program (ad_soyad, gun, saat_araligi, aktivite_turu, ders, detay_aciklama)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """, (secilen_ogr, p_gun, p_saat, p_aktivite, p_ders, p_detay))
+                        cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 1 WHERE ad_soyad = ?", (secilen_ogr,))
+                        conn.commit()
+                        st.success("🎉 Ders aktivitesi eklendi ve öğrenciye bildirim gönderildi!")
+                        st.rerun()
+
+            df_koc_prog = pd.read_sql_query("SELECT id, gun, saat_araligi, aktivite_turu, ders, detay_aciklama FROM haftalik_program WHERE ad_soyad = ? ORDER BY id ASC", conn, params=(secilen_ogr,))
+            if not df_koc_prog.empty:
+                st.markdown("#### 📋 Öğrencinin Aktif Ders Programı")
+                st.dataframe(df_koc_prog, use_container_width=True)
+                
+                sil_id = st.selectbox("Silmek istediğiniz aktivitenin ID numarasını seçin:", df_koc_prog["id"].tolist())
+                if st.button("🗑️ Seçilen Ders Aktivitesini Programdan Sil", type="secondary"):
+                    cursor.execute("DELETE FROM haftalik_program WHERE id = ?", (sil_id,))
+                    cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 1 WHERE ad_soyad = ?", (secilen_ogr,))
+                    conn.commit()
+                    st.success("Aktivite silindi ve program güncellendi!")
+                    st.rerun()
+            else:
+                st.info("Bu öğrenci için henüz program aktivitesi girilmedi.")
+
             st.divider()
             st.markdown(f"<h2 style='font-weight:800; font-size:22px; color:#0f172a;'>📊 Öğrenci Analiz Raporu: {secilen_ogr}</h2>", unsafe_allow_html=True)
             
