@@ -31,7 +31,6 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    /* Huzur Veren Pastel Arka Plan */
     .stApp {
         background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%) !important;
         background-attachment: fixed !important;
@@ -44,7 +43,6 @@ st.markdown("""
         max-width: 1280px !important;
     }
 
-    /* Glassmorphism Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background: rgba(255, 255, 255, 0.85);
@@ -67,18 +65,12 @@ st.markdown("""
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: rgba(241, 245, 249, 0.9);
-        color: #0284c7;
-    }
-
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         color: #ffffff !important;
         box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.35) !important;
     }
 
-    /* Kart Tasarımları */
     .hero-motivation-card {
         background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
         color: #ffffff;
@@ -86,7 +78,6 @@ st.markdown("""
         border-radius: 20px;
         font-weight: 700;
         box-shadow: 0 12px 30px -5px rgba(14, 165, 233, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.2);
         margin-bottom: 20px;
     }
 
@@ -108,7 +99,6 @@ st.markdown("""
         margin-top: 14px;
         font-size: 14.5px;
         color: #0369a1;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.06);
     }
 
     .soru-card {
@@ -145,7 +135,7 @@ def veritabani_gunluk_yedekle():
             yedek_dosya = os.path.join("backups", f"yks_kocluk_backup_{bugun}.db")
             if not os.path.exists(yedek_dosya):
                 shutil.copy2(DB_FILE, yedek_dosya)
-    except Exception as e:
+    except Exception:
         pass
 
 veritabani_gunluk_yedekle()
@@ -156,7 +146,7 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!",
     "💪 Zorluklar, potansiyelini keşfetmen için var olan basamaklardır. Pes etmek yok!",
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!",
-    "🎯 Zirveye giden yolda engel yoktur, sadece kararlılıkla aşılacak hedef vardır!"
+    "🎯 Zirveye giden yolda engel yoktur, sadece kararlılıkla aşılacak hedefler vardır!"
 ]
 
 ILLER_LISTESI = [
@@ -201,23 +191,81 @@ GENEL_DEFAULT_LISE = {
     "İl Nitelikli Anadolu Lisesi (Genel Taban)": {"taban_puan": "410.0", "yuzdelik": "%6.00", "taban_net": 62.0}
 }
 
-TYT_KONULAR = {
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi"],
-    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Rasyonel Sayılar", "Eşitsizlikler", "Problemler", "Fonksiyonlar"],
-    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kuvvet ve Hareket", "Optik"],
-    "🧪 TYT Kimya": ["Kimya Bilimi & Atom", "Periyodik Sistem", "Maddenin Halleri"],
-    "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Kalıtım"],
-    "📜 TYT Tarih": ["Tarih Bilimine Giriş", "Osmanlı Devleti", "Milli Mücadele"],
-    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "İklim Bilgisi", "Nüfus ve Afetler"]
+# 📚 ÖSYM DERS VE DETAYLI TYT - AYT MÜFREDAT KONU SÖZLÜĞÜ
+YKS_KONULAR = {
+    "📖 TYT Türkçe": [
+        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Bağlaç)",
+        "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Cümle Türleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi", "Anlatım Bozuklukları"
+    ],
+    "📐 TYT Matematik": [
+        "Temel Kavramlar & Sayı Kümeleri", "Sayı Basamakları", "Bölme ve Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar",
+        "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Sayı ve Kesir Problemleri",
+        "Yaş Problemleri", "Yüzde / Kâr-Zarar Problemleri", "Karışım / Hız Problemleri", "Mantık & Kümeler", "Fonksiyonlar (Temel)", "Permütasyon, Kombinasyon, Olasılık"
+    ],
+    "📏 TYT Geometri": [
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Çember ve Daire", "Katı Cisimler"
+    ],
+    "⚡ TYT Fizik": [
+        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kaldırma Kuvveti & Basınç", "Isı, Sıcaklık ve Genleşme", "Doğrusal Hareket",
+        "Newton'un Hareket Yasaları", "İş, Güç, Enerji", "Elektrostatik & Elektrik Devreleri", "Optik", "Dalgalar"
+    ],
+    "🧪 TYT Kimya": [
+        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Kimyasal Türler Arası Etkileşimler", "Maddenin Halleri", "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
+    ],
+    "🧬 TYT Biyoloji": [
+        "Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri & Üreme", "Kalıtım", "Ekoloji"
+    ],
+    "📜 TYT Tarih": [
+        "Tarih Bilimi & İlk Çağ Uygarlıkları", "İslam Öncesi Türk Tarihi", "Türk-İslam Devletleri", "Osmanlı Devleti", "Milli Mücadele Dönemi"
+    ],
+    "🌍 TYT Coğrafya": [
+        "Doğa ve İnsan", "Harita Bilgisi & Dünya'nın Şekli", "İklim Bilgisi", "Yerşekilleri", "Nüfus ve Yerleşme", "Afetler"
+    ],
+    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi", "Din Felsefesi"],
+    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler", "Hz. Muhammed (S.A.V.)"],
+    
+    # AYT KISMI
+    "📐 AYT Matematik": [
+        "Karmaşık Sayılar", "2. Dereceden Denklemler & Eşitsizlikler", "Parabol", "Polinomlar", "Fonksiyonlarda Uygulamalar",
+        "Logaritma", "Diziler (Aritmetik & Geometrik)", "Trigonometri", "Limit ve Süreklilik", "Türev ve Uygulamaları", "İntegral ve Alan Hesabı"
+    ],
+    "📏 AYT Geometri": [
+        "Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitik İncelenmesi", "Gelişmiş Katı Cisimler"
+    ],
+    "⚡ AYT Fizik": [
+        "Vektörler & Bağıl Hareket", "Tork, Denge ve Kütle Merkezi", "Basit Makineler", "Atışlar & İtme-Momentum", "Çembersel Hareket & Basit Harmonik Hareket",
+        "Açısal Momentum & Kütle Çekim", "Elektriksel Kuvvet, Potansiyel & Sığaçlar", "Manyetizma ve İndüksiyon", "Alternatif Akım & Transformatörler",
+        "Dalga Mekaniği", "Atom Fiziği & Radyoaktivite", "Özel Görelilik & Modern Fizik"
+    ],
+    "🧪 AYT Kimya": [
+        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler ve Çözünürlük", "Kimyasal Tepkimelerde Enerji", "Tepkime Hızları ve Denge",
+        "Asit-Baz Dengesi (pH/pOH)", "Çözünürlük Dengesi (KÇÇ)", "Kimya ve Elektrik (Elektrokimya)", "Organik Kimyaya Giriş", "Organik Bileşikler"
+    ],
+    "🧬 AYT Biyoloji": [
+        "İnsan Fizyolojisi (Sinir, Duyu, Destek-Hareket, Sindirim, Dolaşım, Solunum, Boşaltım, Üreme Sistemleri)",
+        "Gensoru & Protein Sentezi", "Canlılarda Enerji Dönüşümleri (Fotosentez, Kemosentez, Hücresel Solunum)", "Bitki Biyolojisi", "Popülasyon ve Komünite Ekolojisi"
+    ],
+    "📖 AYT Edebiyat": [
+        "Şiir Bilgisi & Edebi Sanatlar", "İslamiyet Öncesi ve Geçiş Dönemi Türk Edebiyatı", "Halk Edebiyatı", "Divan Edebiyatı",
+        "Tanzimat Edebiyatı", "Servet-i Fünun & Fecr-i Ati", "Milli Edebiyat", "Cumhuriyet Dönemi Türk Edebiyatı", "Edebi Akımlar"
+    ],
+    "📜 AYT Tarih-1 & Tarih-2": [
+        "Tarih ve Zaman", "İlk ve Orta Çağlarda Türk Dünyası", "İslam Medeniyetinin Doğuşu", "İlk Türk-İslam Devletleri",
+        "Beylikten Devlete Osmanlı", "Dünya Gücü Osmanlı", "Devrimler Çağında Osmanlı", "20. Yüzyıl Başlarında Osmanlı", "Milli Mücadele", "Atatürkçülük ve İnkılaplar", "20. Yüzyıl Dünya Tarihi"
+    ],
+    "🌍 AYT Coğrafya-1 & Coğrafya-2": [
+        "Ekosistem ve Biyoçeşitlilik", "Şehirler ve Etki Alanları", "Türkiye'de Tarım, Hayvancılık ve Sanayi", "Küresel Ticaret ve Turizm", "Çevre ve Toplum"
+    ]
 }
 
+# 🎓 MEB 8. SINIF LGS RESMİ MÜFREDAT DERSLERİ VE KONULARI (TOPLAM 90 SORU)
 LGS_KONULAR = {
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözel Mantık"],
-    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Linear Denklemler", "Eşitsizlikler"],
-    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler"],
-    "📜 LGS T.C. İnkılap Tarihi (10 Soru)": ["Bir Kahraman Doğuyor", "Milli Uyanış", "Atatürkçülük ve Çağdaşlaşan Türkiye"],
-    "🕌 LGS Din Kültürü (10 Soru)": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat"],
-    "🇬🇧 LGS İngilizce (10 Soru)": ["Friendship", "Teen Life", "In The Kitchen", "The Internet"]
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Metin Türleri ve Söz Sanatları", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık ve Görsel Okuma"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Cebirsel İfadeler ve Özdeşlikler", "Linear Denklemler", "Eşitsizlikler", "Üçgenler", "Eşlik ve Benzerlik", "Dönüşüm Geometrisi", "Geometrik Cisimler"],
+    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri ve Çevre Bilimi", "Elektrik Yükleri ve Elektrik Enerjisi"],
+    "📜 LGS T.C. İnkılap Tarihi (10 Soru)": ["Bir Kahraman Doğuyor", "Milli Uyanış: Bağımsızlık Yolunda Atılan Adımlar", "Milli Bir Destan: Ya Ölüm Ya Kalıcılık", "Atatürkçülük ve Çağdaşlaşan Türkiye", "Demokratikleşme Çabaları", "Atatürk Dönemi Dış Politika"],
+    "🕌 LGS Din Kültürü (10 Soru)": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat", "Hz. Muhammed'in (S.A.V.) Örnekliği", "Kur'an-ı Kerim ve Özellikleri"],
+    "🇬🇧 LGS İngilizce (10 Soru)": ["Friendship", "Teen Life", "In The Kitchen", "On The Phone", "The Internet", "Adventures", "Tourism", "Chores", "Science", "Natural Forces"]
 }
 
 POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
@@ -265,7 +313,7 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
     sifre TEXT,
     veli_pin TEXT DEFAULT '123456',
-    sinav_turu TEXT DEFAULT 'YKS (TYT)',
+    sinav_turu TEXT DEFAULT 'YKS (TYT-AYT)',
     hedef_il TEXT DEFAULT 'İstanbul',
     koc_adi TEXT DEFAULT '',
     hedef_uni TEXT DEFAULT '',
@@ -355,7 +403,7 @@ if cursor.fetchone()[0] == 0:
 # Şema Güvencesi Migrasyonları
 for tbl, col, col_def in [
     ("ogrenciler", "veli_pin", "TEXT DEFAULT '123456'"),
-    ("ogrenciler", "sinav_turu", "TEXT DEFAULT 'YKS (TYT)'"),
+    ("ogrenciler", "sinav_turu", "TEXT DEFAULT 'YKS (TYT-AYT)'"),
     ("ogrenciler", "hedef_il", "TEXT DEFAULT 'İstanbul'"),
     ("ogrenciler", "koc_adi", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_uni", "TEXT DEFAULT ''"),
@@ -418,7 +466,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
         "📅 HAFTALIK DERS PROGRAMI",
         "📝 GÜNLÜK ÇALIŞMA & YAPILAMAYAN SORULAR",
         "📊 DENEMELER & GELİŞİM",
-        "🗺️ KONU HAKİMİYETİ"
+        "🗺️ TYT-AYT / LGS KONU HAKİMİYETİ"
     ])
     
     with tab_giris:
@@ -431,7 +479,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             with col1: ad_soyad = st.text_input("Adınız ve Soyadınız:").strip().title()
             with col2: sifre = st.text_input("Öğrenci Şifreniz / PIN:", type="password")
             with col3: veli_pin = st.text_input("👨‍👩‍👧‍👦 Veli Erişim PIN Kodu:", value="123456")
-            with col4: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav Kategori:", ["YKS (TYT)", "LGS (8. Sınıf)"])
+            with col4: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav Kategori:", ["YKS (TYT-AYT)", "LGS (8. Sınıf)"])
             with col5: secilen_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
             ogr_giris_btn = st.form_submit_button("Giriş Yap / Hesabı Oluştur", type="primary", use_container_width=True)
             
@@ -459,22 +507,22 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     else:
         cursor.execute("SELECT sinav_turu, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
         r_info = cursor.fetchone()
-        ogr_sinav = r_info[0] if r_info else "YKS (TYT)"
+        ogr_sinav = r_info[0] if r_info else "YKS (TYT-AYT)"
         m_il = r_info[1] if (r_info and r_info[1]) else "İstanbul"
         m_vpin = r_info[2] if (r_info and r_info[2]) else "123456"
         
         st.sidebar.success(f"👤 Aktif Öğrenci: **{aktif_ogr}** ({ogr_sinav})\n🔑 **Veli PIN:** `{m_vpin}`")
         
-        AKTIF_KONULAR = TYT_KONULAR if ogr_sinav == "YKS (TYT)" else LGS_KONULAR
+        AKTIF_KONULAR = YKS_KONULAR if "YKS" in ogr_sinav else LGS_KONULAR
         AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
-        MAX_NET_LIMIT = 120.0 if ogr_sinav == "YKS (TYT)" else 90.0
+        MAX_NET_LIMIT = 120.0 if "YKS" in ogr_sinav else 90.0
 
         with tab_hedef:
             st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 {ogr_sinav} Hedef Okul Takip Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
             cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net, hedef_il FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
             h_data = cursor.fetchone() or ("", "", 80.0, "İstanbul")
 
-            if ogr_sinav == "YKS (TYT)":
+            if "YKS" in ogr_sinav:
                 secilen_uni = st.selectbox("🏛️ Hedeflenen Üniversite:", POPULE_UNIVERSITELER, index=POPULE_UNIVERSITELER.index(h_data[0]) if h_data[0] in POPULE_UNIVERSITELER else 0)
                 mevcut_bolumler = list(YOK_ATLAS_VERILERI[secilen_uni].keys())
                 secilen_bolum = st.selectbox("🎓 Hedeflenen Bölüm:", mevcut_bolumler, index=mevcut_bolumler.index(h_data[1]) if h_data[1] in mevcut_bolumler else 0)
@@ -502,7 +550,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             if not df_prog.empty:
                 st.dataframe(df_prog, use_container_width=True)
 
-        # --- TAB 4: GÜNLÜK ÇALIŞMA VE YAPIŞAMAYAN SORU YÜKLEME ---
         with tab_gunluk:
             st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Yapılamayan Soru Yükleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
             
@@ -530,13 +577,10 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     
                     ders_verileri[ders_adi] = (secilen_konu, ts, ds, ys, bs)
 
-                    # 📸 EKRANIN HEMEN ALTINDA YAPIŞAMAYAN SORU YÜKLEME ALANI
                     st.markdown("<br/>", unsafe_allow_html=True)
                     st.markdown(f"##### 📸 {ders_adi} — Yapamadığınız / Boş Bıraktığınız Soru Fotoğraflarını Yükleyin")
-                    st.caption("Çözemediğiniz soruların fotoğrafını buraya yükleyin; Koçunuz Deniz Yılmaz kendi panelinden inceleyip çözümleri aktarsın.")
-                    
                     yuklenen_sorular = st.file_uploader(
-                        f" Soru Görselleri / PDF Seçin ({ders_adi}):",
+                        f" Soru Görselleri Seçin ({ders_adi}):",
                         type=["png", "jpg", "jpeg", "pdf"],
                         accept_multiple_files=True,
                         key=f"upload_soru_{ders_adi}"
@@ -556,16 +600,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                                 VALUES (?, ?, ?, ?, ?, ?)
                                 """, (aktif_ogr, str(tarih_giris), ders_adi, secilen_konu, save_path, file.name))
                             conn.commit()
-                            st.success(f"🎉 {len(yuklenen_sorular)} adet yapamadığınız soru başarıyla yükledi ve koçunuza iletildi!")
-
-                    # Daha önce yüklenen soruları görüntüleme
-                    df_m_sorular = pd.read_sql_query("SELECT id, tarih, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? AND ders = ?", conn, params=(aktif_ogr, ders_adi))
-                    if not df_m_sorular.empty:
-                        with st.expander(f"📌 {ders_adi} Dersinde Yüklediğiniz Geçmiş Yapılamayan Sorular ({len(df_m_sorular)} Adet)"):
-                            for _, s_row in df_m_sorular.iterrows():
-                                st.write(f"• **Tarih:** {s_row['tarih']} | **Konu:** {s_row['konu']}")
-                                if os.path.exists(s_row['dosya_yolu']) and s_row['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                                    st.image(s_row['dosya_yolu'], width=280)
+                            st.success(f"🎉 {len(yuklenen_sorular)} adet soru başarıyla yüklendi!")
 
             st.divider()
             if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
@@ -592,23 +627,33 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     conn.commit()
                     st.success("🎉 Kaydedildi!")
 
+        # --- TAB 6: DETAYLI TYT - AYT / LGS KONU HAKİMİYETİ ---
         with tab_konular:
-            st.markdown("<h3 style='font-weight:700; font-size:18px;'>🗺️ Konu Hakimiyeti (1 - 5)</h3>", unsafe_allow_html=True)
-            k_sekmeleri = st.tabs(list(AKTIF_KONULAR.keys()))
+            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🗺️ {ogr_sinav} Ayrıntılı Ders Ders Konu Hakimiyet Puanlaması (1 - 5)</h3>", unsafe_allow_html=True)
+            st.caption("Aşağıda TYT ve AYT (veya LGS) derslerinin her bir konusu ayrı ayrı başlıklandırılmıştır. Eksik hissettiğiniz konulara 1 veya 2 puan vererek koçunuzun ekranında 'Acil Müdahale Konuları' olarak belirmesini sağlayabilirsiniz.")
+            
+            konu_sekmeleri = st.tabs(list(AKTIF_KONULAR.keys()))
             for idx, (d_adi, k_list) in enumerate(AKTIF_KONULAR.items()):
-                with k_sekmeleri[idx]:
+                with konu_sekmeleri[idx]:
+                    st.markdown(f"#### {d_adi} Konu Listesi")
                     for kn in k_list:
                         cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
                         r = cursor.fetchone()
                         p_val = r[0] if r else 3
-                        yp = st.select_slider(f"**{kn}**", options=[1, 2, 3, 4, 5], value=p_val, key=f"{aktif_ogr}_{kn}")
+                        yp = st.select_slider(
+                            f"**{kn}**",
+                            options=[1, 2, 3, 4, 5],
+                            value=p_val,
+                            format_func=lambda x: {1: "1 - Çok Zayıf 🔴", 2: "2 - Eksik Var 🟠", 3: "3 - Orta 🟡", 4: "4 - İyi 🟢", 5: "5 - Tam Usta 🔵"}[x],
+                            key=f"{aktif_ogr}_{kn}"
+                        )
                         cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                     conn.commit()
+            st.success("🎉 Konu hakimiyet puanlamalarınız kaydedildi!")
 
 # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
 elif giris_turu == "👨‍👩‍👧‍👦 VELİ TAKİP GİRİŞİ":
     st.markdown("<h1 style='font-weight:800; font-size:26px; color:#0f172a; margin-bottom:10px;'>👨‍👩‍👧‍👦 Veli Öğrenci Takip Ekranı — YKS-LGS KOÇLUK</h1>", unsafe_allow_html=True)
-    st.caption("🔒 Güvenlik Notu: Veliler sadece kendi öğrencilerinin bilgilerini özel Veli PIN Kodu ile takip edebilirler.")
     
     if "aktif_veli_ogrenci" not in st.session_state:
         st.session_state["aktif_veli_ogrenci"] = None
@@ -692,29 +737,27 @@ else:
             
             cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
             k_info = cursor.fetchone()
-            s_turu = k_info[0] if k_info else "YKS (TYT)"
+            s_turu = k_info[0] if k_info else "YKS (TYT-AYT)"
             
-            K_DERSLER = list(TYT_KONULAR.keys()) if s_turu == "YKS (TYT)" else list(LGS_KONULAR.keys())
-            K_MAX_NET = "120" if s_turu == "YKS (TYT)" else "90"
+            K_DERSLER = list(YKS_KONULAR.keys()) if "YKS" in s_turu else list(LGS_KONULAR.keys())
+            K_MAX_NET = "120" if "YKS" in s_turu else "90"
 
             st.info(f"🎓 **Kategori:** `{s_turu}` | **Hedef:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''} / {K_MAX_NET} | 🔑 **Veli PIN:** `{k_info[5] if k_info else ''}`")
 
             st.divider()
             st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular")
-            
             df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
             
             if df_koc_sorular.empty:
                 st.info("Bu öğrenci henüz yapamadığı soru fotoğrafı yüklemedi.")
             else:
-                col_sq1, col_sq2 = st.columns([0.3, 0.7])
+                col_sq1, _ = st.columns([0.4, 0.6])
                 with col_sq1:
                     filtre_ders = st.selectbox("Ders Filtrele:", ["Tüm Dersler"] + K_DERSLER)
                 
                 df_f_sorular = df_koc_sorular if filtre_ders == "Tüm Dersler" else df_koc_sorular[df_koc_sorular['ders'] == filtre_ders]
                 
                 st.write(f"Toplam **{len(df_f_sorular)}** adet çözülemeyen soru bulundu:")
-                
                 cols_s = st.columns(3)
                 for s_idx, (_, s_data) in enumerate(df_f_sorular.iterrows()):
                     with cols_s[s_idx % 3]:
@@ -724,23 +767,13 @@ else:
                             <small><strong>Tarih:</strong> {s_data['tarih']} | <strong>Konu:</strong> {s_data['konu']}</small>
                         </div>
                         """, unsafe_allow_html=True)
-                        
                         if os.path.exists(s_data['dosya_yolu']) and s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
                             st.image(s_data['dosya_yolu'], use_container_width=True)
                             with open(s_data['dosya_yolu'], "rb") as file_bytes:
-                                st.download_button(
-                                    label="📥 Soru Görselini İndir",
-                                    data=file_bytes,
-                                    file_name=s_data['dosya_adi'],
-                                    mime="image/jpeg",
-                                    key=f"dl_{s_data['id']}"
-                                )
-                        else:
-                            st.write(f"📄 Dosya: {s_data['dosya_adi']}")
+                                st.download_button("📥 Soru Görselini İndir", data=file_bytes, file_name=s_data['dosya_adi'], mime="image/jpeg", key=f"dl_{s_data['id']}")
 
             st.divider()
             st.markdown(f"### 📅 {secilen_ogr} ({s_turu}) İçin Haftalık Ders Programı Düzenleme")
-            
             with st.expander("➕ Programa Aktivite Ekle", expanded=True):
                 with st.form("prog_ekle_form"):
                     cp1, cp2, cp3 = st.columns(3)
