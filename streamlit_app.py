@@ -108,6 +108,17 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         margin-bottom: 12px;
     }
+
+    .konu-analiz-box {
+        background: #fefce8;
+        border-left: 4px solid #eab308;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #713f12;
+        margin-top: 8px;
+        margin-bottom: 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -139,6 +150,25 @@ def veritabani_gunluk_yedekle():
         pass
 
 veritabani_gunluk_yedekle()
+
+# 🧠 OTOMATİK KONU ANALİZİ VE İPUCU ÜRETİCİSİ
+def soru_konu_analizi_ureteci(ders, konu):
+    if "Matematik" in ders:
+        return f"📌 **{konu}** konusu işlem basamakları veya formül uygulama eksikliğine dayanabilir. Öğrencinin soru kalıbındaki temel denklem kurma adımını inceleyin."
+    elif "Türkçe" in ders:
+        return f"📌 **{konu}** sorusunda paragraf/metin okuma veya kelime bilgisi kilit roldedir. Çeldirici şıkkın neden yanlış olduğunu öğrenciye vurgulayın."
+    elif "Fizik" in ders or "Fen" in ders:
+        return f"📌 **{konu}** sorusunda kavram yanılgısı veya birim dönüşümü hatası muhtemeldir. Şekilli/grafikli verileri doğru okuyup okumadığını kontrol edin."
+    elif "Kimya" in ders:
+        return f"📌 **{konu}** konusunda tanım veya mol/oran hesaplamalarında takılınmış olabilir. Temel mantığı formül kullanmadan anlatmak faydalı olacaktır."
+    elif "Biyoloji" in ders:
+        return f"📌 **{konu}** ezber ve görsel kavrama ağırlıklıdır. İlgili şemanın ve terimlerin tekrar edilmesini tavsiye edin."
+    elif "Tarih" in ders or "İnkılap" in ders:
+        return f"📌 **{konu}** sorusu sebep-sonuç ilişkisini ölçmektedir. Tarihsel kronolojiye ve öncüllü sorulara dikkat çekin."
+    elif "Coğrafya" in ders:
+        return f"📌 **{konu}** harita bilgisi veya kavramsal eşleştirme gerektirir. Görsel materyallerle konuyu pekiştirin."
+    else:
+        return f"📌 **{konu}** konusu üzerine öğrencinin konu anlatım eksiği veya dikkat hatası olabilir. Çözüm adımlarını basitçe özetleyin."
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -248,13 +278,6 @@ YKS_KONULAR = {
     "📖 AYT Edebiyat": [
         "Şiir Bilgisi & Edebi Sanatlar", "İslamiyet Öncesi ve Geçiş Dönemi Türk Edebiyatı", "Halk Edebiyatı", "Divan Edebiyatı",
         "Tanzimat Edebiyatı", "Servet-i Fünun & Fecr-i Ati", "Milli Edebiyat", "Cumhuriyet Dönemi Türk Edebiyatı", "Edebi Akımlar"
-    ],
-    "📜 AYT Tarih-1 & Tarih-2": [
-        "Tarih ve Zaman", "İlk ve Orta Çağlarda Türk Dünyası", "İslam Medeniyetinin Doğuşu", "İlk Türk-İslam Devletleri",
-        "Beylikten Devlete Osmanlı", "Dünya Gücü Osmanlı", "Devrimler Çağında Osmanlı", "20. Yüzyıl Başlarında Osmanlı", "Milli Mücadele", "Atatürkçülük ve İnkılaplar", "20. Yüzyıl Dünya Tarihi"
-    ],
-    "🌍 AYT Coğrafya-1 & Coğrafya-2": [
-        "Ekosistem ve Biyoçeşitlilik", "Şehirler ve Etki Alanları", "Türkiye'de Tarım, Hayvancılık ve Sanayi", "Küresel Ticaret ve Turizm", "Çevre ve Toplum"
     ]
 }
 
@@ -269,40 +292,6 @@ LGS_KONULAR = {
 }
 
 POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
-
-def halka_grafik_html(baslik, veri_listesi):
-    toplam = sum([v for _, v, _ in veri_listesi])
-    if toplam == 0:
-        return "<p style='color:#64748b; text-align:center; padding:20px; font-weight:500;'>Henüz görüntülenecek soru verisi bulunmuyor.</p>"
-    
-    gradient_parcalari = []
-    mevcut_yuzde = 0.0
-    legend_html = []
-    
-    for etiket, deger, renk in veri_listesi:
-        if deger <= 0: continue
-        yuzde = (deger / toplam) * 100
-        sonraki_yuzde = mevcut_yuzde + yuzde
-        gradient_parcalari.append(f"{renk} {mevcut_yuzde:.1f}% {sonraki_yuzde:.1f}%")
-        mevcut_yuzde = sonraki_yuzde
-        item_str = f'<div style="display:flex; align-items:center; margin-bottom:8px; font-size:13.5px;"><span style="width:12px; height:12px; background-color:{renk}; border-radius:50%; display:inline-block; margin-right:10px;"></span><span style="color:#475569; font-weight:600;">{etiket}:</span>&nbsp;<span style="color:#0f172a; font-weight:700;">{deger} Adet</span>&nbsp;<span style="color:#94a3b8; font-size:11.5px;">(%{yuzde:.1f})</span></div>'
-        legend_html.append(item_str)
-        
-    gradient_str = ", ".join(gradient_parcalari)
-    legend_str = "".join(legend_html)
-    
-    return f'''<div style="background-color:#ffffff; padding:22px; border-radius:16px; border:1px solid #e2e8f0; box-shadow:0 4px 15px -3px rgba(0,0,0,0.04); margin-bottom:18px;">
-<h4 style="margin-top:0; margin-bottom:18px; color:#0f172a; text-align:center; font-size:15px; font-weight:700;">{baslik}</h4>
-<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:24px;">
-<div style="width:140px; height:140px; border-radius:50%; background:conic-gradient({gradient_str}); position:relative; display:flex; align-items:center; justify-content:center;">
-<div style="width:84px; height:84px; background:#ffffff; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-<span style="font-size:18px; font-weight:800; color:#0f172a;">{toplam}</span>
-<span style="font-size:9px; color:#64748b; font-weight:700;">TOPLAM</span>
-</div>
-</div>
-<div>{legend_str}</div>
-</div>
-</div>'''
 
 conn = sqlite3.connect(DB_FILE, check_same_thread=False)
 cursor = conn.cursor()
@@ -400,7 +389,6 @@ if cursor.fetchone()[0] == 0:
     cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", make_hash("Koc123!")))
     conn.commit()
 
-# Şema Güvencesi Migrasyonları
 for tbl, col, col_def in [
     ("ogrenciler", "veli_pin", "TEXT DEFAULT '123456'"),
     ("ogrenciler", "sinav_turu", "TEXT DEFAULT 'YKS (TYT-AYT)'"),
@@ -744,8 +732,9 @@ else:
 
             st.info(f"🎓 **Kategori:** `{s_turu}` | **Hedef:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''} / {K_MAX_NET} | 🔑 **Veli PIN:** `{k_info[5] if k_info else ''}`")
 
+            # 📸 ÇÖZÜLEMEYEN SORULAR VE OTOMATİK KONU ANALİZİ PANELİ
             st.divider()
-            st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular")
+            st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular & Konu Analizi")
             df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
             
             if df_koc_sorular.empty:
@@ -767,6 +756,11 @@ else:
                             <small><strong>Tarih:</strong> {s_data['tarih']} | <strong>Konu:</strong> {s_data['konu']}</small>
                         </div>
                         """, unsafe_allow_html=True)
+                        
+                        # Otomatik Konu Analizi Açıklama Kartı
+                        ipucu_metni = soru_konu_analizi_ureteci(s_data['ders'], s_data['konu'])
+                        st.markdown(f'<div class="konu-analiz-box">💡 <strong>Otomatik Konu Analizi:</strong><br/>{ipucu_metni}</div>', unsafe_allow_html=True)
+
                         if os.path.exists(s_data['dosya_yolu']) and s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
                             st.image(s_data['dosya_yolu'], use_container_width=True)
                             with open(s_data['dosya_yolu'], "rb") as file_bytes:
