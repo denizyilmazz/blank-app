@@ -373,7 +373,6 @@ for tbl, col, col_def in [
     except Exception:
         pass
 
-# Sadece TYT Müfredat Sözlüğü
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Mantık & Küme", "Permütasyon - Kombinasyon - Olasılık"],
@@ -528,31 +527,56 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     st.success(f"🎉 Hedefiniz ({secilen_uni} - {secilen_bolum}) başarıyla kaydedildi!")
                     st.rerun()
 
-            cursor.execute("SELECT toplam_net FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC LIMIT 1", (aktif_ogr,))
-            son_d = cursor.fetchone()
-            son_net = son_d[0] if son_d else 0.0
+            # En Yüksek ve En Düşük Deneme Netlerini Çekme
+            cursor.execute("SELECT MAX(toplam_net), MIN(toplam_net) FROM denemeler WHERE ad_soyad = ?", (aktif_ogr,))
+            d_min_max = cursor.fetchone()
+            max_net = d_min_max[0] if (d_min_max and d_min_max[0] is not None) else 0.0
+            min_net = d_min_max[1] if (d_min_max and d_min_max[1] is not None) else 0.0
             hedef_net_val = float(h_data[2]) if (h_data[2] and h_data[2] > 0) else otomatik_taban_net
 
             st.divider()
-            st.markdown("<h4 style='font-weight:700; font-size:16px; color:#334155;'>🏆 Son Denemenize Göre YÖK Atlas Hedefine Ulaşma Durumu</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='font-weight:700; font-size:16px; color:#334155;'>🏆 En Yüksek ve En Düşük Denemelerinize Göre Hedef Analizi</h4>", unsafe_allow_html=True)
             
-            if son_net > 0:
-                oran = min(1.0, son_net / hedef_net_val)
-                yuzde = oran * 100
-                st.markdown(f"**Aktif Hedef:** {h_data[0]} - {h_data[1]} ({hedef_net_val} Net) | **Son Deneme Netin:** {son_net} Net")
-                st.progress(oran)
-                st.markdown(f"📈 **YÖK Atlas Hedefine Ulaşma Oranı: %{yuzde:.1f}**")
-                
-                fark = hedef_net_val - son_net
-                if fark <= 0:
-                    st.balloons()
-                    st.success(f"🔥 HARİKA! {h_data[0]} için gereken YÖK Atlas taban netini ({hedef_net_val} Net) geçtin! (Son Netin: {son_net})")
-                elif fark <= 15:
-                    st.info(f"🚀 Hedefine çok yakınsın! {h_data[0]} - {h_data[1]} için sadece **{fark:.1f} Net** kaldı. Odaklanmaya devam!")
-                else:
-                    st.warning(f"💪 {h_data[0]} - {h_data[1]} hedefinin taban netine ulaşmak için **{fark:.1f} Net** daha artış yapmalıyız. Adım adım ilerliyoruz!")
+            if max_net > 0:
+                hedef_sub_tab1, hedef_sub_tab2 = st.tabs([
+                    "🔥 EN YÜKSEK DENEME PERFORMANSI (ZİRVE)",
+                    "🛡️ EN DÜŞÜK DENEME PERFORMANSI (TABAN)"
+                ])
+
+                # 🥇 EN YÜKSEK DENEME SEKMESİ
+                with hedef_sub_tab1:
+                    oran_max = min(1.0, max_net / hedef_net_val)
+                    yuzde_max = oran_max * 100
+                    st.markdown(f"**YÖK Atlas Hedef Net:** `{hedef_net_val}` Net | **En Yüksek Deneme Netiniz:** `{max_net}` Net")
+                    st.progress(oran_max)
+                    st.markdown(f"📈 **En Yüksek Nete Göre Hedefe Ulaşma Oranı: %{yuzde_max:.1f}**")
+                    
+                    fark_max = hedef_net_val - max_net
+                    if fark_max <= 0:
+                        st.balloons()
+                        st.success(f"🔥 İNANILMAZ! En yüksek deneme netin ({max_net} Net) ile {secilen_uni} hedefini aştın! Potansiyelin burada, hep burayı hedefle!")
+                    elif fark_max <= 10:
+                        st.info(f"🚀 Zirve performansın hedefine ramak kala! Hedefe sadece **{fark_max:.1f} Net** kaldı. Sen bu neti yapabiliyorsun, başarmak elinde!")
+                    else:
+                        st.info(f"💪 En yüksek netine göre hedefe ulaşmak için **{fark_max:.1f} Net** gerekiyor. Zirveni daha da yukarı taşımak için eksikleri kapatmaya devam!")
+
+                # 🛡️ EN DÜŞÜK DENEME SEKMESİ
+                with hedef_sub_tab2:
+                    oran_min = min(1.0, min_net / hedef_net_val)
+                    yuzde_min = oran_min * 100
+                    st.markdown(f"**YÖK Atlas Hedef Net:** `{hedef_net_val}` Net | **En Düşük Deneme Netiniz:** `{min_net}` Net")
+                    st.progress(oran_min)
+                    st.markdown(f"📈 **En Düşük Nete Göre Hedef Ulaşma Oranı: %{yuzde_min:.1f}**")
+                    
+                    fark_min = hedef_net_val - min_net
+                    if fark_min <= 0:
+                        st.balloons()
+                        st.success(f"🛡️ MÜKEMMEL! En kötü günündeki deneme netin ({min_net} Net) bile {secilen_uni} hedefini karşılıyor! Sisteminiz çok sağlam!")
+                    else:
+                        st.warning(f"⚠️ En düşük denemendeki taban netin ile hedef arasındaki fark: **{fark_min:.1f} Net**. Kötü geçen sınav günlerinde bile netini korumak için dip net seviyeni yukarı çekmeliyiz!")
+
             else:
-                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor. Deneme sonucunu girdikçe hedefe ne kadar yaklaştığın burada otomatik hesaplanacaktır!")
+                st.info("ℹ️ Henüz kaydedilmiş bir deneme sonucunuz bulunmuyor. Denemelerinizi girdikçe en yüksek ve en düşük netlerinize göre analizler burada görüntülenecektir.")
 
         # --- TAB 3: DERS PROGRAMI (KOÇ TARAFINDAN GİRİLEN) ---
         with tab_program:
