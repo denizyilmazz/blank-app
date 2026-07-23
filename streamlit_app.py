@@ -159,7 +159,6 @@ MOTIVASYON_SOZLERI = [
     "🎯 Zirveye giden yolda engel yoktur, sadece kararlılıkla aşılacak hedefler vardır!"
 ]
 
-# 81 İL LİSTESİ
 ILLER_LISTESI = [
     "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
     "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur",
@@ -171,7 +170,7 @@ ILLER_LISTESI = [
     "Şanlıurfa", "Şırnak", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Uşak", "Van", "Yalova", "Yozgat", "Zonguldak"
 ]
 
-# 🏛️ YÖK ATLAS (YKS) VERİTABANI
+# 🏛️ YÖK ATLAS (YKS) VERİTABANI (120 Net Üzerinden)
 YOK_ATLAS_VERILERI = {
     "İstanbul Teknik Üniversitesi (İTÜ)": {
         "Bilgisayar Mühendisliği": {"taban_sira": "2.150", "tavan_sira": "120", "taban_net": 108.5, "tavan_net": 117.5},
@@ -179,27 +178,17 @@ YOK_ATLAS_VERILERI = {
         "Elektrik-Elektronik Mühendisliği": {"taban_sira": "3.800", "tavan_sira": "310", "taban_net": 105.0, "tavan_net": 116.0},
         "Endüstri Mühendisliği": {"taban_sira": "4.500", "tavan_sira": "620", "taban_net": 104.0, "tavan_net": 114.5},
         "Yapay Zeka Mühendisliği": {"taban_sira": "1.850", "tavan_sira": "95", "taban_net": 109.5, "tavan_net": 118.0},
-        "Makine Mühendisliği": {"taban_sira": "8.200", "tavan_sira": "1.200", "taban_net": 99.5, "tavan_net": 111.0},
-        "Mimarlık": {"taban_sira": "28.500", "tavan_sira": "5.400", "taban_net": 88.0, "tavan_net": 103.5}
+        "Makine Mühendisliği": {"taban_sira": "8.200", "tavan_sira": "1.200", "taban_net": 99.5, "tavan_net": 111.0}
     },
     "Boğaziçi Üniversitesi": {
         "Bilgisayar Mühendisliği": {"taban_sira": "290", "tavan_sira": "1", "taban_net": 114.0, "tavan_net": 120.0},
         "Elektrik-Elektronik Mühendisliği": {"taban_sira": "850", "tavan_sira": "15", "taban_net": 112.5, "tavan_net": 119.5},
-        "Endüstri Mühendisliği": {"taban_sira": "1.400", "tavan_sira": "80", "taban_net": 110.0, "tavan_net": 118.5},
-        "İşletme / İktisat": {"taban_sira": "1.100", "tavan_sira": "45", "taban_net": 108.0, "tavan_net": 117.0}
+        "Endüstri Mühendisliği": {"taban_sira": "1.400", "tavan_sira": "80", "taban_net": 110.0, "tavan_net": 118.5}
     },
     "Ortadoğu Teknik Üniversitesi (ODTÜ)": {
         "Bilgisayar Mühendisliği": {"taban_sira": "800", "tavan_sira": "12", "taban_net": 112.0, "tavan_net": 119.5},
         "Elektrik-Elektronik Mühendisliği": {"taban_sira": "1.650", "tavan_sira": "110", "taban_net": 109.5, "tavan_net": 118.0},
-        "Havacılık ve Uzay Mühendisliği": {"taban_sira": "3.200", "tavan_sira": "250", "taban_net": 106.5, "tavan_net": 115.5},
-        "Endüstri Mühendisliği": {"taban_sira": "2.900", "tavan_sira": "300", "taban_net": 107.0, "tavan_net": 116.0},
-        "Makine Mühendisliği": {"taban_sira": "5.400", "tavan_sira": "750", "taban_net": 103.0, "tavan_net": 113.0}
-    },
-    "Bilkent Üniversitesi": {
-        "Bilgisayar Mühendisliği (Burslu)": {"taban_sira": "180", "tavan_sira": "5", "taban_net": 115.0, "tavan_net": 120.0},
-        "Elektrik-Elektronik Mühendisliği (Burslu)": {"taban_sira": "450", "tavan_sira": "22", "taban_net": 113.5, "tavan_net": 119.0},
-        "Endüstri Mühendisliği (Burslu)": {"taban_sira": "950", "tavan_sira": "65", "taban_net": 111.0, "tavan_net": 118.0},
-        "Hukuk Fakültesi (Burslu)": {"taban_sira": "150", "tavan_sira": "8", "taban_net": 109.0, "tavan_net": 116.5}
+        "Havacılık ve Uzay Mühendisliği": {"taban_sira": "3.200", "tavan_sira": "250", "taban_net": 106.5, "tavan_net": 115.5}
     },
     "Hacettepe Üniversitesi": {
         "Tıp Fakültesi (Türkçe)": {"taban_sira": "1.350", "tavan_sira": "45", "taban_net": 110.5, "tavan_net": 118.5},
@@ -207,7 +196,7 @@ YOK_ATLAS_VERILERI = {
     }
 }
 
-# 🏫 İLLERE GÖRE LGS NİTELİKLİ LİSELER VERİTABANI
+# 🏫 İLLERE GÖRE LGS NİTELİKLİ LİSELER VERİTABANI (90 Net ve 500 Puan Üzerinden)
 LGS_IL_LISELERI = {
     "İstanbul": {
         "Galatasaray Lisesi": {"taban_puan": "500.0", "yuzdelik": "%0.04", "taban_net": 88.5},
@@ -216,80 +205,57 @@ LGS_IL_LISELERI = {
         "Atatürk Fen Lisesi": {"taban_puan": "492.5", "yuzdelik": "%0.22", "taban_net": 84.5},
         "Cağaloğlu Anadolu Lisesi": {"taban_puan": "489.0", "yuzdelik": "%0.38", "taban_net": 83.0},
         "Kadıköy Anadolu Lisesi": {"taban_puan": "487.5", "yuzdelik": "%0.47", "taban_net": 82.5},
-        "Hüseyin Avni Sözen Anadolu Lisesi": {"taban_puan": "485.0", "yuzdelik": "%0.58", "taban_net": 81.0},
-        "Beşiktaş Sakıp Sabancı Anadolu Lisesi": {"taban_puan": "482.0", "yuzdelik": "%0.75", "taban_net": 79.5}
+        "Hüseyin Avni Sözen Anadolu Lisesi": {"taban_puan": "485.0", "yuzdelik": "%0.58", "taban_net": 81.0}
     },
     "Ankara": {
         "Ankara Fen Lisesi": {"taban_puan": "495.0", "yuzdelik": "%0.13", "taban_net": 86.0},
         "Prof. Dr. Aziz Sancar Fen Lisesi": {"taban_puan": "488.5", "yuzdelik": "%0.40", "taban_net": 82.5},
         "Atatürk Anadolu Lisesi": {"taban_puan": "483.0", "yuzdelik": "%0.70", "taban_net": 80.0},
-        "Gazi Anadolu Lisesi": {"taban_puan": "478.0", "yuzdelik": "%1.10", "taban_net": 78.0},
-        "Ankara Cumhuriyet Fen Lisesi": {"taban_puan": "475.0", "yuzdelik": "%1.35", "taban_net": 76.5}
+        "Gazi Anadolu Lisesi": {"taban_puan": "478.0", "yuzdelik": "%1.10", "taban_net": 78.0}
     },
     "İzmir": {
         "İzmir Fen Lisesi": {"taban_puan": "494.0", "yuzdelik": "%0.16", "taban_net": 85.5},
         "İzmir Atatürk Lisesi": {"taban_puan": "484.0", "yuzdelik": "%0.65", "taban_net": 80.5},
-        "Bornova Anadolu Lisesi": {"taban_puan": "479.5", "yuzdelik": "%1.00", "taban_net": 78.5},
-        "Buca İnci-Özer Tırnaklı Fen Lisesi": {"taban_puan": "482.0", "yuzdelik": "%0.78", "taban_net": 79.5}
+        "Bornova Anadolu Lisesi": {"taban_puan": "479.5", "yuzdelik": "%1.00", "taban_net": 78.5}
     },
     "Bursa": {
         "Tofaş Fen Lisesi": {"taban_puan": "491.0", "yuzdelik": "%0.30", "taban_net": 84.0},
-        "Bursa Anadolu Lisesi": {"taban_puan": "476.0", "yuzdelik": "%1.25", "taban_net": 77.0},
-        "Nilüfer IMKB Fen Lisesi": {"taban_puan": "483.0", "yuzdelik": "%0.72", "taban_net": 80.0}
+        "Bursa Anadolu Lisesi": {"taban_puan": "476.0", "yuzdelik": "%1.25", "taban_net": 77.0}
     },
     "Antalya": {
         "Antalya Yusuf Ziya Öner Fen Lisesi": {"taban_puan": "490.0", "yuzdelik": "%0.35", "taban_net": 83.5},
         "Adem-Tolunay Anadolu Lisesi": {"taban_puan": "472.0", "yuzdelik": "%1.60", "taban_net": 75.0}
-    },
-    "Adana": {
-        "Adana Fen Lisesi": {"taban_puan": "489.5", "yuzdelik": "%0.36", "taban_net": 83.0},
-        "Adana Anadolu Lisesi": {"taban_puan": "468.0", "yuzdelik": "%2.00", "taban_net": 73.5}
-    },
-    "Kocaeli": {
-        "Kocaeli Fen Lisesi": {"taban_puan": "488.0", "yuzdelik": "%0.45", "taban_net": 82.5},
-        "Muammer Dereli Fen Lisesi": {"taban_puan": "477.0", "yuzdelik": "%1.15", "taban_net": 77.5}
-    },
-    "Konya": {
-        "Meram Fen Lisesi": {"taban_puan": "489.0", "yuzdelik": "%0.38", "taban_net": 83.0},
-        "Konya Karatay Fen Lisesi": {"taban_puan": "481.0", "yuzdelik": "%0.85", "taban_net": 79.0}
-    },
-    "Gaziantep": {
-        "Vehbi Dinçerler Fen Lisesi": {"taban_puan": "486.0", "yuzdelik": "%0.52", "taban_net": 81.5},
-        "Gaziantep Fen Lisesi": {"taban_puan": "482.0", "yuzdelik": "%0.78", "taban_net": 79.5}
-    },
-    "Kayseri": {
-        "Kayseri Fen Lisesi": {"taban_puan": "488.0", "yuzdelik": "%0.45", "taban_net": 82.5},
-        "Sümer Fen Lisesi": {"taban_puan": "480.0", "yuzdelik": "%0.92", "taban_net": 78.5}
     }
 }
 
 GENEL_DEFAULT_LISE = {
     "İl Nitelikli Fen Lisesi (Genel Taban)": {"taban_puan": "450.0", "yuzdelik": "%2.50", "taban_net": 72.0},
     "İl Nitelikli Anadolu Lisesi (Genel Taban)": {"taban_puan": "410.0", "yuzdelik": "%6.00", "taban_net": 62.0},
-    "İl Nitelikli Proje İmam Hatip / Meslek Lisesi": {"taban_puan": "370.0", "yuzdelik": "%12.00", "taban_net": 52.0}
+    "İl Proje İmam Hatip / Meslek Lisesi": {"taban_puan": "370.0", "yuzdelik": "%12.00", "taban_net": 52.0}
 }
 
-# 📖 DERS & KONU SÖZLÜKLERİ
+# 📖 DERS & MÜFREDAT SÖZLÜKLERİ
 TYT_KONULAR = {
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
-    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Mantık & Küme", "Permütasyon - Kombinasyon - Olasılık"],
-    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan & Benzerlik", "Çokgenler & Dörtgenler", "Çember ve Daire", "Analitik Geometri", "Katı Cisimler"],
-    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kuvvet ve Hareket", "İş, Güç, Enerji", "Isı ve Sıcaklık", "Basınç ve Kaldırma Kuvveti", "Elektrostatik & Elektrik", "Optik", "Dalgalar"],
-    "🧪 TYT Kimya": ["Kimya Bilimi & Atom", "Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Mol Kavramı & Tepkimeler", "Karışımlar", "Asit, Baz, Tuz"],
-    "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji"],
-    "📜 TYT Tarih": ["Tarih Bilimine Giriş", "İlk Çağ Uygarlıkları", "İslam Öncesi Türk Tarihi", "İslam Tarihi ve Uygarlığı", "Türk İslam Devletleri", "Osmanlı Devleti Kuruluş & Yükselme", "Milli Mücadele & İnkılap Tarihi"],
-    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Dünya'nın Şekli ve Hareketleri", "Coğrafi Konum & Harita Bilgisi", "İklim Bilgisi & İklim Tipleri", "Yerin Şekillenmesi", "Beşeri Sistemler & Nüfus", "Afetler ve Çevre"],
-    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Felsefi Düşünce & Sorgulama", "Bilgi Felsefesi (Epistemoloji)", "Varlık Felsefesi (Ontoloji)", "Ahlak Felsefesi (Etik)", "Sanat Felsefesi", "Din Felsefesi"],
-    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet ve Esasları", "Ahlak ve Değerler", "Hz. Muhammed (S.A.V.) ve Gençlik", "Vahiy ve Akıl", "İslam ve Bilim"]
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi"],
+    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "Rasyonel Sayılar", "Eşitsizlikler", "Problemler", "Fonksiyonlar"],
+    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Çokgenler & Dörtgenler", "Katı Cisimler"],
+    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kuvvet ve Hareket", "Optik", "Dalgalar"],
+    "🧪 TYT Kimya": ["Kimya Bilimi & Atom", "Periyodik Sistem", "Maddenin Halleri", "Karışımlar"],
+    "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Kalıtım", "Ekoloji"],
+    "📜 TYT Tarih": ["Tarih Bilimine Giriş", "İlk Çağ Uygarlıkları", "Osmanlı Devleti", "Milli Mücadele"],
+    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Coğrafi Konum & Harita", "İklim Bilgisi", "Nüfus ve Afetler"],
+    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi"],
+    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler"]
 }
 
+# 🎓 MEB 8. SINIF LGS RESMİ MÜFREDAT DERSLERİ VE KONULARI (TOPLAM 90 SORU)
 LGS_KONULAR = {
-    "📖 LGS Türkçe": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Metin Türleri ve Söz Sanatları", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık ve Görsel Okuma"],
-    "📐 LGS Matematik": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Basit Olayların Olma Olasılığı", "Cebirsel İfadeler ve Özdeşlikler", "Birinci Dereceden Bir Bilinmeyenli Denklemler", "Eşitsizlikler", "Üçgenler", "Eşlik ve Benzerlik", "Dönüşüm Geometrisi", "Geometrik Cisimler"],
-    "🧪 LGS Fen Bilimleri": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri ve Çevre Bilimi", "Elektrik Yükleri ve Elektrik Enerjisi"],
-    "📜 LGS İnkılap Tarihi": ["Bir Kahraman Doğuyor", "Milli Uyanış: Bağımsızlık Yolunda Atılan Adımlar", "Milli Bir Destan: Ya Ölüm Ya Kalıcılık", "Atatürkçülük ve Çağdaşlaşan Türkiye", "Demokratikleşme Çabaları", "Atatürk Dönemi Dış Politika", "Atatürk'ün Ölümü ve Sonrası"],
-    "🕌 LGS Din Kültürü": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat", "Hz. Muhammed'in (S.A.V.) Örnekliği", "Kur'an-ı Kerim ve Özellikleri"],
-    "🇬🇧 LGS İngilizce": ["Friendship", "Teen Life", "In The Kitchen", "On The Phone", "The Internet", "Adventures", "Tourism", "Chores", "Science", "Natural Forces"]
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Metin Türleri ve Söz Sanatları", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık ve Görsel Okuma"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Cebirsel İfadeler ve Özdeşlikler", "Linear Denklemler", "Eşitsizlikler", "Üçgenler", "Eşlik ve Benzerlik", "Dönüşüm Geometrisi", "Geometrik Cisimler"],
+    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri ve Çevre Bilimi", "Elektrik Yükleri ve Elektrik Enerjisi"],
+    "📜 LGS T.C. İnkılap Tarihi (10 Soru)": ["Bir Kahraman Doğuyor", "Milli Uyanış: Bağımsızlık Yolunda Atılan Adımlar", "Milli Bir Destan: Ya Ölüm Ya Kalıcılık", "Atatürkçülük ve Çağdaşlaşan Türkiye", "Demokratikleşme Çabaları", "Atatürk Dönemi Dış Politika"],
+    "🕌 LGS Din Kültürü (10 Soru)": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat", "Hz. Muhammed'in (S.A.V.) Örnekliği", "Kur'an-ı Kerim ve Özellikleri"],
+    "🇬🇧 LGS İngilizce (10 Soru)": ["Friendship", "Teen Life", "In The Kitchen", "On The Phone", "The Internet", "Adventures", "Tourism", "Chores", "Science", "Natural Forces"]
 }
 
 POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
@@ -302,7 +268,7 @@ def sifre_gecerli_mi(sifre):
     if not re.search(r'\d', sifre):
         return False, "Şifre en az bir RAKAM içermelidir!"
     if not re.search(r'[^\w\s]', sifre):
-        return False, "Şifre en az bir NOKTALAMA İŞARETİ veya ÖZEL KARAKTER (!, ?, ., @, vb.) içermelidir!"
+        return False, "Şifre en az bir ÖZEL KARAKTER (!, ?, ., @, vb.) içermelidir!"
     return True, "Şifre geçerli."
 
 def halka_grafik_html(baslik, veri_listesi):
@@ -353,7 +319,7 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
     koc_adi TEXT DEFAULT '',
     hedef_uni TEXT DEFAULT '',
     hedef_bolum TEXT DEFAULT '',
-    hedef_net FLOAT DEFAULT 100.0,
+    hedef_net FLOAT DEFAULT 80.0,
     program_guncellendi_mi INTEGER DEFAULT 0
 )
 """)
@@ -423,14 +389,14 @@ if cursor.fetchone()[0] == 0:
     cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", make_hash("Koc123!")))
     conn.commit()
 
-# Şema Güvencesi Migrasyonları
+# Şema Güvencesi
 for tbl, col, col_def in [
     ("ogrenciler", "sinav_turu", "TEXT DEFAULT 'YKS (TYT)'"),
     ("ogrenciler", "hedef_il", "TEXT DEFAULT 'İstanbul'"),
     ("ogrenciler", "koc_adi", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_uni", "TEXT DEFAULT ''"),
     ("ogrenciler", "hedef_bolum", "TEXT DEFAULT ''"),
-    ("ogrenciler", "hedef_net", "FLOAT DEFAULT 100.0"),
+    ("ogrenciler", "hedef_net", "FLOAT DEFAULT 80.0"),
     ("ogrenciler", "program_guncellendi_mi", "INTEGER DEFAULT 0"),
     ("gunluk_calisma", "konu", "TEXT DEFAULT 'Genel Soru Çözümü / Karma'"),
     ("denemeler", "koc_notu", "TEXT DEFAULT ''")
@@ -501,7 +467,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             col1, col2, col3, col4 = st.columns(4)
             with col1: ad_soyad = st.text_input("Adınız ve Soyadınız:").strip().title()
             with col2: sifre = st.text_input("Şifreniz / PIN:", type="password")
-            with col3: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav:", ["YKS (TYT)", "LGS (8. Sınıf)"])
+            with col3: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav Kategori:", ["YKS (TYT)", "LGS (8. Sınıf)"])
             with col4: secilen_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
             ogr_giris_btn = st.form_submit_button("Giriş Yap / Hesabı Oluştur", type="primary", use_container_width=True)
             
@@ -549,12 +515,13 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
 
         AKTIF_KONULAR = TYT_KONULAR if ogr_sinav == "YKS (TYT)" else LGS_KONULAR
         AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
+        MAX_NET_LIMIT = 120.0 if ogr_sinav == "YKS (TYT)" else 90.0
 
-        # --- TAB 2: HEDEF TAKİBİ (İLLERE GÖRE DİNAMİK LGS / YKS) ---
+        # --- TAB 2: HEDEF TAKİBİ (DİNAMİK LGS / YKS ÖLÇEK) ---
         with tab_hedef:
-            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 {ogr_sinav} Hedef Okul Takip Area — {aktif_ogr}</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 {ogr_sinav} Hedef Okul & Net Takip Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
             cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net, hedef_il FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
-            h_data = cursor.fetchone() or ("", "", 100.0, "İstanbul")
+            h_data = cursor.fetchone() or ("", "", 80.0, "İstanbul")
 
             if ogr_sinav == "YKS (TYT)":
                 secilen_uni = st.selectbox("🏛️ Hedeflenen Üniversite:", POPULE_UNIVERSITELER, index=POPULE_UNIVERSITELER.index(h_data[0]) if h_data[0] in POPULE_UNIVERSITELER else 0)
@@ -571,15 +538,14 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:10px;">
                         <div><strong>📉 Taban Sıralama:</strong> {atlas_bilgi['taban_sira']}.</div>
                         <div><strong>🏆 Tavan Sıralama:</strong> {atlas_bilgi['tavan_sira']}.</div>
-                        <div><strong>🎯 Taban TYT Net:</strong> {atlas_bilgi['taban_net']} Net</div>
+                        <div><strong>🎯 Taban TYT Net:</strong> {atlas_bilgi['taban_net']} Net / 120</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                # 81 İL SEÇİMLİ LGS MODÜLÜ
+                # LGS 90 NET SİSTEMİ
                 secilen_il = st.selectbox("🗺️ Hedeflediğiniz İli Seçin (81 İl):", ILLER_LISTESI, index=ILLER_LISTESI.index(h_data[3]) if h_data[3] in ILLER_LISTESI else 39)
                 
-                # Seçilen İlin Liselerini Hazırlama
                 il_liseleri_dict = LGS_IL_LISELERI.get(secilen_il, GENEL_DEFAULT_LISE)
                 il_lise_listesi = list(il_liseleri_dict.keys()) + ["✏️ Diğer / Manuel Lise Gir"]
                 
@@ -593,7 +559,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     <div class="target-card">
                         <h4 style="margin-top:0; color:#0284c7;">🏫 LGS Nitelikli Lise Verileri ({secilen_il} - {secilen_uni})</h4>
                         <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:10px;">
-                            <div><strong>📉 LGS Taban Puan:</strong> {lise_bilgi['taban_puan']} Puan</div>
+                            <div><strong>📉 LGS Taban Puan:</strong> {lise_bilgi['taban_puan']} Puan / 500</div>
                             <div><strong>📊 Yüzdelik Dilim:</strong> {lise_bilgi['yuzdelik']}</div>
                             <div><strong>🎯 Gerekli Toplam LGS Net:</strong> {lise_bilgi['taban_net']} Net / 90</div>
                         </div>
@@ -601,12 +567,12 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     """, unsafe_allow_html=True)
                 else:
                     secilen_uni = st.text_input("Manuel Lise Adını Giriniz:", value="Özel Hedef Lise")
-                    otomatik_taban_net = 70.0
+                    otomatik_taban_net = 75.0
 
             with st.form("hedef_kaydet_form"):
                 col_h1, col_h2 = st.columns(2)
                 with col_h1: st.text_input("Gerekli Taban Net (Otomatik):", value=f"{otomatik_taban_net} Net", disabled=True)
-                with col_h2: ozel_hedef_net = st.number_input("Kendi Net Hedefinizi Özelleştirin:", 10.0, 120.0, float(otomatik_taban_net), 1.0)
+                with col_h2: ozel_hedef_net = st.number_input("Kendi Net Hedefinizi Özelleştirin:", 10.0, float(MAX_NET_LIMIT), float(otomatik_taban_net), 1.0)
                 
                 if st.form_submit_button("🎯 Hedefimi Kaydet", type="primary", use_container_width=True):
                     cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ?, hedef_il = ? WHERE ad_soyad = ?", (secilen_uni, secilen_bolum, float(ozel_hedef_net), secilen_il, aktif_ogr))
@@ -627,14 +593,14 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             if max_net > 0:
                 st.markdown("<h5 style='font-weight:700; color:#0284c7; margin-top:15px;'>🔥 En Yüksek Deneme Performansı (Zirve)</h5>", unsafe_allow_html=True)
                 oran_max = min(1.0, max_net / hedef_net_val)
-                st.markdown(f"**Target Net:** `{hedef_net_val}` Net | **En Yüksek Netiniz:** `{max_net}` Net")
+                st.markdown(f"**Hedef Net:** `{hedef_net_val}` Net / {MAX_NET_LIMIT} | **En Yüksek Netiniz:** `{max_net}` Net")
                 st.progress(oran_max)
                 st.markdown(f"📈 **Zirve Nete Göre Ulaşma Oranı: %{(oran_max*100):.1f}**")
 
                 st.markdown("<br/>", unsafe_allow_html=True)
                 st.markdown("<h5 style='font-weight:700; color:#475569;'>🛡️ En Düşük Deneme Performansı (Taban)</h5>", unsafe_allow_html=True)
                 oran_min = min(1.0, min_net / hedef_net_val)
-                st.markdown(f"**Target Net:** `{hedef_net_val}` Net | **En Düşük Netiniz:** `{min_net}` Net")
+                st.markdown(f"**Hedef Net:** `{hedef_net_val}` Net / {MAX_NET_LIMIT} | **En Düşük Netiniz:** `{min_net}` Net")
                 st.progress(oran_min)
                 st.markdown(f"📈 **En Düşük Nete Göre Ulaşma Oranı: %{(oran_min*100):.1f}**")
             else:
@@ -670,7 +636,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
             
             c_top1, c_top2, c_top3 = st.columns([1, 1, 1])
             with c_top1: tarih_giris = st.date_input("Çalışma Tarihi", datetime.date.today())
-            with c_top2: sure_giris = st.number_input("Bugünkü Toplam Çalışma Süresi (Saat)", 0.0, 16.0, 6.0, 0.5)
+            with c_top2: sure_giris = st.number_input("Bugünkü Toplam Çalışma Süresi (Saat)", 0.0, 16.0, 5.5, 0.5)
             with c_top3: verim_giris = st.slider("Günün Verim Puanı (1-10)", 1, 10, 8)
                 
             not_giris = st.text_area("Bugün zorlandığın detaylar / Koçuna iletmek istediğin çalışma notu:", height=70)
@@ -731,7 +697,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 col_d1, col_d2, col_d3 = st.columns(3)
                 with col_d1: yayin = st.text_input("Deneme Adı / Yayın:")
                 with col_d2: d_tur = st.selectbox("Deneme Türü:", [f"{ogr_sinav} Genel Denemesi", f"{ogr_sinav} Branş Denemesi"])
-                with col_d3: toplam_net = st.number_input("Toplam Netiniz:", 0.0, 120.0, 70.0)
+                with col_d3: toplam_net = st.number_input("Toplam Netiniz:", 0.0, float(MAX_NET_LIMIT), 65.0)
                 karne_dosya = st.file_uploader("📄 Deneme Karnesi Yükle:", type=["pdf", "png", "jpg"])
                 if st.form_submit_button("Deneme Karnesini Kaydet", type="primary", use_container_width=True) and yayin:
                     cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -795,8 +761,9 @@ else:
             s_turu = k_info[0] if k_info else "YKS (TYT)"
             
             K_DERSLER = list(TYT_KONULAR.keys()) if s_turu == "YKS (TYT)" else list(LGS_KONULAR.keys())
+            K_MAX_NET = "120" if s_turu == "YKS (TYT)" else "90"
 
-            st.info(f"🎓 **Öğrenci Kategori:** `{s_turu}` | **Hedef Okul:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''}")
+            st.info(f"🎓 **Sınav Kategori:** `{s_turu}` | **Hedef Okul:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''} / {K_MAX_NET}")
 
             st.divider()
             st.markdown(f"### 📅 {secilen_ogr} ({s_turu}) İçin Haftalık Ders Programı Düzenleme")
@@ -810,7 +777,7 @@ else:
                     
                     cp4, cp5 = st.columns(2)
                     with cp4: p_ders = st.selectbox("İlgili Ders:", K_DERSLER + ["--- Genel / Yok ---"])
-                    with cp5: p_detay = st.text_input("Açıklama / Soru Sayısı / Konu:", placeholder="Ör: Paragraf 30 Soru + Matematik Problem")
+                    with cp5: p_detay = st.text_input("Açıklama / Soru Sayısı / Konu:", placeholder="Ör: Paragraf 30 Soru + Fen Bilimleri Test")
                     
                     if st.form_submit_button("➕ Aktiviteyi Kaydet ve Öğrenciye Gönder", type="primary", use_container_width=True):
                         cursor.execute("INSERT INTO haftalik_program (ad_soyad, gun, saat_araligi, aktivite_turu, ders, detay_aciklama) VALUES (?, ?, ?, ?, ?, ?)",
@@ -836,7 +803,7 @@ else:
             
             if not df_deneme.empty:
                 st.dataframe(df_deneme, use_container_width=True)
-                deneme_secenekleri = {row['id']: f"ID: {row['id']} - {row['tarih']} | {row['yayin']} - Net: {row['toplam_net']}" for _, row in df_deneme.iterrows()}
+                deneme_secenekleri = {row['id']: f"ID: {row['id']} - {row['tarih']} | {row['yayin']} - Net: {row['toplam_net']} / {K_MAX_NET}" for _, row in df_deneme.iterrows()}
                 secilen_deneme_id = st.selectbox("Değerlendirilecek Deneme:", options=list(deneme_secenekleri.keys()), format_func=lambda x: deneme_secenekleri[x])
                 deneme_row = df_deneme[df_deneme['id'] == secilen_deneme_id].iloc[0]
 
@@ -846,11 +813,11 @@ else:
                 if st.button("🤖 Otomatik AI Analiz Taslağı Üret", use_container_width=True):
                     st.session_state[f"temp_not_{secilen_deneme_id}"] = (
                         f"📌 {deneme_row['yayin']} Değerlendirmesi ({s_turu}):\n"
-                        f"• Net: {deneme_row['toplam_net']} Net.\n"
+                        f"• Net: {deneme_row['toplam_net']} / {K_MAX_NET} Net.\n"
                         f"• Hedef Okul: {k_info[1] if k_info else ''}\n"
                         f"• Tespit Edilen Zayıf Konular: {z_str}\n\n"
                         f"💡 Deniz Yılmaz Koçluk Tavsiyesi:\n"
-                        f"1. Eksik konulardan günlük en az 30 soru çözülmeli.\n"
+                        f"1. Eksik konulardan günlük düzenli soru çözülmeli.\n"
                         f"2. Yanlış yapılan soruların çözümleri tekrar incelenmeli."
                     )
 
@@ -874,7 +841,7 @@ else:
                         </div>
                         <p><strong>👨‍🎓 Öğrenci:</strong> {secilen_ogr}</p>
                         <p><strong>🎯 Hedef Okul:</strong> {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''})</p>
-                        <p><strong>📑 Deneme:</strong> {deneme_row['yayin']} | <strong>Net:</strong> {deneme_row['toplam_net']}</p>
+                        <p><strong>📑 Deneme:</strong> {deneme_row['yayin']} | <strong>Net:</strong> {deneme_row['toplam_net']} / {K_MAX_NET}</p>
                         <p><strong>🚨 Zayıf Konular:</strong> {z_str}</p>
                         <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px;">
                             <strong>👨‍🏫 Koç Analizi (Deniz Yılmaz):</strong><br/>
