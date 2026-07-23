@@ -10,7 +10,7 @@ import os
 import shutil
 
 st.set_page_config(
-    page_title="YKS Pro Koçluk Platformu",
+    page_title="YKS-LGS KOÇLUK (DENİZ YILMAZ)",
     page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -401,8 +401,8 @@ AKTIVITE_TURLERI = [
 st.sidebar.markdown("""
 <div style="text-align: center; padding: 10px 0 20px 0;">
     <span style="font-size: 42px;">🎓</span>
-    <h2 style="margin: 5px 0 0 0; font-weight: 800; font-size: 20px; color: #0f172a;">YKS Pro Koçluk</h2>
-    <p style="margin: 0; font-size: 12px; color: #0284c7; font-weight: 600;">Hedef & Gelişim Platformu</p>
+    <h2 style="margin: 5px 0 0 0; font-weight: 800; font-size: 18px; color: #0f172a;">YKS-LGS KOÇLUK</h2>
+    <p style="margin: 0; font-size: 13px; color: #0284c7; font-weight: 700;">DENİZ YILMAZ</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -410,7 +410,7 @@ giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ 
 
 # ==================== ÖĞRENCİ PANELİ ====================
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
-    st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🎓 Öğrenci Yönetim Paneli</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🎓 Öğrenci Yönetim Paneli — YKS-LGS KOÇLUK (DENİZ YILMAZ)</h1>", unsafe_allow_html=True)
     
     if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
     if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
@@ -591,9 +591,11 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                 html_table = df_prog.to_html(index=False, classes="styled-table")
                 html_prog_page = f"""
                 <div style="font-family: Arial, sans-serif; padding:25px; border:2px solid #0284c7; border-radius:12px; background:#fff; color:#0f172a;">
-                    <h2 style="color:#0284c7; text-align:center; margin-bottom:5px;">🎓 {aktif_ogr} - HAFTALIK YKS DERS PROGRAMI</h2>
-                    <p style="text-align:center; color:#64748b; font-size:13px; margin-top:0;">Tarih: {datetime.date.today().strftime('%d.%m.%Y')}</p>
-                    <hr style="border:1px solid #e2e8f0; margin-bottom:20px;"/>
+                    <div style="text-align:center; border-bottom:2px solid #e2e8f0; padding-bottom:10px; margin-bottom:15px;">
+                        <h2 style="color:#0284c7; margin:0; font-size:22px;">🎓 YKS-LGS KOÇLUK (DENİZ YILMAZ)</h2>
+                        <h4 style="color:#475569; margin:5px 0 0 0;">👨‍🎓 {aktif_ogr} - HAFTALIK DERS PROGRAMI</h4>
+                        <p style="color:#64748b; font-size:12px; margin:4px 0 0 0;">Tarih: {datetime.date.today().strftime('%d.%m.%Y')}</p>
+                    </div>
                     {html_table}
                 </div>
                 """
@@ -757,7 +759,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
 
 # ==================== KOÇ PANELİ ====================
 else:
-    st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🏫 Koç Yönetim ve Analiz Paneli</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🏫 Koç Yönetim Paneli — YKS-LGS KOÇLUK (DENİZ YILMAZ)</h1>", unsafe_allow_html=True)
     
     if "aktif_koc" not in st.session_state:
         st.session_state["aktif_koc"] = None
@@ -841,7 +843,7 @@ else:
         
         col_koc_top1, col_koc_top2 = st.columns([0.8, 0.2])
         with col_koc_top1:
-            st.success(f"🔓 Aktif Koç Oturumu: **{aktif_koc_adi}**")
+            st.success(f"🔓 Aktif Koç Oturumu: **{aktif_koc_adi}** (YKS-LGS KOÇLUK - DENİZ YILMAZ)")
         with col_koc_top2:
             if st.button("🚪 Çıkış Yap", use_container_width=True):
                 st.session_state["aktif_koc"] = None
@@ -935,7 +937,7 @@ else:
                             f"• Elde edilen Net: {deneme_row['toplam_net']} Net.\n"
                             f"• YÖK Atlas Hedefi: {h_info[0] if h_info else ''} ({h_info[2] if h_info else ''} Net)\n"
                             f"• Tespit Edilen Zayıf Konular: {zayif_str}\n\n"
-                            f"💡 Sorumlu Koç ({aktif_koc_adi}) Tavsiyesi & Çalışma Planı:\n"
+                            f"💡 Koçluk Tavsiyesi & Çalışma Planı (Deniz Yılmaz):\n"
                             f"1. Zayıf tespit edilen konulardan haftalık en az 40'ar soru çözülmeli.\n"
                             f"2. Matematik özel dersindeki örnek sorular tekrar edilmeli.\n"
                             f"3. Zamana karşı süre tutularak TYT branş denemesi çözülmeli."
@@ -960,8 +962,9 @@ else:
                     html_rapor = f"""
                     <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; border: 2px solid #0284c7; border-radius: 12px; background-color: #ffffff; color: #0f172a;">
                         <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 18px;">
-                            <h2 style="color: #0284c7; margin: 0; font-size: 22px;">🎓 YKS ÖĞRENCİ GELİŞİM & DENEME KARNESİ</h2>
-                            <p style="color: #64748b; margin: 6px 0 0 0; font-size: 13px;"><strong>Tarih:</strong> {datetime.date.today().strftime('%d.%m.%Y')} | <strong>Koç:</strong> {aktif_koc_adi}</p>
+                            <h2 style="color: #0284c7; margin: 0; font-size: 22px;">🎓 YKS-LGS KOÇLUK (DENİZ YILMAZ)</h2>
+                            <h4 style="color: #475569; margin: 5px 0 0 0;">ÖĞRENCİ GELİŞİM & DENEME KARNESİ</h4>
+                            <p style="color: #64748b; margin: 6px 0 0 0; font-size: 13px;"><strong>Tarih:</strong> {datetime.date.today().strftime('%d.%m.%Y')} | <strong>Sorumlu Koç:</strong> Deniz Yılmaz ({aktif_koc_adi})</p>
                         </div>
                         <p style="font-size: 14px;"><strong>👨‍🎓 Öğrenci Adı Soyadı:</strong> {secilen_ogr}</p>
                         <p style="font-size: 14px;"><strong>🎯 YÖK Atlas Hedefi:</strong> {h_info[0] if h_info else ''} - {h_info[1] if h_info else ''}</p>
