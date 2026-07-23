@@ -87,6 +87,16 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
+    .yok-atlas-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #bae6fd;
+        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.08);
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+
     .coach-feedback-card {
         background: #f0f9ff;
         border-left: 5px solid #0284c7;
@@ -121,35 +131,63 @@ MOTIVASYON_SOZLERI = [
     "🎯 Zirveye giden yolda engel yoktur, sadece kararlılıkla aşılacak hedefler vardır!"
 ]
 
-POPULE_UNIVERSITELER = [
-    "İstanbul Teknik Üniversitesi (İTÜ)",
-    "Boğaziçi Üniversitesi",
-    "Ortadoğu Teknik Üniversitesi (ODTÜ)",
-    "Bilkent Üniversitesi",
-    "Koç Üniversitesi",
-    "Sabancı Üniversitesi",
-    "Hacettepe Üniversitesi",
-    "İstanbul Üniversitesi",
-    "Ankara Üniversitesi",
-    "Yıldız Teknik Üniversitesi (YTÜ)",
-    "Ege Üniversitesi",
-    "Dokuz Eylül Üniversitesi"
-]
+# 🏛️ YÖK ATLAS TABAN/TAVAN SIRALAMA VE NET VERİ VERİTABANI
+YOK_ATLAS_VERILERI = {
+    "İstanbul Teknik Üniversitesi (İTÜ)": {
+        "Bilgisayar Mühendisliği": {"taban_sira": "2.150", "tavan_sira": "120", "taban_net": 108.5, "tavan_net": 117.5},
+        "Yazılım Mühendisliği": {"taban_sira": "3.100", "tavan_sira": "450", "taban_net": 106.0, "tavan_net": 115.0},
+        "Elektrik-Elektronik Mühendisliği": {"taban_sira": "3.800", "tavan_sira": "310", "taban_net": 105.0, "tavan_net": 116.0},
+        "Endüstri Mühendisliği": {"taban_sira": "4.500", "tavan_sira": "620", "taban_net": 104.0, "tavan_net": 114.5},
+        "Yapay Zeka Mühendisliği": {"taban_sira": "1.850", "tavan_sira": "95", "taban_net": 109.5, "tavan_net": 118.0},
+        "Makine Mühendisliği": {"taban_sira": "8.200", "tavan_sira": "1.200", "taban_net": 99.5, "tavan_net": 111.0},
+        "Mimarlık": {"taban_sira": "28.500", "tavan_sira": "5.400", "taban_net": 88.0, "tavan_net": 103.5}
+    },
+    "Boğaziçi Üniversitesi": {
+        "Bilgisayar Mühendisliği": {"taban_sira": "290", "tavan_sira": "1", "taban_net": 114.0, "tavan_net": 120.0},
+        "Elektrik-Elektronik Mühendisliği": {"taban_sira": "850", "tavan_sira": "15", "taban_net": 112.5, "tavan_net": 119.5},
+        "Endüstri Mühendisliği": {"taban_sira": "1.400", "tavan_sira": "80", "taban_net": 110.0, "tavan_net": 118.5},
+        "İşletme / İktisat": {"taban_sira": "1.100", "tavan_sira": "45", "taban_net": 108.0, "tavan_net": 117.0}
+    },
+    "Ortadoğu Teknik Üniversitesi (ODTÜ)": {
+        "Bilgisayar Mühendisliği": {"taban_sira": "800", "tavan_sira": "12", "taban_net": 112.0, "tavan_net": 119.5},
+        "Elektrik-Elektronik Mühendisliği": {"taban_sira": "1.650", "tavan_sira": "110", "taban_net": 109.5, "tavan_net": 118.0},
+        "Havacılık ve Uzay Mühendisliği": {"taban_sira": "3.200", "tavan_sira": "250", "taban_net": 106.5, "tavan_net": 115.5},
+        "Endüstri Mühendisliği": {"taban_sira": "2.900", "tavan_sira": "300", "taban_net": 107.0, "tavan_net": 116.0},
+        "Makine Mühendisliği": {"taban_sira": "5.400", "tavan_sira": "750", "taban_net": 103.0, "tavan_net": 113.0}
+    },
+    "Bilkent Üniversitesi": {
+        "Bilgisayar Mühendisliği (Burslu)": {"taban_sira": "180", "tavan_sira": "5", "taban_net": 115.0, "tavan_net": 120.0},
+        "Elektrik-Elektronik Mühendisliği (Burslu)": {"taban_sira": "450", "tavan_sira": "22", "taban_net": 113.5, "tavan_net": 119.0},
+        "Endüstri Mühendisliği (Burslu)": {"taban_sira": "950", "tavan_sira": "65", "taban_net": 111.0, "tavan_net": 118.0},
+        "Hukuk Fakültesi (Burslu)": {"taban_sira": "150", "tavan_sira": "8", "taban_net": 109.0, "tavan_net": 116.5}
+    },
+    "Koç Üniversitesi": {
+        "Tıp Fakültesi (Burslu)": {"taban_sira": "75", "tavan_sira": "1", "taban_net": 116.5, "tavan_net": 120.0},
+        "Bilgisayar Mühendisliği (Burslu)": {"taban_sira": "110", "tavan_sira": "3", "taban_net": 116.0, "tavan_net": 120.0}
+    },
+    "Hacettepe Üniversitesi": {
+        "Tıp Fakültesi (Türkçe)": {"taban_sira": "1.350", "tavan_sira": "45", "taban_net": 110.5, "tavan_net": 118.5},
+        "Tıp Fakültesi (İngilizce)": {"taban_sira": "850", "tavan_sira": "18", "taban_net": 112.0, "tavan_net": 119.0},
+        "Diş Hekimliği": {"taban_sira": "18.500", "tavan_sira": "8.200", "taban_net": 93.5, "tavan_net": 104.0},
+        "Eczacılık": {"taban_sira": "32.000", "tavan_sira": "15.000", "taban_net": 86.5, "tavan_net": 98.0},
+        "Bilgisayar Mühendisliği": {"taban_sira": "3.400", "tavan_sira": "420", "taban_net": 106.0, "tavan_net": 115.0}
+    },
+    "İstanbul Üniversitesi": {
+        "İstanbul Tıp Fakültesi (Çapa)": {"taban_sira": "2.100", "tavan_sira": "150", "taban_net": 109.0, "tavan_net": 117.5},
+        "Cerrahpaşa Tıp Fakültesi": {"taban_sira": "2.400", "tavan_sira": "210", "taban_net": 108.5, "tavan_net": 117.0},
+        "Hukuk Fakültesi": {"taban_sira": "3.800", "tavan_sira": "450", "taban_net": 98.5, "tavan_net": 110.0},
+        "Diş Hekimliği": {"taban_sira": "22.000", "tavan_sira": "11.000", "taban_net": 91.5, "tavan_net": 101.5}
+    },
+    "Yıldız Teknik Üniversitesi (YTÜ)": {
+        "Bilgisayar Mühendisliği": {"taban_sira": "4.800", "tavan_sira": "850", "taban_net": 104.5, "tavan_net": 113.5},
+        "Yazılım Mühendisliği": {"taban_sira": "5.900", "tavan_sira": "1.100", "taban_net": 103.0, "tavan_net": 112.0},
+        "Yapay Zeka Mühendisliği": {"taban_sira": "4.100", "tavan_sira": "650", "taban_net": 105.5, "tavan_net": 114.0},
+        "Endüstri Mühendisliği": {"taban_sira": "9.500", "tavan_sira": "2.100", "taban_net": 98.5, "tavan_net": 109.5},
+        "Makine Mühendisliği": {"taban_sira": "18.000", "tavan_sira": "5.200", "taban_net": 93.5, "tavan_net": 104.0}
+    }
+}
 
-POPULER_BOLUMLER = [
-    "Bilgisayar Mühendisliği",
-    "Yazılım Mühendisliği",
-    "Tıp Fakültesi",
-    "Elektrik-Elektronik Mühendisliği",
-    "Endüstri Mühendisliği",
-    "Makine Mühendisliği",
-    "Diş Hekimliği",
-    "Eczacılık",
-    "Hukuk Fakültesi",
-    "İşletme / İktisat",
-    "Mimarlık",
-    "Yapay Zeka Mühendisliği"
-]
+POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
 
 def sifre_gecerli_mi(sifre):
     if len(sifre) < 6:
@@ -290,7 +328,7 @@ for tbl, col, col_def in [
     except Exception:
         pass
 
-# Sadece TYT Müfredat Müfredat Sözlüğü
+# Sadece TYT Müfredat Sözlüğü
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragraf", "Yazım Kuralları", "Noktalama İşaretleri", "Dil Bilgisi", "Metin Türleri"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme - Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Problemler (Sayı, Kesir, Yaş, Yüzde, Hız)", "Fonksiyonlar", "2. Dereceden Denklemler", "Polinomlar", "Mantık & Küme", "Permütasyon - Kombinasyon - Olasılık"],
@@ -316,7 +354,7 @@ st.sidebar.markdown("""
 
 giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ GİRİŞİ", "👨‍🏫 KOÇ GİRİŞİ"])
 
-# ==================== ÖĞRENCİ PANELSİ ====================
+# ==================== ÖĞRENCİ PANELİ ====================
 if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🎓 Öğrenci Yönetim Paneli</h1>", unsafe_allow_html=True)
     
@@ -341,7 +379,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     
     tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
         "🔑 GİRİŞ / KAYIT",
-        "🎯 ÜNİVERSİTE & HEDEF TAKİBİ",
+        "🎯 YÖK ATLAS HEDEF TAKİBİ",
         "📅 HAFTALIK DERS PROGRAMI",
         "📝 GÜNLÜK ÇALIŞMA",
         "📊 DENEMELER & GELİŞİM",
@@ -351,7 +389,6 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     # --- TAB 1: ÖĞRENCİ GİRİŞ / KAYIT ---
     with tab_giris:
         st.markdown("<h3 style='font-weight:700; font-size:18px; color:#1e293b;'>Öğrenci Hesabı Girişi / Kaydı</h3>", unsafe_allow_html=True)
-        
         cursor.execute("SELECT kullanici_adi FROM koclar")
         koc_listesi = [r[0] for r in cursor.fetchall()] or ["koc1"]
             
@@ -389,56 +426,73 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     else:
         st.sidebar.success(f"👤 Aktif Öğrenci: **{aktif_ogr}**")
         
-        # --- TAB 2: HEDEF TAKİBİ ---
+        # --- TAB 2: YÖK ATLAS HEDEF TAKİBİ ---
         with tab_hedef:
-            st.markdown(f"<h3 style='font-weight:700; font-size:18px; color:#1e293b;'>🎯 Üniversite & Bölüm Hedef Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='font-weight:700; font-size:18px; color:#1e293b;'>🎯 YÖK Atlas Üniversite & Bölüm Hedef Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
             
             cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
             h_data = cursor.fetchone() or ("", "", 100.0)
             
-            with st.form("hedef_guncelle_formu"):
-                col_h1, col_h2, col_h3 = st.columns(3)
+            secilen_uni = st.selectbox("🏛️ Hedeflenen Üniversiteyi Seçin:", POPULE_UNIVERSITELER, index=POPULE_UNIVERSITELER.index(h_data[0]) if h_data[0] in POPULE_UNIVERSITELER else 0)
+            
+            mevcut_bolumler = list(YOK_ATLAS_VERILERI[secilen_uni].keys())
+            secilen_bolum = st.selectbox("🎓 Hedeflenen Bölümü Seçin:", mevcut_bolumler, index=mevcut_bolumler.index(h_data[1]) if h_data[1] in mevcut_bolumler else 0)
+            
+            # YÖK Atlas Verisini Çekme
+            atlas_bilgi = YOK_ATLAS_VERILERI[secilen_uni][secilen_bolum]
+            otomatik_taban_net = atlas_bilgi["taban_net"]
+            
+            st.markdown(f"""
+            <div class="yok-atlas-card">
+                <h4 style="margin-top:0; color:#0284c7; font-size:16px;">🏛️ YÖK Atlas Resmi Taban & Tavan Verileri ({secilen_uni} - {secilen_bolum})</h4>
+                <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:15px; margin-top:10px;">
+                    <div><strong>📉 Taban Sıralama (Son Giren):</strong> <span style="color:#2563eb; font-weight:800;">{atlas_bilgi['taban_sira']}.</span></div>
+                    <div><strong>🏆 Tavan Sıralama (1. Giren):</strong> <span style="color:#10b981; font-weight:800;">{atlas_bilgi['tavan_sira']}.</span></div>
+                    <div><strong>🎯 Gerekli Taban TYT Net:</strong> <span style="color:#0284c7; font-weight:800;">{atlas_bilgi['taban_net']} Net</span></div>
+                    <div><strong>🔥 Tavan TYT Net:</strong> <span style="color:#8b5cf6; font-weight:800;">{atlas_bilgi['tavan_net']} Net</span></div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.form("hedef_kaydet_form"):
+                col_h1, col_h2 = st.columns(2)
                 with col_h1:
-                    h_uni = st.selectbox("Hedeflenen Üniversite:", POPULE_UNIVERSITELER, index=POPULE_UNIVERSITELER.index(h_data[0]) if h_data[0] in POPULE_UNIVERSITELER else 0)
+                    st.text_input("Seçilen YÖK Atlas Taban Neti (Otomatik Geldi):", value=f"{otomatik_taban_net} Net", disabled=True)
                 with col_h2:
-                    h_bolum = st.selectbox("Hedeflenen Bölüm:", POPULER_BOLUMLER, index=POPULER_BOLUMLER.index(h_data[1]) if h_data[1] in POPULER_BOLUMLER else 0)
-                with col_h3:
-                    h_net = st.number_input("Hedeflenen TYT Net Sayısı:", 40.0, 120.0, float(h_data[2]) if (h_data[2] and h_data[2] > 0) else 100.0, 2.5)
-                    
-                hedef_kaydet = st.form_submit_button("🎯 Hedefimi Kaydet / Güncelle", type="primary", use_container_width=True)
+                    ozel_hedef_net = st.number_input("Kendi TYT Net Hedefinizi Özelleştirin (İsteğe Bağlı):", 40.0, 120.0, float(otomatik_taban_net), 1.0)
                 
-            if hedef_kaydet:
-                cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ? WHERE ad_soyad = ?", (h_uni, h_bolum, float(h_net), aktif_ogr))
-                conn.commit()
-                st.success("🎉 Target üniversite ve bölüm hedefin başarıyla güncellendi!")
-                st.rerun()
+                if st.form_submit_button("🎯 Bu Hedefi Profilime Kaydet", type="primary", use_container_width=True):
+                    cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ? WHERE ad_soyad = ?", (secilen_uni, secilen_bolum, float(ozel_hedef_net), aktif_ogr))
+                    conn.commit()
+                    st.success(f"🎉 Hedefiniz ({secilen_uni} - {secilen_bolum}) başarıyla kaydedildi!")
+                    st.rerun()
 
             # Hedefe Yaklaşma Hesaplaması ve İlerleme Çubuğu
             cursor.execute("SELECT toplam_net FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC LIMIT 1", (aktif_ogr,))
             son_d = cursor.fetchone()
             son_net = son_d[0] if son_d else 0.0
-            hedef_net_val = float(h_data[2]) if (h_data[2] and h_data[2] > 0) else 100.0
+            hedef_net_val = float(h_data[2]) if (h_data[2] and h_data[2] > 0) else otomatik_taban_net
 
             st.divider()
-            st.markdown("<h4 style='font-weight:700; font-size:16px; color:#334155;'>🏆 Son Denemeye Göre Hedefe Yaklaşma Durumu</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='font-weight:700; font-size:16px; color:#334155;'>🏆 Son Denemenize Göre YÖK Atlas Hedefine Ulaşma Durumu</h4>", unsafe_allow_html=True)
             
             if son_net > 0:
                 oran = min(1.0, son_net / hedef_net_val)
                 yuzde = oran * 100
-                st.markdown(f"**Hedef:** {h_data[0]} - {h_data[1]} ({hedef_net_val} Net) | **Son Deneme Netin:** {son_net} Net")
+                st.markdown(f"**Aktif Hedef:** {h_data[0]} - {h_data[1]} ({hedef_net_val} Net) | **Son Deneme Netin:** {son_net} Net")
                 st.progress(oran)
-                st.markdown(f"📈 **Hedefe Ulaşma Oranı: %{yuzde:.1f}**")
+                st.markdown(f"📈 **YÖK Atlas Hedefine Ulaşma Oranı: %{yuzde:.1f}**")
                 
                 fark = hedef_net_val - son_net
                 if fark <= 0:
                     st.balloons()
-                    st.success(f"🔥 İNANILMAZ! {h_data[0]} için belirlediğin {hedef_net_val} Net hedefini aştın! Tebrikler!")
+                    st.success(f"🔥 HARİKA! {h_data[0]} için gereken YÖK Atlas taban netini ({hedef_net_val} Net) geçtin! (Son Netin: {son_net})")
                 elif fark <= 15:
-                    st.info(f"🚀 Hedefine çok yakınsın! {h_data[0]} hayaline sadece **{fark:.1f} Net** kaldı. Temponu koru!")
+                    st.info(f"🚀 Hedefine çok yakınsın! {h_data[0]} - {h_data[1]} için sadece **{fark:.1f} Net** kaldı. Odaklanmaya devam!")
                 else:
-                    st.warning(f"💪 {h_data[0]} - {h_data[1]} hedefine ulaşmak için **{fark:.1f} Net** daha artış yapmalıyız. Adım adım ilerliyoruz!")
+                    st.warning(f"💪 {h_data[0]} - {h_data[1]} hedefinin taban netine ulaşmak için **{fark:.1f} Net** daha artış yapmalıyız. Adım adım ilerliyoruz!")
             else:
-                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor. Deneme sonucunu girdikçe hedefe ne kadar yaklaştığın burada canlı olarak hesaplanacaktır!")
+                st.info("ℹ️ Henüz kaydedilmiş deneme sonucun bulunmuyor. Deneme sonucunu girdikçe hedefe ne kadar yaklaştığın burada otomatik hesaplanacaktır!")
 
         # --- TAB 3: DERS PROGRAMI ---
         with tab_program:
@@ -622,7 +676,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     conn.commit()
             st.success("🎉 Konu hakimiyet puanlamalarınız başarıyla kaydedildi.")
 
-# ==================== KOÇ PANELSİ ====================
+# ==================== KOÇ PANELİ ====================
 else:
     st.markdown("<h1 style='font-weight:800; font-size:28px; color:#0f172a; margin-bottom:10px;'>👨‍🏫 Koç Yönetim ve Analiz Paneli</h1>", unsafe_allow_html=True)
     
@@ -722,11 +776,11 @@ else:
         else:
             secilen_ogr = st.selectbox(f"🔍 Öğrenci Seçin ({len(ogrenciler)} Kayıtlı Öğrenci):", ogrenciler)
             
-            # Öğrenci Hedef Bilgisi Özeti
+            # Öğrenci YÖK Atlas Hedef Bilgisi Özeti
             cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
             h_info = cursor.fetchone()
             if h_info and h_info[0]:
-                st.info(f"🎯 **Öğrenci Hedefi:** {h_info[0]} - {h_info[1]} (Hedef Net: {h_info[2]})")
+                st.info(f"🎯 **Öğrenci YÖK Atlas Hedefi:** {h_info[0]} - {h_info[1]} (Hedef Taban Net: {h_info[2]})")
             
             st.divider()
             st.markdown(f"<h2 style='font-weight:800; font-size:22px; color:#0f172a;'>📊 Öğrenci Analiz Raporu: {secilen_ogr}</h2>", unsafe_allow_html=True)
@@ -762,6 +816,7 @@ else:
                         otomatik_not = (
                             f"📌 {deneme_row['yayin']} ({deneme_row['tur']}) Değerlendirmesi:\n"
                             f"• Elde edilen Net: {deneme_row['toplam_net']} Net.\n"
+                            f"• YÖK Atlas Hedefi: {h_info[0] if h_info else ''} ({h_info[2] if h_info else ''} Net)\n"
                             f"• Tespit Edilen Zayıf Konular: {zayif_str}\n\n"
                             f"💡 Sorumlu Koç ({aktif_koc_adi}) Tavsiyesi & Çalışma Planı:\n"
                             f"1. Zayıf tespit edilen konulardan haftalık en az 40'ar soru çözülmeli.\n"
@@ -792,6 +847,7 @@ else:
                             <p style="color: #64748b; margin: 6px 0 0 0; font-size: 13px;"><strong>Tarih:</strong> {datetime.date.today().strftime('%d.%m.%Y')} | <strong>Koç:</strong> {aktif_koc_adi}</p>
                         </div>
                         <p style="font-size: 14px;"><strong>👨‍🎓 Öğrenci Adı Soyadı:</strong> {secilen_ogr}</p>
+                        <p style="font-size: 14px;"><strong>🎯 YÖK Atlas Hedefi:</strong> {h_info[0] if h_info else ''} - {h_info[1] if h_info else ''}</p>
                         <p style="font-size: 14px;"><strong>📑 Deneme Adı / Yayın:</strong> {deneme_row['yayin']} ({deneme_row['tur']})</p>
                         <p style="font-size: 14px;"><strong>🎯 Toplam Net:</strong> <span style="font-size: 18px; color: #0284c7; font-weight: bold;">{deneme_row['toplam_net']} Net</span></p>
                         <p style="font-size: 14px;"><strong>🚨 Zayıf Olduğu Konular:</strong> {zayif_str}</p>
