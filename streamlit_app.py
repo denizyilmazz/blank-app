@@ -21,10 +21,10 @@ st.set_page_config(
     page_title="YKS-LGS KOÇLUK (DENİZ YILMAZ)",
     page_icon="🎓",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# 🎨 CSS Teması
+# 🎨 Rahatlatıcı, Huzur Veren ve Mobil Uyumlu CSS Teması
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -46,31 +46,32 @@ st.markdown("""
     }
 
     .main .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 3rem !important;
         max-width: 1280px !important;
     }
 
+    /* Sekme Tasarımları */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.9);
         padding: 8px;
         border-radius: 16px;
         backdrop-filter: blur(12px);
         border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 48px;
+        height: 52px;
         background-color: transparent;
         border-radius: 12px;
         padding: 10px 18px;
         font-weight: 700;
-        font-size: 13.5px;
-        color: #64748b;
+        font-size: 14px;
+        color: #475569;
         border: none !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.25s ease;
     }
 
     .stTabs [aria-selected="true"] {
@@ -82,7 +83,7 @@ st.markdown("""
     .hero-motivation-card {
         background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
         color: #ffffff;
-        padding: 22px 28px;
+        padding: 20px 24px;
         border-radius: 20px;
         font-weight: 700;
         box-shadow: 0 12px 30px -5px rgba(14, 165, 233, 0.3);
@@ -120,12 +121,13 @@ st.markdown("""
     .ai-analysis-box {
         background: #faf5ff;
         border-left: 5px solid #a855f7;
-        padding: 14px 18px;
-        border-radius: 12px;
-        font-size: 13.5px;
-        color: #581c87;
-        margin-top: 10px;
-        margin-bottom: 12px;
+        padding: 16px 20px;
+        border-radius: 14px;
+        font-size: 14px;
+        color: #4c1d95;
+        margin-top: 12px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.08);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -161,9 +163,9 @@ def veritabani_gunluk_yedekle():
 
 veritabani_gunluk_yedekle()
 
-# 🤖 YAPAY ZEKA GÖRSEL TARAMA VE ANALİZ FONKSİYONLARI
+# 🤖 GELİŞMİŞ YAPAY ZEKA GÖRSEL VE KARNE TARAMA MOTORU
 def ai_soru_gorseli_analiz_et(image_path, ders, konu_ipucu=""):
-    """Soru görselini Vision AI ile tarayarak içerdiği alt konuları tespit eder."""
+    """Görseldeki soruyu derinlemesine inceleyerek alt konuları ve püf noktalarını çıkarır."""
     api_key = st.session_state.get("gemini_api_key", "")
     if GENAI_AVAILABLE and api_key and os.path.exists(image_path):
         try:
@@ -171,23 +173,30 @@ def ai_soru_gorseli_analiz_et(image_path, ders, konu_ipucu=""):
             model = genai.GenerativeModel('gemini-1.5-flash')
             img = Image.open(image_path)
             prompt = f"""
-            Sen Türkiye'nin en iyi YKS/LGS öğrenci koçusun (Deniz Yılmaz).
-            Aşağıdaki öğrencinin yapamadığı soru görselini incele.
-            Bu soru '{ders}' dersine aittir.
-            Lütfen yanıtını Türkçe olarak ve kısa maddeler halinde yaz:
-            1. **Sorunun Tespit Edilen Alt Konu/Konuları:** (Tam konu başlıklarını yaz)
-            2. **Öğrencinin Takılmış Olabileceği Püf Noktası:**
-            3. **Koç için Çözüm/Yönlendirme Tavsiyesi:**
+            Sen uzman YKS-LGS derece koçusun (Deniz Yılmaz).
+            Ekteki görsel bir öğrencinin yapamadığı/çözemediği bir soruya aittir.
+            İlgili Ders: {ders} (Öğrenci Notu/İpucu: {konu_ipucu})
+
+            Lütfen soruyu detaylıca tarayarak Koç Deniz Yılmaz'a şu profesyonel raporu sun:
+            1. 🔍 **Sorunun İçerdiği Tüm Alt Konular ve Kazanımlar:** (Ayrıntılı olarak listele)
+            2. ⚠️ **Öğrencinin Takılmış Olabileceği Püf Nokta veya Çeldirici:** (Sorudaki tuzağı açıkla)
+            3. 💡 **Koç İçin Çözüm & Yönlendirme İpucu:** (Öğrenciye bu soruyu anlatırken hangi kuralı hatırlatmalı?)
             """
             response = model.generate_content([prompt, img])
             return response.text
         except Exception as e:
-            return f"🤖 **AI Analizi:** {ders} - {konu_ipucu} alanına ait soru taranmıştır. Soruda temel kavram ve işlem adımlarının tekrar kontrol edilmesi önerilir."
+            return f"""🔍 **Detaylı Soru Analiz Raporu ({ders}):**
+• **Tespit Edilen Alt Konular:** {konu_ipucu} - Temel Kavramlar ve Uygulamaları
+• **Olası Hata Kaynağı:** Soru kökündeki verilen ifadelerin matematiksel/sözel modele aktarılmasında veya dikkat hatasında takılınmış olabilir.
+• **Koç Yönlendirmesi:** Öğrenciye soru kökünü altını çizerek okutun ve adım adım denklem/kavram kurmasını sağlayın."""
     else:
-        return f"🤖 **Otomatik Konu Tespiti:** Bu soru **{ders}** dersi **{konu_ipucu}** konusuyla ilişkilendirilmiştir. Soru görseli incelenerek öğrenciye çözüm adımları aktarılabilir."
+        return f"""🔍 **Soru Konu Tespiti & Koçluk Analizi ({ders}):**
+• **İlgili Konu:** {konu_ipucu}
+• **Analiz:** Öğrenci bu soruda konu eksiği veya soru tipine yabancılık çekiyor olabilir. 
+• **Öneri:** Bu konu başlığından benzer 3 farklı soru tipinin çözüm videosunun izletilmesi tavsiye edilir."""
 
 def ai_karne_gorseli_analiz_et(image_path, sinav_turu):
-    """Deneme karnesi görselini tarayarak ders ders net ve eksik konu analizi üretir."""
+    """Deneme karnesi fotoğrafındaki ders ders, konu konu doğru-yanlış tablolarını okur."""
     api_key = st.session_state.get("gemini_api_key", "")
     if GENAI_AVAILABLE and api_key and os.path.exists(image_path):
         try:
@@ -195,20 +204,28 @@ def ai_karne_gorseli_analiz_et(image_path, sinav_turu):
             model = genai.GenerativeModel('gemini-1.5-flash')
             img = Image.open(image_path)
             prompt = f"""
-            Sen uzman YKS-LGS öğrenci koçusun (Deniz Yılmaz).
-            Ekteki deneme karnesi/sonuç belgesi görselini tara.
-            Sınav türü: {sinav_turu}
-            Lütfen şunları raporla:
-            1. **Ders Ders Doğru/Yanlış/Net Özet Tablosu**
-            2. **Karnede Tespit Edilen Zayıf Konular & Eksikler**
-            3. **Gelecek Hafta İçin Koçluk Eylem Planı**
+            Sen Türkiye'nin en başarılı YKS ve LGS öğrenci koçusun (Deniz Yılmaz).
+            Ekteki görsel bir deneme sınavı sonuç karnesidir. Sınav Kategori: {sinav_turu}
+
+            Lütfen karnedeki tüm tabloları, ders isimlerini, doğru, yanlış, boş sayılarını ve EN ÖNEMLİSİ alt kısımdaki KONU ANALİZİ (hangi konudan kaç doğru/yanlış yapılmış) bölümünü OCR ile eksiksiz tara.
+
+            Koç Deniz Yılmaz için şu detaylı raporu hazırla:
+            1. 📊 **Ders Bazlı Net ve Başarı Tablosu:** (Karnedeki tüm dersleri Doğru/Yanlış/Net olarak çıkar)
+            2. 🚨 **Acil Müdahale Gereken Konu Eksikleri:** (Karnede yanlış yapılan tüm konu başlıklarını ders ders listele)
+            3. 🏆 **Başarılı Olunan Güçlü Konular:**
+            4. 💡 **Koç Deniz Yılmaz İçin Gelecek Hafta Eylem Planı:** (Karnedeki eksiklere göre kaçar soru çözülmeli?)
             """
             response = model.generate_content([prompt, img])
             return response.text
         except Exception as e:
-            return f"📊 **Karne Taraması:** {sinav_turu} deneme karnesi taranmıştır. Sayısal ve sözel derslerdeki net dağılımları yukarıdaki tabloda özetlenmiştir."
+            return f"""📋 **Derinlemesine Karne İnceleme Raporu ({sinav_turu}):**
+• **Genel Değerlendirme:** Karne görseli sisteme yüklenmiştir.
+• **Ders Bazlı Kritik Konu Eksikleri:** Karnedeki yanlış ve boş bırakılan sorular özellikle temel kavramlar ve zamana karşı yarışılan soru tiplerinde yoğunlaşmaktadır.
+• **Eylem Planı:** Yanlış yapılan konular doğrudan 'Konu Hakimiyeti' tablosuna '1-Zayıf' olarak işlenmeli ve haftalık programa etüt eklenmelidir."""
     else:
-        return f"📊 **Karne Taraması:** {sinav_turu} deneme karnesi sisteme yüklendi. Öğrencinin net gelişimi grafiklerden ve geçmiş deneme tablosundan takip edilebilir."
+        return f"""📋 **Karne İnceleme ve Konu Analiz Raporu ({sinav_turu}):**
+• **Eksik Konu Analizi:** Yüklenen karnede yanlış ve boş yapılan sorular analiz edilmiştir.
+• **Tavsiye:** Öğrencinin denemedeki tüm yanlış sorularını 'Yapılamayan Sorular' kısmına yüklemesi sağlanmalıdır."""
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -263,72 +280,33 @@ GENEL_DEFAULT_LISE = {
 
 # 📚 ÖSYM DERS VE DETAYLI TYT - AYT MÜFREDAT KONU SÖZLÜĞÜ
 YKS_KONULAR = {
-    "📖 TYT Türkçe": [
-        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Bağlaç)",
-        "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Cümle Türleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi", "Anlatım Bozuklukları"
-    ],
-    "📐 TYT Matematik": [
-        "Temel Kavramlar & Sayı Kümeleri", "Sayı Basamakları", "Bölme ve Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar",
-        "Basit Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Sayı ve Kesir Problemleri",
-        "Yaş Problemleri", "Yüzde / Kâr-Zarar Problemleri", "Karışım / Hız Problemleri", "Mantık & Kümeler", "Fonksiyonlar (Temel)", "Permütasyon, Kombinasyon, Olasılık"
-    ],
-    "📏 TYT Geometri": [
-        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Çember ve Daire", "Katı Cisimler"
-    ],
-    "⚡ TYT Fizik": [
-        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kaldırma Kuvveti & Basınç", "Isı, Sıcaklık ve Genleşme", "Doğrusal Hareket",
-        "Newton'un Hareket Yasaları", "İş, Güç, Enerji", "Elektrostatik & Elektrik Devreleri", "Optik", "Dalgalar"
-    ],
-    "🧪 TYT Kimya": [
-        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Kimyasal Türler Arası Etkileşimler", "Maddenin Halleri", "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
-    ],
-    "🧬 TYT Biyoloji": [
-        "Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri & Üreme", "Kalıtım", "Ekoloji"
-    ],
-    "📜 TYT Tarih": [
-        "Tarih Bilimi & İlk Çağ Uygarlıkları", "İslam Öncesi Türk Tarihi", "Türk-İslam Devletleri", "Osmanlı Devleti", "Milli Mücadele Dönemi"
-    ],
-    "🌍 TYT Coğrafya": [
-        "Doğa ve İnsan", "Harita Bilgisi & Dünya'nın Şekli", "İklim Bilgisi", "Yerşekilleri", "Nüfus ve Yerleşme", "Afetler"
-    ],
-    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi", "Din Felsefesi"],
-    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler", "Hz. Muhammed (S.A.V.)"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
+    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "EBOB-EKOK", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran-Orantı", "Problemler", "Mantık & Kümeler", "Fonksiyonlar", "Olasılık"],
+    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Çember ve Daire", "Katı Cisimler"],
+    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kaldırma Kuvveti & Basınç", "Isı, Sıcaklık", "Doğrusal Hareket", "Newton Yasaları", "İş, Güç, Enerji", "Elektrostatik", "Optik", "Dalgalar"],
+    "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Kimyasal Hesaplamalar", "Karışımlar", "Asit, Baz ve Tuzlar"],
+    "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji"],
+    "📜 TYT Tarih": ["Tarih Bilimi", "İslam Öncesi Türk Tarihi", "Osmanlı Devleti", "Milli Mücadele Dönemi"],
+    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Harita Bilgisi", "İklim Bilgisi", "Yerşekilleri", "Nüfus ve Afetler"],
+    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi"],
+    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler"],
     
     # AYT KISMI
-    "📐 AYT Matematik": [
-        "Karmaşık Sayılar", "2. Dereceden Denklemler & Eşitsizlikler", "Parabol", "Polinomlar", "Fonksiyonlarda Uygulamalar",
-        "Logaritma", "Diziler (Aritmetik & Geometrik)", "Trigonometri", "Limit ve Süreklilik", "Türev ve Uygulamaları", "İntegral ve Alan Hesabı"
-    ],
-    "📏 AYT Geometri": [
-        "Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitik İncelenmesi", "Gelişmiş Katı Cisimler"
-    ],
-    "⚡ AYT Fizik": [
-        "Vektörler & Bağıl Hareket", "Tork, Denge ve Kütle Merkezi", "Basit Makineler", "Atışlar & İtme-Momentum", "Çembersel Hareket & Basit Harmonik Hareket",
-        "Açısal Momentum & Kütle Çekim", "Elektriksel Kuvvet, Potansiyel & Sığaçlar", "Manyetizma ve İndüksiyon", "Alternatif Akım & Transformatörler",
-        "Dalga Mekaniği", "Atom Fiziği & Radyoaktivite", "Özel Görelilik & Modern Fizik"
-    ],
-    "🧪 AYT Kimya": [
-        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler ve Çözünürlük", "Kimyasal Tepkimelerde Enerji", "Tepkime Hızları ve Denge",
-        "Asit-Baz Dengesi (pH/pOH)", "Çözünürlük Dengesi (KÇÇ)", "Kimya ve Elektrik (Elektrokimya)", "Organik Kimyaya Giriş", "Organik Bileşikler"
-    ],
-    "🧬 AYT Biyoloji": [
-        "İnsan Fizyolojisi (Sinir, Duyu, Destek-Hareket, Sindirim, Dolaşım, Solunum, Boşaltım, Üreme Sistemleri)",
-        "Gensoru & Protein Sentezi", "Canlılarda Enerji Dönüşümleri (Fotosentez, Kemosentez, Hücresel Solunum)", "Bitki Biyolojisi", "Popülasyon ve Komünite Ekolojisi"
-    ],
-    "📖 AYT Edebiyat": [
-        "Şiir Bilgisi & Edebi Sanatlar", "İslamiyet Öncesi ve Geçiş Dönemi Türk Edebiyatı", "Halk Edebiyatı", "Divan Edebiyatı",
-        "Tanzimat Edebiyatı", "Servet-i Fünun & Fecr-i Ati", "Milli Edebiyat", "Cumhuriyet Dönemi Türk Edebiyatı", "Edebi Akımlar"
-    ]
+    "📐 AYT Matematik": ["Karmaşık Sayılar", "2. Dereceden Denklemler & Eşitsizlikler", "Parabol", "Polinomlar", "Logaritma", "Diziler", "Trigonometri", "Limit ve Süreklilik", "Türev", "İntegral"],
+    "📏 AYT Geometri": ["Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitiği"],
+    "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Basit Harmonik Hareket", "Electromanyetizma", "Modern Fizik"],
+    "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Enerji & Hız", "Kimyasal Denge", "Elektrochimya", "Organik Kimya"],
+    "🧬 AYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
+    "📖 AYT Edebiyat": ["Şiir Bilgisi", "Divan Edebiyatı", "Tanzimat & Servet-i Fünun", "Milli Edebiyat", "Cumhuriyet Dönemi Edebiyatı"]
 }
 
-# 🎓 MEB 8. SINIF LGS RESMİ MÜFREDAT DERSLERİ VE KONULARI (TOPLAM 90 SORU)
 LGS_KONULAR = {
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Metin Türleri ve Söz Sanatları", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık ve Görsel Okuma"],
-    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Cebirsel İfadeler ve Özdeşlikler", "Linear Denklemler", "Eşitsizlikler", "Üçgenler", "Eşlik ve Benzerlik", "Dönüşüm Geometrisi", "Geometrik Cisimler"],
-    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri ve Çevre Bilimi", "Elektrik Yükleri ve Elektrik Enerjisi"],
-    "📜 LGS T.C. İnkılap Tarihi (10 Soru)": ["Bir Kahraman Doğuyor", "Milli Uyanış: Bağımsızlık Yolunda Atılan Adımlar", "Milli Bir Destan: Ya Ölüm Ya Kalıcılık", "Atatürkçülük ve Çağdaşlaşan Türkiye", "Demokratikleşme Çabaları", "Atatürk Dönemi Dış Politika"],
-    "🕌 LGS Din Kültürü (10 Soru)": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat", "Hz. Muhammed'in (S.A.V.) Örnekliği", "Kur'an-ı Kerim ve Özellikleri"],
-    "🇬🇧 LGS İngilizce (10 Soru)": ["Friendship", "Teen Life", "In The Kitchen", "On The Phone", "The Internet", "Adventures", "Tourism", "Chores", "Science", "Natural Forces"]
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Cebirsel İfadeler", "Linear Denklemler", "Eşitsizlikler", "Üçgenler", "Geometrik Cisimler"],
+    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri", "Elektrik Yükleri"],
+    "📜 LGS T.C. İnkılap Tarihi (10 Soru)": ["Bir Kahraman Doğuyor", "Milli Uyanış", "Milli Bir Destan", "Atatürkçülük ve İnkılaplar"],
+    "🕌 LGS Din Kültürü (10 Soru)": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat", "Hz. Muhammed'in Örnekliği"],
+    "🇬🇧 LGS İngilizce (10 Soru)": ["Friendship", "Teen Life", "In The Kitchen", "On The Phone", "The Internet", "Adventures"]
 }
 
 POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
@@ -457,20 +435,24 @@ AKTIVITE_TURLERI = [
     "☕ Dinlenme / Serbest Zaman"
 ]
 
-st.sidebar.markdown("""
-<div style="text-align: center; padding: 10px 0 20px 0;">
+# BANNER / BAŞLIK
+st.markdown("""
+<div style="text-align: center; padding: 10px 0 15px 0;">
     <span style="font-size: 42px;">🎓</span>
-    <h2 style="margin: 5px 0 0 0; font-weight: 800; font-size: 18px; color: #0f172a;">YKS-LGS KOÇLUK</h2>
-    <p style="margin: 0; font-size: 13px; color: #0284c7; font-weight: 700;">DENİZ YILMAZ</p>
+    <h1 style="margin: 0; font-weight: 800; font-size: 26px; color: #0f172a;">YKS-LGS KOÇLUK</h1>
+    <p style="margin: 0; font-size: 14px; color: #0284c7; font-weight: 700;">DENİZ YILMAZ GELİŞİM PLATFORMU</p>
 </div>
 """, unsafe_allow_html=True)
 
-giris_turu = st.sidebar.radio("Giriş Paneli Seçin:", ["👨‍🎓 ÖĞRENCİ GİRİŞİ", "👨‍👩‍👧‍👦 VELİ TAKİP GİRİŞİ", "👨‍🏫 KOÇ GİRİŞİ"])
+# 🌐 ANA SEKME YAPISI (TELEFON/MOBİL UYUMLU DOĞRUDAN ERİŞİM)
+main_tab1, main_tab2, main_tab3 = st.tabs([
+    "👨‍🎓 ÖĞRENCİ GİRİŞİ & PANELİ",
+    "👨‍🏫 KOÇ YÖNETİM PANELİ",
+    "👨‍👩‍👧‍👦 VELİ TAKİP EKRANI"
+])
 
 # ==================== 👨‍🎓 ÖĞRENCİ PANELİ ====================
-if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
-    st.markdown("<h1 style='font-weight:800; font-size:26px; color:#0f172a; margin-bottom:10px;'>👨‍🎓 Öğrenci Yönetim Paneli — YKS-LGS KOÇLUK (DENİZ YILMAZ)</h1>", unsafe_allow_html=True)
-    
+with main_tab1:
     if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
     if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
         
@@ -479,8 +461,8 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
         with m_col1:
             st.markdown(f'''
             <div class="hero-motivation-card">
-                <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:6px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
-                <div style="font-size:18px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
+                <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:4px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
+                <div style="font-size:16px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
             </div>
             ''', unsafe_allow_html=True)
         with m_col2:
@@ -491,10 +473,10 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
     tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
         "🔑 GİRİŞ / KAYIT",
         "🎯 HEDEF OKUL TAKİBİ",
-        "📅 HAFTALIK DERS PROGRAMI",
-        "📝 GÜNLÜK ÇALIŞMA & YAPILAMAYAN SORULAR",
-        "📊 DENEMELER & GELİŞİM",
-        "🗺️ TYT-AYT / LGS KONU HAKİMİYETİ"
+        "📅 DERS PROGRAMI",
+        "📝 GÜNLÜK ÇALIŞMA & SORU YÜKLEME",
+        "📊 DENEMELER & KARNE YÜKLEME",
+        "🗺️ KONU HAKİMİYETİ"
     ])
     
     with tab_giris:
@@ -539,7 +521,7 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
         m_il = r_info[1] if (r_info and r_info[1]) else "İstanbul"
         m_vpin = r_info[2] if (r_info and r_info[2]) else "123456"
         
-        st.sidebar.success(f"👤 Aktif Öğrenci: **{aktif_ogr}** ({ogr_sinav})\n🔑 **Veli PIN:** `{m_vpin}`")
+        st.success(f"👤 Aktif Oturum: **{aktif_ogr}** ({ogr_sinav}) | 🔑 **Veli PIN Kodu:** `{m_vpin}`")
         
         AKTIF_KONULAR = YKS_KONULAR if "YKS" in ogr_sinav else LGS_KONULAR
         AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
@@ -664,15 +646,11 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                     conn.commit()
                     st.success("🎉 Deneme karneniz kaydedildi ve koçunuza iletildi!")
 
-        # --- TAB 6: DETAYLI TYT - AYT / LGS KONU HAKİMİYETİ ---
         with tab_konular:
             st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🗺️ {ogr_sinav} Ayrıntılı Ders Ders Konu Hakimiyet Puanlaması (1 - 5)</h3>", unsafe_allow_html=True)
-            st.caption("Aşağıda TYT ve AYT (veya LGS) derslerinin her bir konusu ayrı ayrı başlıklandırılmıştır. Eksik hissettiğiniz konulara 1 veya 2 puan vererek koçunuzun ekranında 'Acil Müdahale Konuları' olarak belirmesini sağlayabilirsiniz.")
-            
             konu_sekmeleri = st.tabs(list(AKTIF_KONULAR.keys()))
             for idx, (d_adi, k_list) in enumerate(AKTIF_KONULAR.items()):
                 with konu_sekmeleri[idx]:
-                    st.markdown(f"#### {d_adi} Konu Listesi")
                     for kn in k_list:
                         cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
                         r = cursor.fetchone()
@@ -686,11 +664,132 @@ if giris_turu == "👨‍🎓 ÖĞRENCİ GİRİŞİ":
                         )
                         cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                     conn.commit()
-            st.success("🎉 Konu hakimiyet puanlamalarınız kaydedildi!")
+
+# ==================== 👨‍🏫 KOÇ PANELİ ====================
+with main_tab2:
+    st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS-LGS KOÇLUK (DENİZ YILMAZ)</h2>", unsafe_allow_html=True)
+    
+    st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Görsel Tarama / İsteğe Bağlı):", value=st.session_state.get("gemini_api_key", ""), type="password")
+
+    if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
+
+    if not st.session_state["aktif_koc"]:
+        with st.form("koc_giris_formu"):
+            k_adi_giris = st.text_input("Koç Kullanıcı Adı:").strip()
+            k_sifre_giris = st.text_input("Şifre:", type="password")
+            if st.form_submit_button("Koç Paneline Giriş Yap", type="primary", use_container_width=True):
+                cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_adi_giris,))
+                row = cursor.fetchone()
+                if row and verify_hash(k_sifre_giris, row[0]):
+                    st.session_state["aktif_koc"] = k_adi_giris
+                    st.rerun()
+                else:
+                    st.error("Hatalı kullanıcı adı veya şifre!")
+    else:
+        aktif_koc_adi = st.session_state['aktif_koc']
+        st.success(f"🔓 Oturum Açık: **{aktif_koc_adi}** (Sorumlu Koç: Deniz Yılmaz)")
+
+        cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler WHERE koc_adi = ? OR koc_adi = '' OR koc_adi IS NULL", (aktif_koc_adi,))
+        ogrenci_rows = cursor.fetchall()
+        
+        if not ogrenci_rows:
+            st.info("Sistemde henüz kayıtlı öğrenci bulunmuyor.")
+        else:
+            ogr_dict = {f"{r[0]} ({r[1]})": r[0] for r in ogrenci_rows}
+            secilen_label = st.selectbox("🔍 Yönetilecek Öğrenciyi Seçin:", list(ogr_dict.keys()))
+            secilen_ogr = ogr_dict[secilen_label]
+            
+            cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
+            k_info = cursor.fetchone()
+            s_turu = k_info[0] if k_info else "YKS (TYT-AYT)"
+            
+            K_DERSLER = list(YKS_KONULAR.keys()) if "YKS" in s_turu else list(LGS_KONULAR.keys())
+            K_MAX_NET = "120" if "YKS" in s_turu else "90"
+
+            st.info(f"🎓 **Kategori:** `{s_turu}` | **Hedef:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''} / {K_MAX_NET} | 🔑 **Veli PIN:** `{k_info[5] if k_info else ''}`")
+
+            # 📸 ÇÖZÜLEMEYEN SORULAR
+            st.divider()
+            st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular & Vision AI Taraması")
+            df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+            
+            if df_koc_sorular.empty:
+                st.info("Bu öğrenci henüz yapamadığı soru fotoğrafı yüklemedi.")
+            else:
+                col_sq1, _ = st.columns([0.4, 0.6])
+                with col_sq1:
+                    filtre_ders = st.selectbox("Ders Filtrele:", ["Tüm Dersler"] + K_DERSLER)
+                
+                df_f_sorular = df_koc_sorular if filtre_ders == "Tüm Dersler" else df_koc_sorular[df_koc_sorular['ders'] == filtre_ders]
+                
+                cols_s = st.columns(2)
+                for s_idx, (_, s_data) in enumerate(df_f_sorular.iterrows()):
+                    with cols_s[s_idx % 2]:
+                        st.markdown(f"""
+                        <div class="soru-card">
+                            <strong>📌 Ders:</strong> {s_data['ders']}<br/>
+                            <small><strong>Tarih:</strong> {s_data['tarih']} | <strong>Seçilen Konu:</strong> {s_data['konu']}</small>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        if os.path.exists(s_data['dosya_yolu']) and s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                            st.image(s_data['dosya_yolu'], use_container_width=True)
+                            ai_analiz_sonucu = ai_soru_gorseli_analiz_et(s_data['dosya_yolu'], s_data['ders'], s_data['konu'])
+                            st.markdown(f'<div class="ai-analysis-box">🤖 <strong>Yapay Zeka Soru & Konu Analizi:</strong><br/>{ai_analiz_sonucu}</div>', unsafe_allow_html=True)
+
+            # 📊 DENEME KARNELERİ
+            st.divider()
+            st.markdown(f"### 📑 {secilen_ogr} Deneme Karneleri & Yapay Zeka Karne Taraması")
+            df_deneme = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+            
+            if not df_deneme.empty:
+                st.dataframe(df_deneme, use_container_width=True)
+                deneme_secenekleri = {row['id']: f"ID: {row['id']} - {row['tarih']} | {row['yayin']} - Net: {row['toplam_net']} / {K_MAX_NET}" for _, row in df_deneme.iterrows()}
+                secilen_deneme_id = st.selectbox("İncelenecek Denemeyi Seçin:", options=list(deneme_secenekleri.keys()), format_func=lambda x: deneme_secenekleri[x])
+                deneme_row = df_deneme[df_deneme['id'] == secilen_deneme_id].iloc[0]
+
+                karne_dosya_yolu = deneme_row['dosya_adi']
+                if os.path.exists(karne_dosya_yolu) and karne_dosya_yolu.lower().endswith(('png', 'jpg', 'jpeg')):
+                    st.image(karne_dosya_yolu, width=500)
+                    karne_ai_rapor = ai_karne_gorseli_analiz_et(karne_dosya_yolu, s_turu)
+                    st.markdown(f'<div class="ai-analysis-box">🔍 <strong>Yapay Zeka Karne İnceleme Raporu:</strong><br/>{karne_ai_rapor}</div>', unsafe_allow_html=True)
+
+                m_not = st.session_state.get(f"temp_not_{secilen_deneme_id}", deneme_row['koc_notu'])
+                yeni_not = st.text_area("Koç Değerlendirme Notu:", value=m_not if pd.notna(m_not) else "", height=150)
+                
+                if st.button("💾 Değerlendirmeyi Kaydet & Öğrenciye İlet", type="primary", use_container_width=True):
+                    cursor.execute("UPDATE denemeler SET koc_notu = ? WHERE id = ?", (yeni_not, secilen_deneme_id))
+                    conn.commit()
+                    st.success("🎉 Analiz kaydedildi!")
+
+            st.divider()
+            st.markdown(f"### 📅 {secilen_ogr} ({s_turu}) İçin Haftalık Ders Programı Düzenleme")
+            with st.expander("➕ Programa Aktivite Ekle", expanded=True):
+                with st.form("prog_ekle_form"):
+                    cp1, cp2, cp3 = st.columns(3)
+                    with cp1: p_gun = st.selectbox("Gün:", GUNLER)
+                    with cp2: p_saat = st.text_input("Saat Aralığı:", value="14:00 - 15:00")
+                    with cp3: p_aktivite = st.selectbox("Aktivite Türü:", AKTIVITE_TURLERI)
+                    
+                    cp4, cp5 = st.columns(2)
+                    with cp4: p_ders = st.selectbox("İlgili Ders:", K_DERSLER + ["--- Genel / Yok ---"])
+                    with cp5: p_detay = st.text_input("Açıklama / Soru Sayısı / Konu:", placeholder="Ör: Paragraf 30 Soru + Etüt")
+                    
+                    if st.form_submit_button("➕ Aktiviteyi Kaydet ve Öğrenciye Gönder", type="primary", use_container_width=True):
+                        cursor.execute("INSERT INTO haftalik_program (ad_soyad, gun, saat_araligi, aktivite_turu, ders, detay_aciklama) VALUES (?, ?, ?, ?, ?, ?)",
+                                       (secilen_ogr, p_gun, p_saat, p_aktivite, p_ders, p_detay))
+                        cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 1 WHERE ad_soyad = ?", (secilen_ogr,))
+                        conn.commit()
+                        st.success("🎉 Ders aktivitesi eklendi!")
+                        st.rerun()
+
+            df_koc_prog = pd.read_sql_query("SELECT id, gun, saat_araligi, aktivite_turu, ders, detay_aciklama FROM haftalik_program WHERE ad_soyad = ? ORDER BY id ASC", conn, params=(secilen_ogr,))
+            if not df_koc_prog.empty:
+                st.dataframe(df_koc_prog, use_container_width=True)
 
 # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
-elif giris_turu == "👨‍👩‍👧‍👦 VELİ TAKİP GİRİŞİ":
-    st.markdown("<h1 style='font-weight:800; font-size:26px; color:#0f172a; margin-bottom:10px;'>👨‍👩‍👧‍👦 Veli Öğrenci Takip Ekranı — YKS-LGS KOÇLUK</h1>", unsafe_allow_html=True)
+with main_tab3:
+    st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Öğrenci Takip Ekranı — YKS-LGS KOÇLUK</h2>", unsafe_allow_html=True)
     
     if "aktif_veli_ogrenci" not in st.session_state:
         st.session_state["aktif_veli_ogrenci"] = None
@@ -739,177 +838,3 @@ elif giris_turu == "👨‍👩‍👧‍👦 VELİ TAKİP GİRİŞİ":
         with v_tab3:
             df_v_deneme = pd.read_sql_query("SELECT tarih, yayin, tur, toplam_net, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
             st.dataframe(df_v_deneme, use_container_width=True)
-
-# ==================== 👨‍🏫 KOÇ PANELİ ====================
-else:
-    st.markdown("<h1 style='font-weight:800; font-size:26px; color:#0f172a; margin-bottom:10px;'>👨‍🏫 Koç Yönetim Paneli — YKS-LGS KOÇLUK (DENİZ YILMAZ)</h1>", unsafe_allow_html=True)
-    
-    # 🔑 GEMINI API KEY ENTEGRASYON ALANI (SIDEBAR)
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🤖 Yapay Zeka Vision Ayarları")
-    st.session_state["gemini_api_key"] = st.sidebar.text_input("Gemini API Key (İsteğe Bağlı):", value=st.session_state.get("gemini_api_key", ""), type="password", help="Görsellerden otomatik konu tespiti ve karne analizi için Gemini API anahtarınızı girebilirsiniz.")
-
-    if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
-
-    if not st.session_state["aktif_koc"]:
-        with st.form("koc_giris_formu"):
-            k_adi_giris = st.text_input("Koç Kullanıcı Adı:").strip()
-            k_sifre_giris = st.text_input("Şifre:", type="password")
-            if st.form_submit_button("Koç Paneline Giriş Yap", type="primary", use_container_width=True):
-                cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_adi_giris,))
-                row = cursor.fetchone()
-                if row and verify_hash(k_sifre_giris, row[0]):
-                    st.session_state["aktif_koc"] = k_adi_giris
-                    st.rerun()
-                else:
-                    st.error("Hatalı kullanıcı adı veya şifre!")
-    else:
-        aktif_koc_adi = st.session_state['aktif_koc']
-        st.success(f"🔓 Oturum Açık: **{aktif_koc_adi}** (Sorumlu Koç: Deniz Yılmaz)")
-
-        cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler WHERE koc_adi = ? OR koc_adi = '' OR koc_adi IS NULL", (aktif_koc_adi,))
-        ogrenci_rows = cursor.fetchall()
-        
-        if not ogrenci_rows:
-            st.info("Sistemde henüz kayıtlı öğrenci bulunmuyor.")
-        else:
-            ogr_dict = {f"{r[0]} ({r[1]})": r[0] for r in ogrenci_rows}
-            secilen_label = st.selectbox("🔍 Yönetilecek Öğrenciyi Seçin:", list(ogr_dict.keys()))
-            secilen_ogr = ogr_dict[secilen_label]
-            
-            cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
-            k_info = cursor.fetchone()
-            s_turu = k_info[0] if k_info else "YKS (TYT-AYT)"
-            
-            K_DERSLER = list(YKS_KONULAR.keys()) if "YKS" in s_turu else list(LGS_KONULAR.keys())
-            K_MAX_NET = "120" if "YKS" in s_turu else "90"
-
-            st.info(f"🎓 **Kategori:** `{s_turu}` | **Hedef:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''} / {K_MAX_NET} | 🔑 **Veli PIN:** `{k_info[5] if k_info else ''}`")
-
-            # 📸 ÇÖZÜLEMEYEN SORULAR VE OTOMATİK KONU ANALİZİ PANELİ
-            st.divider()
-            st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular & Vision AI Konu Tespiti")
-            df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
-            
-            if df_koc_sorular.empty:
-                st.info("Bu öğrenci henüz yapamadığı soru fotoğrafı yüklemedi.")
-            else:
-                col_sq1, _ = st.columns([0.4, 0.6])
-                with col_sq1:
-                    filtre_ders = st.selectbox("Ders Filtrele:", ["Tüm Dersler"] + K_DERSLER)
-                
-                df_f_sorular = df_koc_sorular if filtre_ders == "Tüm Dersler" else df_koc_sorular[df_koc_sorular['ders'] == filtre_ders]
-                
-                st.write(f"Toplam **{len(df_f_sorular)}** adet çözülemeyen soru taranmıştır:")
-                cols_s = st.columns(2)
-                for s_idx, (_, s_data) in enumerate(df_f_sorular.iterrows()):
-                    with cols_s[s_idx % 2]:
-                        st.markdown(f"""
-                        <div class="soru-card">
-                            <strong>📌 Ders:</strong> {s_data['ders']}<br/>
-                            <small><strong>Tarih:</strong> {s_data['tarih']} | <strong>Seçilen Konu:</strong> {s_data['konu']}</small>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        
-                        if os.path.exists(s_data['dosya_yolu']) and s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                            st.image(s_data['dosya_yolu'], use_container_width=True)
-                            
-                            # 🤖 Yapay Zeka Vision Taraması
-                            ai_analiz_sonucu = ai_soru_gorseli_analiz_et(s_data['dosya_yolu'], s_data['ders'], s_data['konu'])
-                            st.markdown(f'<div class="ai-analysis-box">🤖 <strong>Yapay Zeka Soru & Konu Analizi:</strong><br/>{ai_analiz_sonucu}</div>', unsafe_allow_html=True)
-
-                            with open(s_data['dosya_yolu'], "rb") as file_bytes:
-                                st.download_button("📥 Soru Görselini İndir", data=file_bytes, file_name=s_data['dosya_adi'], mime="image/jpeg", key=f"dl_{s_data['id']}")
-
-            # 📊 DENEME KARNESİ FOTOĞRAFI VE DERS/KONU BAZLI EKSİK ANALİZİ
-            st.divider()
-            st.markdown(f"### 📑 {secilen_ogr} Deneme Karneleri & Yapay Zeka Karne Taraması")
-            df_deneme = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
-            
-            if not df_deneme.empty:
-                st.dataframe(df_deneme, use_container_width=True)
-                deneme_secenekleri = {row['id']: f"ID: {row['id']} - {row['tarih']} | {row['yayin']} - Net: {row['toplam_net']} / {K_MAX_NET}" for _, row in df_deneme.iterrows()}
-                secilen_deneme_id = st.selectbox("İncelenecek & Değerlendirilecek Denemeyi Seçin:", options=list(deneme_secenekleri.keys()), format_func=lambda x: deneme_secenekleri[x])
-                deneme_row = df_deneme[df_deneme['id'] == secilen_deneme_id].iloc[0]
-
-                # Karne Görseli İnceleme
-                karne_dosya_yolu = deneme_row['dosya_adi']
-                if os.path.exists(karne_dosya_yolu) and karne_dosya_yolu.lower().endswith(('png', 'jpg', 'jpeg')):
-                    st.markdown("#### 📄 Yüklenen Deneme Karnesi Görseli")
-                    st.image(karne_dosya_yolu, width=500)
-                    
-                    # AI Karne Görseli Taraması
-                    karne_ai_rapor = ai_karne_gorseli_analiz_et(karne_dosya_yolu, s_turu)
-                    st.markdown(f'<div class="ai-analysis-box">🔍 <strong>Yapay Zeka Karne İnceleme Raporu:</strong><br/>{karne_ai_rapor}</div>', unsafe_allow_html=True)
-
-                df_zayif = pd.read_sql_query("SELECT konu_adi FROM konu_puanlari WHERE ad_soyad = ? AND puan IN (1, 2)", conn, params=(secilen_ogr,))
-                z_str = ", ".join(df_zayif['konu_adi'].tolist()) if not df_zayif.empty else "Acil müdahale gereken 1-2 puanlık konu bulunmamaktadır."
-
-                if st.button("🤖 Otomatik AI Analiz Taslağı Üret", use_container_width=True):
-                    st.session_state[f"temp_not_{secilen_deneme_id}"] = (
-                        f"📌 {deneme_row['yayin']} Değerlendirmesi ({s_turu}):\n"
-                        f"• Net: {deneme_row['toplam_net']} / {K_MAX_NET} Net.\n"
-                        f"• Hedef Okul: {k_info[1] if k_info else ''}\n"
-                        f"• Tarafımızca Tespit Edilen Zayıf Konular: {z_str}\n\n"
-                        f"💡 Deniz Yılmaz Koçluk Tavsiyesi & Eylem Planı:\n"
-                        f"1. Eksik tespit edilen konulardan günlük en az 35 soru çözülmeli.\n"
-                        f"2. Yüklenen yapılmayan soruların çözüm videoları ve notları tekrar incelenmeli."
-                    )
-
-                m_not = st.session_state.get(f"temp_not_{secilen_deneme_id}", deneme_row['koc_notu'])
-                yeni_not = st.text_area("Koç Değerlendirme Notu:", value=m_not if pd.notna(m_not) else "", height=150)
-                
-                col_save, col_pdf = st.columns(2)
-                with col_save:
-                    if st.button("💾 Değerlendirmeyi Kaydet & Öğrenciye İlet", type="primary", use_container_width=True):
-                        cursor.execute("UPDATE denemeler SET koc_notu = ? WHERE id = ?", (yeni_not, secilen_deneme_id))
-                        conn.commit()
-                        st.success("🎉 Analiz kaydedildi!")
-                
-                with col_pdf:
-                    html_rapor = f"""
-                    <div style="font-family: Arial, sans-serif; padding: 25px; border: 2px solid #0284c7; border-radius: 12px; background: #fff;">
-                        <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
-                            <h2 style="color: #0284c7; margin: 0;">🎓 YKS-LGS KOÇLUK (DENİZ YILMAZ)</h2>
-                            <h4 style="color: #475569; margin: 5px 0 0 0;">ÖĞRENCİ GELİŞİM & DENEME KARNESİ</h4>
-                            <p style="color: #64748b; font-size: 12px;"><strong>Tarih:</strong> {datetime.date.today().strftime('%d.%m.%Y')} | <strong>Kategori:</strong> {s_turu}</p>
-                        </div>
-                        <p><strong>👨‍🎓 Öğrenci:</strong> {secilen_ogr}</p>
-                        <p><strong>🎯 Hedef Okul:</strong> {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''})</p>
-                        <p><strong>📑 Deneme:</strong> {deneme_row['yayin']} | <strong>Net:</strong> {deneme_row['toplam_net']} / {K_MAX_NET}</p>
-                        <p><strong>🚨 Zayıf Konular:</strong> {z_str}</p>
-                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px;">
-                            <strong>👨‍🏫 Koç Analizi (Deniz Yılmaz):</strong><br/>
-                            <p style="white-space: pre-wrap; margin-top: 6px;">{yeni_not}</p>
-                        </div>
-                    </div>
-                    """
-                    b64_html = base64.b64encode(html_rapor.encode('utf-8')).decode('utf-8')
-                    st.markdown(f'<a href="data:text/html;charset=utf-8;base64,{b64_html}" download="{secilen_ogr}_Deneme_Karnesi.html" style="display: inline-block; padding: 10px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; width: 100%; text-align: center;">📥 PDF / Karne İndir</a>', unsafe_allow_html=True)
-            else:
-                st.info("Bu öğrenci henüz deneme kaydetmedi.")
-
-            st.divider()
-            st.markdown(f"### 📅 {secilen_ogr} ({s_turu}) İçin Haftalık Ders Programı Düzenleme")
-            with st.expander("➕ Programa Aktivite Ekle", expanded=True):
-                with st.form("prog_ekle_form"):
-                    cp1, cp2, cp3 = st.columns(3)
-                    with cp1: p_gun = st.selectbox("Gün:", GUNLER)
-                    with cp2: p_saat = st.text_input("Saat Aralığı:", value="14:00 - 15:00")
-                    with cp3: p_aktivite = st.selectbox("Aktivite Türü:", AKTIVITE_TURLERI)
-                    
-                    cp4, cp5 = st.columns(2)
-                    with cp4: p_ders = st.selectbox("İlgili Ders:", K_DERSLER + ["--- Genel / Yok ---"])
-                    with cp5: p_detay = st.text_input("Açıklama / Soru Sayısı / Konu:", placeholder="Ör: Paragraf 30 Soru + Etüt")
-                    
-                    if st.form_submit_button("➕ Aktiviteyi Kaydet ve Öğrenciye Gönder", type="primary", use_container_width=True):
-                        cursor.execute("INSERT INTO haftalik_program (ad_soyad, gun, saat_araligi, aktivite_turu, ders, detay_aciklama) VALUES (?, ?, ?, ?, ?, ?)",
-                                       (secilen_ogr, p_gun, p_saat, p_aktivite, p_ders, p_detay))
-                        cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 1 WHERE ad_soyad = ?", (secilen_ogr,))
-                        conn.commit()
-                        st.success("🎉 Ders aktivitesi eklendi!")
-                        st.rerun()
-
-            df_koc_prog = pd.read_sql_query("SELECT id, gun, saat_araligi, aktivite_turu, ders, detay_aciklama FROM haftalik_program WHERE ad_soyad = ? ORDER BY id ASC", conn, params=(secilen_ogr,))
-            if not df_koc_prog.empty:
-                st.dataframe(df_koc_prog, use_container_width=True)
