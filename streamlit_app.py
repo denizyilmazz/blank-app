@@ -23,7 +23,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🎨 Modern Mobil Uyumlu Excel Teması
+# 🎨 Modern Mobil Uyumlu CSS Teması
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -43,25 +43,25 @@ st.markdown("""
     .main .block-container {
         padding-top: 1rem !important;
         padding-bottom: 3rem !important;
-        max-width: 1400px !important;
+        max-width: 1420px !important;
     }
 
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.9);
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.95);
         padding: 8px;
         border-radius: 16px;
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        border: 1px solid rgba(226, 232, 240, 0.9);
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 52px;
+        height: 48px;
         background-color: transparent;
-        border-radius: 12px;
-        padding: 10px 18px;
+        border-radius: 10px;
+        padding: 8px 16px;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 13px;
         color: #475569;
         border: none !important;
     }
@@ -161,6 +161,7 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
+# 📚 TÜM YKS VE LGS MÜFREDAT KÜTÜPHANESİ
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "EBOB-EKOK", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran-Orantı", "Problemler", "Mantık & Kümeler", "Fonksiyonlar", "Olasılık"],
@@ -486,7 +487,7 @@ with main_tab1:
                         cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                     conn.commit()
 
-# ==================== 👨‍🏫 KOÇ PANELİ (SATIR EKLENEBİLİR EXCEL EDİTÖRÜ) ====================
+# ==================== 👨‍🏫 KOÇ PANELİ (SEKMELİ MÜFREDAT VE EXCEL EDİTÖRÜ) ====================
 with main_tab2:
     st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
     st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -531,10 +532,65 @@ with main_tab2:
             cursor.execute("SELECT sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
             s_turu = cursor.fetchone()[0]
 
-            # 📊 BİREBİR EXCEL TABLOSU GÖRÜNÜMLÜ DERS PROGRAMI EDİTÖRÜ
+            if "TYT (Sadece" in s_turu:
+                KOC_MUFREDAT = TYT_KONULAR
+            elif "YKS" in s_turu:
+                KOC_MUFREDAT = {**TYT_KONULAR, **AYT_KONULAR}
+            else:
+                KOC_MUFREDAT = LGS_KONULAR
+
+            # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
             st.divider()
-            st.markdown(f"### 📊 {secilen_ogr} — 7 Günlük İnteraktif Excel Ders Programı")
-            st.caption("✨ **Satır Ekleme Özelliği Aktif:** Tablonun altındaki '+' butonuna basarak dilediğiniz kadar yeni saat satırı ekleyebilir, saatleri dakikasına kadar özgürce yazıp ders ve konuları doğrudan hücrelerin içine yazabilirsiniz.")
+            st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Sekmeli Müfredat Programlayıcı")
+            st.caption("💡 Tıklamak istediğiniz günün sekmesini seçin, açılan menüden müfredattaki tüm ders ve konuları kolayca ekleyin.")
+
+            gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
+
+            for idx, g_adi in enumerate(GUNLER):
+                with gun_sekmeleri[idx]:
+                    st.markdown(f"#### 📌 {g_adi} Günü İçin Ders/Konu Ekle")
+                    col_s1, col_s2 = st.columns(2)
+                    with col_s1:
+                        s_ders = st.selectbox(f"1. Ders Seçin ({g_adi}):", list(KOC_MUFREDAT.keys()) + ["--- Mola / Serbest ---", "--- Deneme Sınavı ---"], key=f"d_sec_{g_adi}")
+                    with col_s2:
+                        if s_ders in KOC_MUFREDAT:
+                            konu_opts = KOC_MUFREDAT[s_ders]
+                        else:
+                            konu_opts = ["Mola / Dinlenme", "TYT Genel Deneme", "Branş Denemesi", "Haftalık Değerlendirme"]
+                        s_konu = st.selectbox(f"2. Müfredat Konusu Seçin ({g_adi}):", konu_opts, key=f"k_sec_{g_adi}")
+
+                    col_t1, col_t2 = st.columns(2)
+                    with col_t1:
+                        s_saat = st.text_input(f"3. Saat Aralığı (Dakikasıyla):", value="14:00 - 15:00", key=f"saat_input_{g_adi}")
+                    with col_t2:
+                        s_not = st.text_input(f"4. Özel Koç Notu / Soru Hedefi:", placeholder="Örn: 30 Soru + Yanlış Taraması", key=f"not_input_{g_adi}")
+
+                    if st.button(f"➕ {g_adi} Gününe Bu Dersi Ekle", key=f"btn_add_{g_adi}", type="primary"):
+                        icerik = f"{s_ders}: {s_konu}"
+                        if s_not: icerik += f" ({s_not})"
+
+                        # Veritabanında o günün ilgili saat satırını güncelle veya ekle
+                        cursor.execute("SELECT * FROM excel_program_matris WHERE ad_soyad = ? AND saat_araligi = ?", (secilen_ogr, s_saat))
+                        ex_row = cursor.fetchone()
+
+                        gun_sutun_map = {
+                            "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                            "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                        }
+                        target_col = gun_sutun_map[g_adi]
+
+                        if ex_row:
+                            cursor.execute(f"UPDATE excel_program_matris SET {target_col} = ? WHERE ad_soyad = ? AND saat_araligi = ?", (icerik, secilen_ogr, s_saat))
+                        else:
+                            cursor.execute(f"INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {target_col}) VALUES (?, ?, ?)", (secilen_ogr, s_saat, icerik))
+                        conn.commit()
+                        st.success(f"🎉 '{icerik}' bilgisi {g_adi} günü ({s_saat}) dilimine eklendi!")
+                        st.rerun()
+
+            # 📊 TÜM HAFTALIK EXCEL MATRİSİ ÖNİZLEME VE CANLI DÜZENLEME
+            st.divider()
+            st.markdown("### 📊 7 Günlük Bütünsel Excel Ders Programı (Düzenlenebilir)")
+            st.caption("✨ Sekmelerden eklenen tüm veriler buraya yansır. İsterseniz hücrelerin içine çift tıklayarak doğrudan düzenleme de yapabilirsiniz.")
 
             df_matris = pd.read_sql_query("""
                 SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
@@ -543,48 +599,29 @@ with main_tab2:
                 FROM excel_program_matris WHERE ad_soyad = ?
             """, conn, params=(secilen_ogr,))
 
-            # YKS Müfredatına ve Çalışma Hiyerarşisine Tam Uyumlu Varsayılan Excel Şablonu
             if df_matris.empty:
                 excel_sablon = [
-                    {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "Paragraf (25s) + Problem (20s)", "Salı": "Paragraf (25s) + Problem (20s)", "Çarşamba": "Paragraf (25s) + Problem (20s)", "Perşembe": "Paragraf (25s) + Problem (20s)", "Cuma": "Paragraf (25s) + Problem (20s)", "Cumartesi": "TYT GENEL DENEME SINAVI (165 Dk)", "Pazar": "TYT BRANŞ DENEME SİMÜLASYONU"},
-                    {"Saat Aralığı": "10:00 - 10:15", "Pazartesi": "Mola / Nefes", "Salı": "Mola / Nefes", "Çarşamba": "Mola / Nefes", "Perşembe": "Mola / Nefes", "Cuma": "Mola / Nefes", "Cumartesi": "Deneme Devam", "Pazar": "Deneme Devam"},
-                    {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "TYT Matematik (Temel Kavramlar)", "Salı": "TYT Geometri (Üçgenler)", "Çarşamba": "TYT Matematik (Üslü-Köklü İfadeler)", "Perşembe": "TYT Geometri (Çokgen-Dörtgen)", "Cuma": "TYT Matematik (Kümeler & Mantık)", "Cumartesi": "TYT Deneme Analizi & Video Çözüm", "Pazar": "TYT Branş Denemesi Analizi"},
+                    {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "📖 TYT Türkçe: Paragrafta Anlam", "Salı": "📖 TYT Türkçe: Paragrafta Anlam", "Çarşamba": "📖 TYT Türkçe: Paragrafta Anlam", "Perşembe": "📖 TYT Türkçe: Paragrafta Anlam", "Cuma": "📖 TYT Türkçe: Paragrafta Anlam", "Cumartesi": "TYT GENEL DENEME SINAVI", "Pazar": "TYT BRANŞ DENEMESİ"},
+                    {"Saat Aralığı": "10:00 - 10:15", "Pazartesi": "Mola", "Salı": "Mola", "Çarşamba": "Mola", "Perşembe": "Mola", "Cuma": "Mola", "Cumartesi": "Deneme Devam", "Pazar": "Deneme Devam"},
+                    {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "📐 TYT Matematik: Temel Kavramlar", "Salı": "📏 TYT Geometri: Üçgenler", "Çarşamba": "📐 TYT Matematik: Üslü & Köklü", "Perşembe": "📏 TYT Geometri: Çokgenler", "Cuma": "📐 TYT Matematik: Kümeler", "Cumartesi": "Deneme Analizi", "Pazar": "Branş Deneme Analizi"},
                     {"Saat Aralığı": "12:30 - 13:30", "Pazartesi": "Öğle Yemeği & Dinlenme", "Salı": "Öğle Yemeği & Dinlenme", "Çarşamba": "Öğle Yemeği & Dinlenme", "Perşembe": "Öğle Yemeği & Dinlenme", "Cuma": "Öğle Yemeği & Dinlenme", "Cumartesi": "Öğle Yemeği & Dinlenme", "Pazar": "Öğle Yemeği & Dinlenme"},
-                    {"Saat Aralığı": "13:30 - 14:00", "Pazartesi": "TYT Fizik Ön Çalışma", "Salı": "TYT Kimya Konu Anlatımı", "Çarşamba": "TYT Fizik Soru Taraması", "Perşembe": "TYT Kimya Soru Bankası", "Cuma": "TYT Fizik İleri Soru Çözümü", "Cumartesi": "TYT Geometri Soru Çözümü", "Pazar": "HAFTALIK KOÇLUK DEĞERLENDİRMESİ"},
-                    {"Saat Aralığı": "14:00 - 15:00", "Pazartesi": "📐 MATEMATİK ÖZEL DERSİ", "Salı": "TYT Kimya Soru Çözümü", "Çarşamba": "📐 MATEMATİK ÖZEL DERSİ", "Perşembe": "TYT Kimya İleri Etüt", "Cuma": "📐 MATEMATİK ÖZEL DERSİ", "Cumartesi": "TYT Geometri Soru Çözümü", "Pazar": "HAFTALIK KOÇLUK DEĞERLENDİRMESİ"},
-                    {"Saat Aralığı": "15:00 - 15:45", "Pazartesi": "Özel Ders Tekrarı & Soru Çözümü", "Salı": "TYT Kimya Analiz", "Çarşamba": "Özel Ders Tekrarı & Soru Çözümü", "Perşembe": "TYT Kimya Analiz", "Cuma": "Özel Ders Tekrarı & Soru Çözümü", "Cumartesi": "TYT Geometri Soru Çözümü", "Pazar": "Serbest Zaman / Ödül Molası"},
-                    {"Saat Aralığı": "15:45 - 16:15", "Pazartesi": "Mola / Kahve", "Salı": "Mola / Kahve", "Çarşamba": "Mola / Kahve", "Perşembe": "Mola / Kahve", "Cuma": "Mola / Kahve", "Cumartesi": "Mola / Kahve", "Pazar": "Serbest Zaman"},
-                    {"Saat Aralığı": "16:15 - 18:30", "Pazartesi": "TYT Türkçe Dil Bilgisi", "Salı": "TYT Biyoloji (Konu + Soru)", "Çarşamba": "TYT Matematik Problem Kampı", "Perşembe": "TYT Biyoloji Soru Bankası", "Cuma": "TYT Türkçe Dil Bilgisi Etüdü", "Cumartesi": "Haftalık Soru Bankası Temizliği", "Pazar": "Serbest Zaman"},
-                    {"Saat Aralığı": "18:30 - 19:30", "Pazartesi": "Akşam Yemeği", "Salı": "Akşam Yemeği", "Çarşamba": "Akşam Yemeği", "Perşembe": "Akşam Yemeği", "Cuma": "Akşam Yemeği", "Cumartesi": "Akşam Yemeği", "Pazar": "Serbest Zaman"},
-                    {"Saat Aralığı": "19:30 - 20:45", "Pazartesi": "TYT Sosyal (Coğrafya/Tarih)", "Salı": "TYT Matematik Branş Denemesi", "Çarşamba": "TYT Fen Branş Denemesi", "Perşembe": "TYT Türkçe Branş Denemesi", "Cuma": "Haftalık Yanlış/Boş Soru Tekrarı", "Cumartesi": "TYT Eksik Kapatma / Serbest", "Pazar": "Serbest Zaman"},
-                    {"Saat Aralığı": "20:45 - 21:30", "Pazartesi": "Haftalık Soru Defteri Analizi", "Salı": "Haftalık Soru Defteri Analizi", "Çarşamba": "Haftalık Soru Defteri Analizi", "Perşembe": "Haftalık Soru Defteri Analizi", "Cuma": "Haftalık Soru Defteri Analizi", "Cumartesi": "Gelecek Hafta TYT Planlama", "Pazar": "Serbest Zaman"}
+                    {"Saat Aralığı": "14:00 - 15:00", "Pazartesi": "📐 MATEMATİK ÖZEL DERSİ", "Salı": "🧪 TYT Kimya: Atom ve Periyodik Sistem", "Çarşamba": "📐 MATEMATİK ÖZEL DERSİ", "Perşembe": "🧪 TYT Kimya: Karışımlar", "Cuma": "📐 MATEMATİK ÖZEL DERSİ", "Cumartesi": "📐 TYT Matematik: Problemler", "Pazar": "HAFTALIK KOÇLUK DEĞERLENDİRMESİ"}
                 ]
                 df_matris = pd.DataFrame(excel_sablon)
 
-            # SATIR EKLENEBİLİR VEYA SİLİNEBİLİR SERBEST EXCEL EDİTÖRÜ
             edited_df = st.data_editor(
                 df_matris,
                 num_rows="dynamic",
                 use_container_width=True,
-                height=520,
-                key=f"excel_editor_{secilen_ogr}",
-                column_config={
-                    "Saat Aralığı": st.column_config.TextColumn("Saat Aralığı (Örn: 14:00 - 15:00)", help="Saat aralığını dakikasına kadar özgürce yazabilirsiniz."),
-                    "Pazartesi": st.column_config.TextColumn("Pazartesi"),
-                    "Salı": st.column_config.TextColumn("Salı"),
-                    "Çarşamba": st.column_config.TextColumn("Çarşamba"),
-                    "Perşembe": st.column_config.TextColumn("Perşembe"),
-                    "Cuma": st.column_config.TextColumn("Cuma"),
-                    "Cumartesi": st.column_config.TextColumn("Cumartesi"),
-                    "Pazar": st.column_config.TextColumn("Pazar")
-                }
+                height=480,
+                key=f"excel_editor_{secilen_ogr}"
             )
 
-            if st.button("💾 Excel Tablosundaki Değişiklikleri Öğrenciye Kaydet", type="primary", use_container_width=True):
+            if st.button("💾 Bütün Değişiklikleri Kaydet ve Öğrenciye İlet", type="primary", use_container_width=True):
                 cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
                 for _, row in edited_df.iterrows():
                     s_araligi = str(row.get("Saat Aralığı", "")).strip()
-                    if s_araligi: # Boş olmayan satırları kaydet
+                    if s_araligi:
                         cursor.execute("""
                             INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -600,7 +637,7 @@ with main_tab2:
                             str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
                         ))
                 conn.commit()
-                st.success("🎉 Excel Ders Programı başarıyla kaydedildi! Yeni satırlar ve tüm saat düzenlemeleri öğrenci paneline yansıtıldı.")
+                st.success("🎉 Haftalık Excel Ders Programı başarıyla güncellendi! Öğrencinin panelinde anında aktifleşti.")
 
             # 📸 ÇÖZÜLEMEYEN SORULAR & KARNELER
             st.divider()
