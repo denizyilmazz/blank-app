@@ -23,7 +23,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🎨 Modern Excel Hissiyatlı Mobil Uyumlu CSS Teması
+# 🎨 Modern Mobil Uyumlu Excel Teması
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -43,7 +43,7 @@ st.markdown("""
     .main .block-container {
         padding-top: 1rem !important;
         padding-bottom: 3rem !important;
-        max-width: 1380px !important;
+        max-width: 1400px !important;
     }
 
     .stTabs [data-baseweb="tab-list"] {
@@ -161,7 +161,6 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
-# 📚 YKS MÜFREDATINA VE DERS SIRALAMASINA UYGUN DERS SÖZLÜKLERİ
 TYT_KONULAR = {
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "EBOB-EKOK", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran-Orantı", "Problemler", "Mantık & Kümeler", "Fonksiyonlar", "Olasılık"],
@@ -282,21 +281,10 @@ CREATE TABLE IF NOT EXISTS excel_program_matris (
     persembe TEXT DEFAULT '',
     cuma TEXT DEFAULT '',
     cumartesi TEXT DEFAULT '',
-    pazar TEXT DEFAULT '',
-    PRIMARY KEY (ad_soyad, saat_araligi)
+    pazar TEXT DEFAULT ''
 )
 """)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS program_dosyalari (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ad_soyad TEXT,
-    yukleyen TEXT,
-    tarih TEXT,
-    dosya_yolu TEXT,
-    dosya_adi TEXT
-)
-""")
 conn.commit()
 
 cursor.execute("SELECT COUNT(*) FROM koclar")
@@ -420,7 +408,7 @@ with main_tab1:
             """, conn, params=(aktif_ogr,))
 
             if not df_matris_ogr.empty:
-                st.dataframe(df_matris_ogr, use_container_width=True, height=480)
+                st.dataframe(df_matris_ogr, use_container_width=True, height=520)
             else:
                 st.info("Sorumlu koçunuz henüz 7 günlük haftalık programınızı hazırlamadı.")
 
@@ -498,7 +486,7 @@ with main_tab1:
                         cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                     conn.commit()
 
-# ==================== 👨‍🏫 KOÇ PANELİ (EXCEL EDİTÖR MATRİSİ) ====================
+# ==================== 👨‍🏫 KOÇ PANELİ (SATIR EKLENEBİLİR EXCEL EDİTÖRÜ) ====================
 with main_tab2:
     st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
     st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -546,7 +534,7 @@ with main_tab2:
             # 📊 BİREBİR EXCEL TABLOSU GÖRÜNÜMLÜ DERS PROGRAMI EDİTÖRÜ
             st.divider()
             st.markdown(f"### 📊 {secilen_ogr} — 7 Günlük İnteraktif Excel Ders Programı")
-            st.caption("💡 Saat aralıklarını dakikasına kadar dilediğiniz gibi değiştirebilir, hücrelerin üzerine çift tıklayarak dersleri ve özel ders saatlerini anında düzenleyebilirsiniz.")
+            st.caption("✨ **Satır Ekleme Özelliği Aktif:** Tablonun altındaki '+' butonuna basarak dilediğiniz kadar yeni saat satırı ekleyebilir, saatleri dakikasına kadar özgürce yazıp ders ve konuları doğrudan hücrelerin içine yazabilirsiniz.")
 
             df_matris = pd.read_sql_query("""
                 SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
@@ -573,34 +561,46 @@ with main_tab2:
                 ]
                 df_matris = pd.DataFrame(excel_sablon)
 
-            # INTERAKTIF EXCEL EDİTÖRÜ (ST.DATA_EDITOR)
+            # SATIR EKLENEBİLİR VEYA SİLİNEBİLİR SERBEST EXCEL EDİTÖRÜ
             edited_df = st.data_editor(
                 df_matris,
                 num_rows="dynamic",
                 use_container_width=True,
-                height=480,
-                key=f"excel_editor_{secilen_ogr}"
+                height=520,
+                key=f"excel_editor_{secilen_ogr}",
+                column_config={
+                    "Saat Aralığı": st.column_config.TextColumn("Saat Aralığı (Örn: 14:00 - 15:00)", help="Saat aralığını dakikasına kadar özgürce yazabilirsiniz."),
+                    "Pazartesi": st.column_config.TextColumn("Pazartesi"),
+                    "Salı": st.column_config.TextColumn("Salı"),
+                    "Çarşamba": st.column_config.TextColumn("Çarşamba"),
+                    "Perşembe": st.column_config.TextColumn("Perşembe"),
+                    "Cuma": st.column_config.TextColumn("Cuma"),
+                    "Cumartesi": st.column_config.TextColumn("Cumartesi"),
+                    "Pazar": st.column_config.TextColumn("Pazar")
+                }
             )
 
             if st.button("💾 Excel Tablosundaki Değişiklikleri Öğrenciye Kaydet", type="primary", use_container_width=True):
                 cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
                 for _, row in edited_df.iterrows():
-                    cursor.execute("""
-                        INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        secilen_ogr,
-                        str(row.get("Saat Aralığı", "")),
-                        str(row.get("Pazartesi", "")),
-                        str(row.get("Salı", "")),
-                        str(row.get("Çarşamba", "")),
-                        str(row.get("Perşembe", "")),
-                        str(row.get("Cuma", "")),
-                        str(row.get("Cumartesi", "")),
-                        str(row.get("Pazar", ""))
-                    ))
+                    s_araligi = str(row.get("Saat Aralığı", "")).strip()
+                    if s_araligi: # Boş olmayan satırları kaydet
+                        cursor.execute("""
+                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (
+                            secilen_ogr,
+                            s_araligi,
+                            str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
+                            str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
+                            str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
+                            str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
+                            str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
+                            str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
+                            str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
+                        ))
                 conn.commit()
-                st.success("🎉 Excel Ders Programı başarıyla kaydedildi! Öğrenci ekranında anında güncellendi.")
+                st.success("🎉 Excel Ders Programı başarıyla kaydedildi! Yeni satırlar ve tüm saat düzenlemeleri öğrenci paneline yansıtıldı.")
 
             # 📸 ÇÖZÜLEMEYEN SORULAR & KARNELER
             st.divider()
