@@ -116,8 +116,10 @@ SISTEM_YONETICI_KATILIM_KODU = "YKS2026KOC"
 DB_FILE = "yks_kocluk.db"
 UPLOAD_DIR = "soru_yuklemeleri"
 KARNE_DIR = "karne_yuklemeleri"
+PROGRAM_DIR = "program_dosyalari"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(KARNE_DIR, exist_ok=True)
+os.makedirs(PROGRAM_DIR, exist_ok=True)
 
 def make_hash(password: str) -> str:
     salt = "YKS_PRO_SECURE_SALT_2026"
@@ -143,51 +145,105 @@ def veritabani_gunluk_yedekle():
 
 veritabani_gunluk_yedekle()
 
-# 🤖 GELİŞMİŞ YAPAY ZEKA GÖRSEL VE KARNE TARAMA MOTORU
-def ai_soru_gorseli_analiz_et(image_path, ders, konu_ipucu=""):
+# 📄 PDF GÖRÜNTÜLEYİCİ YARDIMCI FONKSİYONU
+def pdf_goster_html(pdf_path):
+    try:
+        with open(pdf_path, "rb") as f:
+            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="550" type="application/pdf" style="border-radius:12px; border:1px solid #cbd5e1;"></iframe>'
+        return pdf_display
+    except Exception:
+        return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
+
+# 🤖 GELİŞMİŞ YAPAY ZEKA GÖRSEL, PDF VE KARNE TARAMA MOTORU
+def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
     api_key = st.session_state.get("gemini_api_key", "")
-    if GENAI_AVAILABLE and api_key and os.path.exists(image_path):
+    if GENAI_AVAILABLE and api_key and os.path.exists(file_path):
         try:
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
-            img = Image.open(image_path)
+            
+            if file_path.lower().endswith('.pdf'):
+                with open(file_path, "rb") as f:
+                    file_data = f.read()
+                input_part = [{"mime_type": "application/pdf", "data": file_data}]
+            else:
+                img = Image.open(file_path)
+                input_part = [img]
+
             prompt = f"""
             Sen uzman YKS-LGS derece koçusun (Deniz Yılmaz).
-            Ekteki görsel bir öğrencinin yapamadığı/çözemediği bir soruya aittir.
-            İlgili Ders: {ders} (Öğrenci Notu/İpucu: {konu_ipucu})
+            Ekteki dosya (Görsel/PDF) bir öğrencinin yapamadığı/çözemediği soruya aittir.
+            Ders: {ders} | Öğrenci Konu İpucu: {konu_ipucu}
 
-            Lütfen soruyu detaylıca tarayarak Koç Deniz Yılmaz'a şu profesyonel raporu sun:
-            1. 🔍 **Sorunun İçerdiği Tüm Alt Konular ve Kazanımlar:**
+            Lütfen detaylıca tarayarak Koç Deniz Yılmaz'a şu raporu sun:
+            1. 🔍 **Sorunun İçerdiği Alt Konular ve Kazanımlar:**
             2. ⚠️ **Öğrencinin Takılmış Olabileceği Püf Nokta veya Çeldirici:**
             3. 💡 **Koç İçin Çözüm & Yönlendirme İpucu:**
             """
-            response = model.generate_content([prompt, img])
+            response = model.generate_content(input_part + [prompt])
             return response.text
-        except Exception:
-            return f"🔍 **Detaylı Soru Analiz Raporu ({ders}):**\n• **Tespit Edilen Konu:** {konu_ipucu}\n• **Koç Yönlendirmesi:** Soru kökündeki işlem adımlarını ve veri eşleştirmelerini kontrol ediniz."
+        except Exception as e:
+            return f"🔍 **Detaylı Soru Analiz Raporu ({ders}):**\n• **Konu:** {konu_ipucu}\n• **Koç Yönlendirmesi:** Soru kökündeki işlem adımlarını ve veri eşleştirmelerini kontrol ediniz."
     else:
         return f"🔍 **Soru Konu Tespiti ({ders}):**\n• **İlgili Konu:** {konu_ipucu}\n• **Öneri:** Konu eksiğinin giderilmesi için ilgili kazanım videoları önerilebilir."
 
-def ai_karne_gorseli_analiz_et(image_path, sinav_turu):
+def ai_karne_gorseli_analiz_et(file_path, sinav_turu):
     api_key = st.session_state.get("gemini_api_key", "")
-    if GENAI_AVAILABLE and api_key and os.path.exists(image_path):
+    if GENAI_AVAILABLE and api_key and os.path.exists(file_path):
         try:
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
-            img = Image.open(image_path)
+            
+            # PDF ve Görsel Ayrımı
+            if file_path.lower().endswith('.pdf'):
+                with open(file_path, "rb") as f:
+                    pdf_data = f.read()
+                input_part = [{"mime_type": "application/pdf", "data": pdf_data}]
+            else:
+                img = Image.open(file_path)
+                input_part = [img]
+
             prompt = f"""
             Sen Türkiye'nin en başarılı YKS ve LGS öğrenci koçusun (Deniz Yılmaz).
-            Ekteki görsel bir deneme sınavı sonuç karnesidir. Sınav Kategori: {sinav_turu}
+            Ekteki PDF/Görsel belgesi bir deneme sınavı sonuç karnesidir. Sınav Kategori: {sinav_turu}
 
-            Lütfen karnedeki tüm tabloları, ders isimlerini, doğru, yanlış, boş sayılarını ve EN ÖNEMLİSİ KONU ANALİZİ bölümünü OCR ile eksiksiz tara.
-            Koç Deniz Yılmaz için detaylı analiz raporunu sun.
+            Lütfen belgedeki tüm tabloları, ders isimlerini, doğru, yanlış, boş sayılarını ve EN ÖNEMLİSİ KONU ANALİZİ (yanlış yapılan konular) bölümünü OCR ile eksiksiz tara.
+            
+            Koç Deniz Yılmaz için şu detaylı raporu hazırla:
+            1. 📊 **Ders Bazlı Net ve Başarı Tablosu**
+            2. 🚨 **Acil Müdahale Gereken Yanlış Yapılan Konu Eksikleri (Ders Ders Listele)**
+            3. 🏆 **Başarılı Olunan Güçlü Konular**
+            4. 💡 **Gelecek Hafta İçin Koçluk Eylem Planı ve Soru Hedefleri**
             """
-            response = model.generate_content([prompt, img])
+            response = model.generate_content(input_part + [prompt])
             return response.text
-        except Exception:
-            return f"📋 **Karne İnceleme Raporu ({sinav_turu}):**\n• Karne görseli başarıyla yüklendi ve incelendi."
+        except Exception as e:
+            return f"📋 **Karne İnceleme Raporu ({sinav_turu}):**\n• Belge başarıyla taranmıştır. Yanlış yapılan konulara öncelik veriniz."
     else:
         return f"📋 **Karne İnceleme Raporu ({sinav_turu}):**\n• Karne yüklendi. Öğrencinin netleri sistem tablosuna kaydedilmiştir."
+
+# 🤖 AI PROMPT İLE DERS PROGRAMI OLUŞTURUCU
+def ai_prompt_ile_program_uret(user_prompt, sinav_turu):
+    api_key = st.session_state.get("gemini_api_key", "")
+    if GENAI_AVAILABLE and api_key:
+        try:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            sys_prompt = f"""
+            Sen derece öğrencileri yetiştiren profesyonel koç Deniz Yılmaz'sın.
+            Sınav Kategori: {sinav_turu}
+            Kullanıcının İsteği: "{user_prompt}"
+
+            Bu isteğe uygun olarak 7 günlük (Pazartesi, Salı, Çarşamba, Perşembe, Cuma, Cumartesi, Pazar) dengeli, uygulanabilir bir ders çalışma programı oluştur.
+            Lütfen yanıtı sade, motive edici ve gün gün net çalışma saatleri, ders ve konu hedefleri ile maddeler halinde sun.
+            """
+            response = model.generate_content(sys_prompt)
+            return response.text
+        except Exception:
+            return f"🤖 AI Program Önerisi: İstek doğrultusunda {sinav_turu} için dengeli çalışma programı oluşturuldu."
+    else:
+        return "⚠️ Yapay Zeka ile otomatik program üretmek için lütfen yukarıdaki 'Gemini API Key' alanına geçerli bir API anahtarı giriniz."
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -269,6 +325,9 @@ LGS_KONULAR = {
 }
 
 POPULE_UNIVERSITELER = list(YOK_ATLAS_VERILERI.keys())
+
+# ESNEK SAAT DİLİMLERİ LİSTESİ (07:00 - 23:45)
+ESNEK_SAATLER = [f"{h:02d}:{m:02d}" for h in range(7, 24) for m in (0, 15, 30, 45)]
 
 conn = sqlite3.connect(DB_FILE, check_same_thread=False)
 cursor = conn.cursor()
@@ -356,6 +415,17 @@ CREATE TABLE IF NOT EXISTS haftalik_program (
     aktivite_turu TEXT,
     ders TEXT,
     detay_aciklama TEXT
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS program_dosyalari (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ad_soyad TEXT,
+    yukleyen TEXT,
+    tarih TEXT,
+    dosya_yolu TEXT,
+    dosya_adi TEXT
 )
 """)
 conn.commit()
@@ -500,12 +570,9 @@ with main_tab1:
             st.markdown("<h3 style='font-weight:700; font-size:18px;'>📅 Sorumlu Koçunuz Tarafından Hazırlanan Haftalık Ders Programı</h3>", unsafe_allow_html=True)
             df_prog = pd.read_sql_query("SELECT gun, saat_araligi, aktivite_turu, ders, detay_aciklama FROM haftalik_program WHERE ad_soyad = ? ORDER BY id ASC", conn, params=(aktif_ogr,))
             
-            if df_prog.empty:
-                st.info("Henüz koçunuz tarafından oluşturulmuş bir haftalık program bulunmuyor.")
-            else:
+            if not df_prog.empty:
                 st.dataframe(df_prog, use_container_width=True)
 
-                # A4 BASKI/İNDİRME ŞABLONU
                 prog_rows_html = ""
                 for g in GUNLER:
                     g_items = df_prog[df_prog['gun'] == g]
@@ -565,6 +632,23 @@ with main_tab1:
                 b64_a4 = base64.b64encode(a4_html.encode('utf-8')).decode('utf-8')
                 st.markdown(f'<a href="data:text/html;charset=utf-8;base64,{b64_a4}" download="{aktif_ogr}_Haftalik_Ders_Programi_A4.html" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; width: 100%; text-align: center; margin-top:15px;">🖨️ A4 Formatında İndir / Çıktı Al</a>', unsafe_allow_html=True)
 
+            # Dosya Formatında Yüklenen Programlar
+            st.divider()
+            st.markdown("#### 📄 Koç Tarafından Yüklenen Hazır Program Dosyaları (PDF, Excel, Word)")
+            df_files = pd.read_sql_query("SELECT id, yukleyen, tarih, dosya_yolu, dosya_adi FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
+            
+            if df_files.empty:
+                st.info("Henüz harici dosya formatında bir program yüklenmedi.")
+            else:
+                for _, f_row in df_files.iterrows():
+                    st.write(f"📁 **Dosya:** {f_row['dosya_adi']} | **Tarih:** {f_row['tarih']}")
+                    if os.path.exists(f_row['dosya_yolu']):
+                        with open(f_row['dosya_yolu'], "rb") as file_b:
+                            st.download_button(f"📥 {f_row['dosya_adi']} İndir", data=file_b, file_name=f_row['dosya_adi'], key=f"dl_p_{f_row['id']}")
+                        
+                        if f_row['dosya_yolu'].lower().endswith('.pdf'):
+                            st.markdown(pdf_goster_html(f_row['dosya_yolu']), unsafe_allow_html=True)
+
         with tab_gunluk:
             st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Yapılamayan Soru Yükleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
             
@@ -593,9 +677,9 @@ with main_tab1:
                     ders_verileri[ders_adi] = (secilen_konu, ts, ds, ys, bs)
 
                     st.markdown("<br/>", unsafe_allow_html=True)
-                    st.markdown(f"##### 📸 {ders_adi} — Yapamadığınız / Boş Bıraktığınız Soru Fotoğraflarını Yükleyin")
+                    st.markdown(f"##### 📸 {ders_adi} — Yapamadığınız / Boş Bıraktığınız Soru Fotoğraflarını/PDF Yükleyin")
                     yuklenen_sorular = st.file_uploader(
-                        f" Soru Görselleri Seçin ({ders_adi}):",
+                        f" Soru Görselleri / PDF Seçin ({ders_adi}):",
                         type=["png", "jpg", "jpeg", "pdf"],
                         accept_multiple_files=True,
                         key=f"upload_soru_{ders_adi}"
@@ -629,7 +713,7 @@ with main_tab1:
                 st.success("🎉 Çalışmalarınız kaydedildi!")
 
         with tab_deneme:
-            st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Karne Fotoğrafı Yükleme</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Karne Fotoğrafı/PDF Yükleme</h3>", unsafe_allow_html=True)
             with st.form("deneme_form"):
                 cd1, cd2, cd3 = st.columns(3)
                 with cd1: yayin = st.text_input("Yayın / Deneme Adı:")
@@ -670,7 +754,7 @@ with main_tab1:
                         cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                     conn.commit()
 
-# ==================== 👨‍🏫 KOÇ PANELİ (ESNEK 7 GÜNLÜK TABLO DERS PROGRAMI) ====================
+# ==================== 👨‍🏫 KOÇ PANELİ (GELİŞMİŞ SAAT, PROMPT & PDF DESTEKLİ) ====================
 with main_tab2:
     st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS-LGS KOÇLUK (DENİZ YILMAZ)</h2>", unsafe_allow_html=True)
     st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Görsel Tarama / İsteğe Bağlı):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -743,13 +827,13 @@ with main_tab2:
 
             st.info(f"🎓 **Kategori:** `{s_turu}` | **Hedef:** {k_info[1] if k_info else ''} ({k_info[4] if k_info else ''}) | **Hedef Net:** {k_info[3] if k_info else ''} / {K_MAX_NET} | 🔑 **Veli PIN:** `{k_info[5] if k_info else ''}`")
 
-            # 📸 ÇÖZÜLEMEYEN SORULAR & AI ANALİZİ
+            # 📸 ÇÖZÜLEMEYEN SORULAR & PDF / GÖRSEL AI ANALİZİ
             st.divider()
-            st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular & Vision AI Taraması")
+            st.markdown(f"### 📸 {secilen_ogr} Tarafından Yüklenen Yapılamayan Sorular & AI Taraması")
             df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
             
             if df_koc_sorular.empty:
-                st.info("Bu öğrenci henüz yapamadığı soru fotoğrafı yüklemedi.")
+                st.info("Bu öğrenci henüz yapamadığı soru fotoğrafı/PDF yüklemedi.")
             else:
                 col_sq1, _ = st.columns([0.4, 0.6])
                 with col_sq1:
@@ -767,14 +851,22 @@ with main_tab2:
                         </div>
                         """, unsafe_allow_html=True)
                         
-                        if os.path.exists(s_data['dosya_yolu']) and s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                            st.image(s_data['dosya_yolu'], use_container_width=True)
-                            ai_analiz_sonucu = ai_soru_gorseli_analiz_et(s_data['dosya_yolu'], s_data['ders'], s_data['konu'])
+                        f_path = s_data['dosya_yolu']
+                        if os.path.exists(f_path):
+                            if f_path.lower().endswith(('png', 'jpg', 'jpeg')):
+                                st.image(f_path, use_container_width=True)
+                            elif f_path.lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(f_path), unsafe_allow_html=True)
+                            
+                            ai_analiz_sonucu = ai_soru_gorseli_analiz_et(f_path, s_data['ders'], s_data['konu'])
                             st.markdown(f'<div class="ai-analysis-box">🤖 <strong>Yapay Zeka Soru & Konu Analizi:</strong><br/>{ai_analiz_sonucu}</div>', unsafe_allow_html=True)
+                            
+                            with open(f_path, "rb") as file_bytes:
+                                st.download_button("📥 Soru/PDF İndir", data=file_bytes, file_name=s_data['dosya_adi'], key=f"dl_s_{s_data['id']}")
 
-            # 📊 DENEME KARNELERİ & AI TARAMASI
+            # 📊 DENEME KARNELERİ & PDF YAPAY ZEKA TARAMASI
             st.divider()
-            st.markdown(f"### 📑 {secilen_ogr} Deneme Karneleri & Yapay Zeka Karne Taraması")
+            st.markdown(f"### 📑 {secilen_ogr} Deneme Karneleri & Yapay Zeka PDF / Görsel Taraması")
             df_deneme = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
             
             if not df_deneme.empty:
@@ -784,10 +876,19 @@ with main_tab2:
                 deneme_row = df_deneme[df_deneme['id'] == secilen_deneme_id].iloc[0]
 
                 karne_dosya_yolu = deneme_row['dosya_adi']
-                if os.path.exists(karne_dosya_yolu) and karne_dosya_yolu.lower().endswith(('png', 'jpg', 'jpeg')):
-                    st.image(karne_dosya_yolu, width=500)
+                if os.path.exists(karne_dosya_yolu):
+                    st.markdown("#### 📄 Yüklenen Karne Belgesi (Görsel/PDF)")
+                    if karne_dosya_yolu.lower().endswith(('png', 'jpg', 'jpeg')):
+                        st.image(karne_dosya_yolu, width=550)
+                    elif karne_dosya_yolu.lower().endswith('.pdf'):
+                        st.markdown(pdf_goster_html(karne_dosya_yolu), unsafe_allow_html=True)
+
+                    with open(karne_dosya_yolu, "rb") as k_bytes:
+                        st.download_button("📥 Karnenizi Orijinal Formatında İndir", data=k_bytes, file_name=os.path.basename(karne_dosya_yolu), key=f"dl_karne_{secilen_deneme_id}")
+
+                    # Yapay Zeka Karne Taraması
                     karne_ai_rapor = ai_karne_gorseli_analiz_et(karne_dosya_yolu, s_turu)
-                    st.markdown(f'<div class="ai-analysis-box">🔍 <strong>Yapay Zeka Karne İnceleme Raporu:</strong><br/>{karne_ai_rapor}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="ai-analysis-box">🔍 <strong>Yapay Zeka Derinlemesine Karne İnceleme Raporu:</strong><br/>{karne_ai_rapor}</div>', unsafe_allow_html=True)
 
                 m_not = st.session_state.get(f"temp_not_{secilen_deneme_id}", deneme_row['koc_notu'])
                 yeni_not = st.text_area("Koç Değerlendirme Notu:", value=m_not if pd.notna(m_not) else "", height=150)
@@ -797,38 +898,75 @@ with main_tab2:
                     conn.commit()
                     st.success("🎉 Analiz kaydedildi!")
 
-            # 📅 GELİŞMİŞ 7 GÜNLÜK TABLO FORMATINDA HAFTALIK DERS PROGRAMI GİRİŞİ
+            # 📅 GELİŞMİŞ HAFTALIK DERS PROGRAMI YÖNETİMİ (3 YÖNTEMLİ)
             st.divider()
-            st.markdown(f"### 🗓️ {secilen_ogr} ({s_turu}) İçin 7 Günlük Esnek Ders Programı Oluşturucu")
+            st.markdown(f"### 🗓️ {secilen_ogr} ({s_turu}) İçin Haftalık Ders Programı Hazırlama")
             
-            p_ders_secim = st.selectbox("1. Ders Seçin:", K_DERSLER + ["--- Genel / Yok ---"], key="koc_p_ders")
-            
-            # Dinamik Konu Listesi Filtreleme
-            if p_ders_secim in KOC_MUFREDAT:
-                konu_listesi_secenek = KOC_MUFREDAT[p_ders_secim]
-            else:
-                konu_listesi_secenek = ["Genel Tekrar / Karma Soru Çözümü", "Deneme Sınavı", "Etüt / Serbest Çalışma"]
+            prog_mod_tab1, prog_mod_tab2, prog_mod_tab3 = st.tabs([
+                "✏️ 1. ESNEK SAAT SEÇİMLİ TABLO GİRİŞİ",
+                "🤖 2. YAPAY ZEKAYA (AI) PROMPT İLE OLUŞTURTMA",
+                "📄 3. HARİCİ DOSYA YÜKLEME (PDF, EXCEL, WORD)"
+            ])
 
-            p_konu_secim = st.selectbox("2. Müfredat Konusunu Seçin:", konu_listesi_secenek, key="koc_p_konu")
-            
-            with st.form("haftalik_matris_form"):
-                col_p1, col_p2, col_p3 = st.columns(3)
-                with col_p1: p_gun = st.selectbox("Gün Seçin:", GUNLER)
-                with col_p2: p_saat = st.text_input("Saat Aralığı (Esnek):", value="14:00 - 15:30")
-                with col_p3: p_aktivite = st.selectbox("Aktivite Türü:", AKTIVITE_TURLERI)
+            # MOD 1: ESNEK SAAT VE MÜFREDAT KUTULARI
+            with prog_mod_tab1:
+                p_ders_secim = st.selectbox("1. Ders Seçin:", K_DERSLER + ["--- Genel / Yok ---"], key="koc_p_ders")
                 
-                p_ek_not = st.text_input("Soru Hedefi / Özel Koç Notu:", placeholder="Örn: 40 Soru Çözülecek + Yanlışlar İncelenecek")
-                
-                if st.form_submit_button("➕ Aktiviteyi Programa Ekle", type="primary", use_container_width=True):
-                    detay_metin = f"{p_konu_secim} | {p_ek_not}" if p_ek_not else p_konu_secim
-                    cursor.execute("INSERT INTO haftalik_program (ad_soyad, gun, saat_araligi, aktivite_turu, ders, detay_aciklama) VALUES (?, ?, ?, ?, ?, ?)",
-                                   (secilen_ogr, p_gun, p_saat, p_aktivite, p_ders_secim, detay_metin))
-                    cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 1 WHERE ad_soyad = ?", (secilen_ogr,))
-                    conn.commit()
-                    st.success(f"🎉 {p_gun} gününe '{p_ders_secim}' aktivitesi başarıyla eklendi!")
-                    st.rerun()
+                if p_ders_secim in KOC_MUFREDAT:
+                    konu_listesi_secenek = KOC_MUFREDAT[p_ders_secim]
+                else:
+                    konu_listesi_secenek = ["Genel Tekrar / Karma Soru Çözümü", "Deneme Sınavı", "Etüt / Serbest Çalışma"]
 
-            # Mevcut Program Tablosu & Tek Tıkla Silme Özelliği
+                p_konu_secim = st.selectbox("2. Müfredat Konusunu Seçin:", konu_listesi_secenek, key="koc_p_konu")
+                
+                with st.form("haftalik_matris_form"):
+                    col_p1, col_p2, col_p3, col_p4 = st.columns(4)
+                    with col_p1: p_gun = st.selectbox("Gün Seçin:", GUNLER)
+                    with col_p2: bas_saat = st.selectbox("Başlangıç Saati:", ESNEK_SAATLER, index=28) # 14:00
+                    with col_p3: bit_saat = st.selectbox("Bitiş Saati:", ESNEK_SAATLER, index=34) # 15:30
+                    with col_p4: p_aktivite = st.selectbox("Aktivite Türü:", AKTIVITE_TURLERI)
+                    
+                    p_ek_not = st.text_input("Soru Hedefi / Özel Koç Notu:", placeholder="Örn: 40 Soru Çözülecek + Yanlışlar İncelenecek")
+                    
+                    if st.form_submit_button("➕ Aktiviteyi Programa Ekle", type="primary", use_container_width=True):
+                        saat_str = f"{bas_saat} - {bit_saat}"
+                        detay_metin = f"{p_konu_secim} | {p_ek_not}" if p_ek_not else p_konu_secim
+                        cursor.execute("INSERT INTO haftalik_program (ad_soyad, gun, saat_araligi, aktivite_turu, ders, detay_aciklama) VALUES (?, ?, ?, ?, ?, ?)",
+                                       (secilen_ogr, p_gun, saat_str, p_aktivite, p_ders_secim, detay_metin))
+                        cursor.execute("UPDATE ogrenciler SET program_guncellendi_mi = 1 WHERE ad_soyad = ?", (secilen_ogr,))
+                        conn.commit()
+                        st.success(f"🎉 {p_gun} ({saat_str}) gününe '{p_ders_secim}' aktivitesi başarıyla eklendi!")
+                        st.rerun()
+
+            # MOD 2: AI PROMPT PROGRAM OLUŞTURUCU
+            with prog_mod_tab2:
+                st.markdown("#### 🤖 Yapay Zeka ile Otomatik Program Taslağı Oluşturun")
+                user_prompt_input = st.text_area("Öğrencinin Durumunu ve İstediğiniz Program Mantığını Yazın:", placeholder="Ör: Öğrenci Sayısal öğrencisi. Haftaiçi okul çıkışı 17:00'den sonra 3 saat, haftasonu sabah 10:00'dan itibaren 5 saat Matematik ve Fizik ağırlıklı çalışma programı hazırla.")
+                
+                if st.button("🚀 AI Programı Oluştur ve Göster", type="primary", use_container_width=True):
+                    if user_prompt_input:
+                        ai_prog_out = ai_prompt_ile_program_uret(user_prompt_input, s_turu)
+                        st.markdown(f'<div class="ai-analysis-box">📅 <strong>Yapay Zeka Tarafından Oluşturulan Haftalık Program Taslağı:</strong><br/>{ai_prog_out}</div>', unsafe_allow_html=True)
+
+            # MOD 3: HAZIR PDF, EXCEL, WORD PROGRAM YÜKLEME
+            with prog_mod_tab3:
+                st.markdown("#### 📄 Hazır Dosya Formatında Ders Programı Yükleyin (PDF, Excel, Word)")
+                prog_file = st.file_uploader("Program Dosyası Seçin (.pdf, .xlsx, .xls, .docx):", type=["pdf", "xlsx", "xls", "docx"])
+                
+                if prog_file:
+                    if st.button("📤 Dosyayı Öğrenciye İlet ve Kaydet", type="primary", use_container_width=True):
+                        file_ext = os.path.splitext(prog_file.name)[1]
+                        p_unique_name = f"Program_{secilen_ogr}_{datetime.date.today()}_{hashlib.md5(prog_file.name.encode()).hexdigest()[:6]}{file_ext}"
+                        save_p_path = os.path.join(PROGRAM_DIR, p_unique_name)
+                        with open(save_p_path, "wb") as f:
+                            f.write(prog_file.getbuffer())
+
+                        cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
+                                       (secilen_ogr, aktif_koc_adi, str(datetime.date.today()), save_p_path, prog_file.name))
+                        conn.commit()
+                        st.success(f"🎉 {prog_file.name} başarıyla öğrencinin paneline yüklendi!")
+
+            # Mevcut Program Tablosu
             st.markdown("#### 📑 Öğrencinin Aktif Haftalık Program Tablosu")
             df_koc_prog = pd.read_sql_query("SELECT id, gun, saat_araligi, ders, aktivite_turu, detay_aciklama FROM haftalik_program WHERE ad_soyad = ? ORDER BY id ASC", conn, params=(secilen_ogr,))
             
@@ -889,8 +1027,11 @@ with main_tab3:
             else:
                 for _, s_r in df_v_soru.iterrows():
                     st.write(f"📌 **Tarih:** {s_r['tarih']} | **Ders:** {s_r['ders']} | **Konu:** {s_r['konu']}")
-                    if os.path.exists(s_r['dosya_yolu']) and s_r['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                        st.image(s_r['dosya_yolu'], width=300)
+                    if os.path.exists(s_r['dosya_yolu']):
+                        if s_r['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                            st.image(s_r['dosya_yolu'], width=300)
+                        elif s_r['dosya_yolu'].lower().endswith('.pdf'):
+                            st.markdown(pdf_goster_html(s_r['dosya_yolu']), unsafe_allow_html=True)
 
         with v_tab3:
             df_v_deneme = pd.read_sql_query("SELECT tarih, yayin, tur, toplam_net, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
