@@ -725,7 +725,7 @@ else:
                 raw_url = st.query_params.get("host_url", "")
                 if not raw_url:
                     # Codespaces / Streamlit ortamındaki tam adres yapısı
-                    host_domain = "https://laughing-waddle-g4qqvgr6ggp9hpgqr-8501.app.github.dev"
+                    host_domain = "https://blank-app-ybp6arlr8h.streamlit.app/"
                 else:
                     host_domain = raw_url
 
