@@ -93,11 +93,11 @@ st.markdown("""
 
     /* 🔗 Özel Tıklanabilir Paylaşım Kartı Stili */
     .share-link-card {
-        background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+        background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
         color: white;
         padding: 20px 24px;
         border-radius: 16px;
-        box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.3);
+        box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
         margin-bottom: 20px;
     }
 </style>
@@ -118,7 +118,7 @@ def make_hash(password: str) -> str:
 
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
-    if password == hashed_password: return True
+    if password == hashed_password: True
     return make_hash(password) == hashed_password
 
 def veritabani_gunluk_yedekle():
@@ -303,7 +303,7 @@ if cursor.fetchone()[0] == 0:
     cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", make_hash("Koc123!")))
     conn.commit()
 
-# URL PARAMETRESİ İLE DOĞRUDAN SORU İNCELEME KONTROLÜ
+# URL PARAMETRESİ İLE DOĞRUDAN ŞİFRESİZ SORU İNCELEME KONTROLÜ
 query_params = st.query_params
 link_ogrenci = query_params.get("ogrenci", None)
 
@@ -316,34 +316,31 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# EĞER DIŞARIDAN LİNK İLE GELİNMİŞSE DOĞRUDAN SORU İNCELEME EKRANINI AÇ
+# EĞER ÖĞRETMEN LİNK İLE GELMİŞSE ŞİFRESİZ ANINDA EKRANI AÇ
 if link_ogrenci:
-    st.info(f"🔗 **Öğretmen Soru İnceleme Ekranı:** Öğrenci: **{link_ogrenci}**")
-    link_sifre = st.text_input("🔑 İnceleme Şifreniz / Öğrenci PIN veya Veli PIN Giriniz:", type="password")
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-bottom: 20px;">
+        <h3 style="margin:0; font-size:20px; font-weight:800;">👨‍🏫 Öğretmen Soru İnceleme Ekranı</h3>
+        <p style="margin:4px 0 0 0; opacity:0.9;"><strong>{link_ogrenci}</strong> öğrencisinin çözemediği ve destek beklediği tüm sorular listelenmektedir.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    if link_sifre:
-        cursor.execute("SELECT sifre, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (link_ogrenci,))
-        row_chk = cursor.fetchone()
-        
-        if row_chk and (verify_hash(link_sifre, row_chk[0]) or link_sifre == row_chk[1] or link_sifre == "123456"):
-            st.success(f"🔓 Erişim Onaylandı! **{link_ogrenci}** Öğrencisinin Yapılamayan Soruları Yükleniyor...")
-            df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(link_ogrenci,))
-            
-            if df_link_sorular.empty:
-                st.warning("Bu öğrenci için henüz yapılamayan soru yüklenmemiş.")
-            else:
-                for _, s_data in df_link_sorular.iterrows():
-                    st.write(f"📌 **{s_data['ders']}** - {s_data['konu']} ({s_data['tarih']})")
-                    if os.path.exists(s_data['dosya_yolu']):
-                        if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                            st.image(s_data['dosya_yolu'], width=380)
-                        elif s_data['dosya_yolu'].lower().endswith('.pdf'):
-                            st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
-                    st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
-        else:
-            st.error("❌ Hatalı şifre!")
+    df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(link_ogrenci,))
     
-    if st.button("⬅️ Ana Uygulamaya Dön"):
+    if df_link_sorular.empty:
+        st.info(f"ℹ️ {link_ogrenci} isimli öğrenci henüz çözemediği soru yüklememiştir.")
+    else:
+        for _, s_data in df_link_sorular.iterrows():
+            st.markdown(f"#### 📌 {s_data['ders']} — {s_data['konu']} <span style='font-size:12px; color:#64748b;'>({s_data['tarih']})</span>", unsafe_allow_html=True)
+            if os.path.exists(s_data['dosya_yolu']):
+                if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                    st.image(s_data['dosya_yolu'], width=400)
+                elif s_data['dosya_yolu'].lower().endswith('.pdf'):
+                    st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
+            st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
+            st.divider()
+
+    if st.button("⬅️ Koçluk Platformu Ana Sayfasına Dön", use_container_width=True):
         st.query_params.clear()
         st.rerun()
 
@@ -533,7 +530,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (ÖĞRETMEN PAYLAŞIM LİNKİ DÜZELTİLMİŞ) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ (WHATSAPP ENTEGRASYONLU PAYLAŞIM) ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -720,26 +717,29 @@ else:
                         st.success("Tablo sıfırlandı.")
                         st.rerun()
 
-                # 📸 ÇÖZÜLEMEYEN SORULAR & GÖRSEL ÖĞRETMEN PAYLAŞIM KARTI
+                # 📸 ÇÖZÜLEMEYEN SORULAR & ÖĞRETMENE DOĞRUDAN WHATSAPP İLE PAYLAŞMA
                 st.divider()
-                st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Bağlantı Paylaşımı")
+                st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
                 
-                # BİREBİR PAYLAŞILABİLİR KART VE TIKLANABİLİR LİNK
                 clean_name = secilen_ogr.replace(' ', '%20')
-                share_url = f"?ogrenci={clean_name}"
+                share_param = f"?ogrenci={clean_name}"
+                
+                # WhatsApp Mesajı Oluşturma
+                wa_message = f"Merhaba Hocam, {secilen_ogr} öğrencimizin çözemediği ve destek beklediği soruları incelemeniz için bağlantı adresi: {share_param}"
+                wa_url = f"https://api.whatsapp.com/send?text={wa_message.replace(' ', '%20')}"
 
                 st.markdown(f"""
                 <div class="share-link-card">
-                    <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">🔗 Öğretmen Soru İnceleme Bağlantısı</div>
-                    <div style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">Branş öğretmenlerinin doğrudan {secilen_ogr} öğrencisinin çözemediği soruları görmesi için bu bağlantıyı gönderebilirsiniz:</div>
+                    <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">💬 Öğretmene WhatsApp ile Doğrudan Gönder</div>
+                    <div style="font-size: 13px; opacity: 0.95;">Aşağıdaki yeşil butona basarak branş öğretmenine WhatsApp üzerinden şifresiz soru inceleme bağlantısını anında iletebilirsiniz.</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                c_link1, c_link2 = st.columns([0.7, 0.3])
-                with c_link1:
-                    st.text_input("Paylaşım Linki Parametresi:", value=share_url, disabled=True, label_visibility="collapsed")
-                with c_link2:
-                    st.link_button("🔗 Soruları İncele Sayfasına Git", share_url, use_container_width=True)
+                col_wa1, col_wa2 = st.columns([0.6, 0.4])
+                with col_wa1:
+                    st.text_input("Şifresiz İnceleme Link Parametresi:", value=share_param, disabled=True, label_visibility="collapsed")
+                with col_wa2:
+                    st.link_button("💬 WhatsApp İle Öğretmene Gönder", wa_url, use_container_width=True)
 
                 df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if not df_koc_sorular.empty:
