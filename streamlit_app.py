@@ -24,7 +24,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🎨 Modern Mobil Uyumlu CSS Teması & Özel Kart Stilleri
+# 🎨 Modern Mobil Uyumlu CSS Teması
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -171,7 +171,6 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
-# PARAGRAF + PROBLEM SEÇENEĞİ EKLENMİŞ DERS SÖZLÜKLERİ
 TYT_KONULAR = {
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
         "Paragraf (25s) + Problem (20s) Günlük Rutin",
@@ -309,6 +308,17 @@ CREATE TABLE IF NOT EXISTS excel_program_matris (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS program_dosyalari (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ad_soyad TEXT,
+    yukleyen TEXT,
+    tarih TEXT,
+    dosya_yolu TEXT,
+    dosya_adi TEXT
+)
+""")
+
 conn.commit()
 
 cursor.execute("SELECT COUNT(*) FROM koclar")
@@ -386,7 +396,7 @@ else:
         tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
             "🔑 GİRİŞ / KAYIT",
             "🎯 HEDEF TAKİBİ",
-            "📅 DERS PROGRAMI (EXCEL TABLOSU)",
+            "📅 DERS PROGRAMI (EXCEL / PDF)",
             "📝 GÜNLÜK ÇALIŞMA & SORU YÜKLEME",
             "📊 DENEMELER & KARNE YÜKLEME",
             "🗺️ KONU HAKİMİYETİ"
@@ -454,9 +464,9 @@ else:
                         conn.commit()
                         st.success("🎉 Hedef kaydedildi!")
 
-            # 📊 ÖĞRENCİ EXCEL DERS PROGRAMI TABLOSU
+            # 📊 ÖĞRENCİ EXCEL VE HARİCİ DOSYA DERS PROGRAMI
             with tab_program:
-                st.markdown("### 📊 Haftalık Ders Programı (Excel Tablo Görünümü)")
+                st.markdown("### 📊 Haftalık Ders Programınız (Excel Çizelgesi)")
                 df_matris_ogr = pd.read_sql_query("""
                     SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
                            carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
@@ -465,9 +475,24 @@ else:
                 """, conn, params=(aktif_ogr,))
 
                 if not df_matris_ogr.empty:
-                    st.dataframe(df_matris_ogr, use_container_width=True, height=520)
+                    st.dataframe(df_matris_ogr, use_container_width=True, height=480)
                 else:
                     st.info("Sorumlu koçunuz henüz 7 günlük haftalık programınızı hazırlamadı.")
+
+                st.divider()
+                st.markdown("#### 📁 Sorumlu Koçunuz Tarafından Yüklenen Hazır Program Dosyaları (PDF, Excel, Word)")
+                df_p_files = pd.read_sql_query("SELECT id, yukleyen, tarih, dosya_yolu, dosya_adi FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
+                
+                if df_p_files.empty:
+                    st.caption("Henüz harici dosya formatında bir program yüklenmedi.")
+                else:
+                    for _, pf_row in df_p_files.iterrows():
+                        st.write(f"📄 **{pf_row['dosya_adi']}** (Yükleyen Koç: {pf_row['yukleyen']} - Tarih: {pf_row['tarih']})")
+                        if os.path.exists(pf_row['dosya_yolu']):
+                            with open(pf_row['dosya_yolu'], "rb") as f_b:
+                                st.download_button(f"📥 {pf_row['dosya_adi']} İndir", data=f_b, file_name=pf_row['dosya_adi'], key=f"dl_pf_{pf_row['id']}")
+                            if pf_row['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(pf_row['dosya_yolu']), unsafe_allow_html=True)
 
             with tab_gunluk:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Yapılamayan Soru Yükleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
@@ -543,7 +568,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (PARAGRAF+PROBLEM ENTEGRASYONLU) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ (EXCEL / PDF YÜKLEME EKLENMİŞ) ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -604,6 +629,7 @@ else:
                             cursor.execute("DELETE FROM yapilamayan_sorular WHERE ad_soyad = ?", (secilen_ogr,))
                             cursor.execute("DELETE FROM denemeler WHERE ad_soyad = ?", (secilen_ogr,))
                             cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
+                            cursor.execute("DELETE FROM program_dosyalari WHERE ad_soyad = ?", (secilen_ogr,))
                             conn.commit()
                             st.session_state["silme_onayi_ogrenci"] = None
                             st.success(f"🗑️ {secilen_ogr} silindi!")
@@ -627,7 +653,7 @@ else:
                 # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Şablonlu Ders Programlayıcı")
-                st.caption("⚡ Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin. 'Paragraf + Problem' rutinleri doğrudan ilk sırada yer alır.")
+                st.caption("⚡ Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin.")
 
                 gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
 
@@ -694,7 +720,7 @@ else:
                     df_matris,
                     num_rows="dynamic",
                     use_container_width=True,
-                    height=480,
+                    height=450,
                     key=f"excel_editor_{secilen_ogr}"
                 )
 
@@ -729,6 +755,23 @@ else:
                         conn.commit()
                         st.success("Tablo sıfırlandı.")
                         st.rerun()
+
+                # 📄 HARİCİ EXCEL / PDF / WORD DOSYASI YÜKLEME ALANI
+                st.divider()
+                st.markdown(f"### 📄 {secilen_ogr} İçin Harici Ders Programı Dosyası Yükleyin (Excel, PDF, Word)")
+                prog_file = st.file_uploader(f"Hazır Program Dosyası Seçin (.xlsx, .pdf, .docx):", type=["xlsx", "xls", "pdf", "docx"], key=f"file_up_{secilen_ogr}")
+                
+                if prog_file and st.button(f"📤 {prog_file.name} Dosyasını Öğrenciye Gönder", type="primary", use_container_width=True):
+                    file_ext = os.path.splitext(prog_file.name)[1]
+                    p_unique_name = f"Program_{secilen_ogr}_{datetime.date.today()}_{hashlib.md5(prog_file.name.encode()).hexdigest()[:6]}{file_ext}"
+                    save_p_path = os.path.join(PROGRAM_DIR, p_unique_name)
+                    with open(save_p_path, "wb") as f:
+                        f.write(prog_file.getbuffer())
+
+                    cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
+                                   (secilen_ogr, aktif_koc_adi, str(datetime.date.today()), save_p_path, prog_file.name))
+                    conn.commit()
+                    st.success(f"🎉 '{prog_file.name}' dosyası {secilen_ogr} öğrencisinin paneline başarıyla yüklendi!")
 
                 # 📸 ÇÖZÜLEMEYEN SORULAR & TAM URL WHATSAPP PAYLAŞIM ALANI
                 st.divider()
