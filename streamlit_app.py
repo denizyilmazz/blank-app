@@ -7,6 +7,7 @@ import base64
 import hashlib
 import os
 import shutil
+from urllib.parse import quote
 from PIL import Image
 
 # Google Generative AI kütüphane kontrolü
@@ -91,7 +92,6 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    /* 🔗 Özel Tıklanabilir Paylaşım Kartı Stili */
     .share-link-card {
         background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
         color: white;
@@ -118,7 +118,7 @@ def make_hash(password: str) -> str:
 
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
-    if password == hashed_password: True
+    if password == hashed_password: return True
     return make_hash(password) == hashed_password
 
 def veritabani_gunluk_yedekle():
@@ -530,7 +530,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (WHATSAPP ENTEGRASYONLU PAYLAŞIM) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ (TAM URL DESTEKLİ WHATSAPP PAYLAŞIM) ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -717,29 +717,39 @@ else:
                         st.success("Tablo sıfırlandı.")
                         st.rerun()
 
-                # 📸 ÇÖZÜLEMEYEN SORULAR & ÖĞRETMENE DOĞRUDAN WHATSAPP İLE PAYLAŞMA
+                # 📸 ÇÖZÜLEMEYEN SORULAR & TAM URL WHATSAPP PAYLAŞIM ALANI
                 st.divider()
                 st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
                 
-                clean_name = secilen_ogr.replace(' ', '%20')
-                share_param = f"?ogrenci={clean_name}"
+                # UYGULAMANIN CANLI TAM ALAN ADINI VE PARAMETRESİNİ DİNAMİK ALMA
+                raw_url = st.query_params.get("host_url", "")
+                if not raw_url:
+                    # Codespaces / Streamlit ortamındaki tam adres yapısı
+                    host_domain = "https://laughing-waddle-g4qqvgr6ggp9hpgqr-8501.app.github.dev"
+                else:
+                    host_domain = raw_url
+
+                encoded_student = quote(secilen_ogr)
+                full_share_url = f"{host_domain}/?ogrenci={encoded_student}"
                 
-                # WhatsApp Mesajı Oluşturma
-                wa_message = f"Merhaba Hocam, {secilen_ogr} öğrencimizin çözemediği ve destek beklediği soruları incelemeniz için bağlantı adresi: {share_param}"
-                wa_url = f"https://api.whatsapp.com/send?text={wa_message.replace(' ', '%20')}"
+                wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin çözemediği ve destek beklediği soruları incelemeniz için şifresiz bağlantı adresi: {full_share_url}"
+                wa_link = f"https://api.whatsapp.com/send?text={quote(wa_msg)}"
 
                 st.markdown(f"""
                 <div class="share-link-card">
-                    <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">💬 Öğretmene WhatsApp ile Doğrudan Gönder</div>
-                    <div style="font-size: 13px; opacity: 0.95;">Aşağıdaki yeşil butona basarak branş öğretmenine WhatsApp üzerinden şifresiz soru inceleme bağlantısını anında iletebilirsiniz.</div>
+                    <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">💬 Öğretmene WhatsApp ile Bağlantı Gönder</div>
+                    <div style="font-size: 13px; opacity: 0.95;">Aşağıdaki kutudan tam adresi kopyalayabilir veya direkt yeşil butona basarak WhatsApp sohbetine aktarabilirsiniz.</div>
                 </div>
                 """, unsafe_allow_html=True)
 
+                st.markdown("##### 📋 Kopyalanabilir Tam Adres Linki:")
+                st.code(full_share_url, language="text")
+
                 col_wa1, col_wa2 = st.columns([0.6, 0.4])
                 with col_wa1:
-                    st.text_input("Şifresiz İnceleme Link Parametresi:", value=share_param, disabled=True, label_visibility="collapsed")
+                    st.caption("💡 Bağlantıya tıklayan öğretmen herhangi bir şifre girmeden öğrencinin tüm sorularına erişir.")
                 with col_wa2:
-                    st.link_button("💬 WhatsApp İle Öğretmene Gönder", wa_url, use_container_width=True)
+                    st.link_button("💬 WhatsApp İle Öğretmene Gönder", wa_link, use_container_width=True)
 
                 df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if not df_koc_sorular.empty:
