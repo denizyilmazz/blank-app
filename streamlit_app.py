@@ -171,7 +171,16 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
+# PARAGRAF + PROBLEM SEÇENEĞİ EKLENMİŞ DERS SÖZLÜKLERİ
 TYT_KONULAR = {
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
+        "Paragraf (25s) + Problem (20s) Günlük Rutin",
+        "Paragraf (20s) + Problem (15s) Temel Düzey",
+        "Paragraf (30s) + Problem (25s) İleri Düzey",
+        "Paragraf Hız Kampı + Problem Karma",
+        "Sadece Paragraf Etüdü",
+        "Sadece Problem Etüdü"
+    ],
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "EBOB-EKOK", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran-Orantı", "Problemler", "Mantık & Kümeler", "Fonksiyonlar", "Olasılık"],
     "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Çember ve Daire", "Katı Cisimler"],
@@ -194,6 +203,10 @@ AYT_KONULAR = {
 }
 
 LGS_KONULAR = {
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
+        "Paragraf (20s) + Problem (15s) Günlük Rutin",
+        "Sözel Mantık + Matematik Yeni Nesil Soru Etüdü"
+    ],
     "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık"],
     "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Cebirsel İfadeler", "Linear Denklemler", "Eşitsizlikler", "Üçgenler", "Geometrik Cisimler"],
     "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri", "Elektrik Yükleri"],
@@ -530,7 +543,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (TAM URL DESTEKLİ WHATSAPP PAYLAŞIM) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ (PARAGRAF+PROBLEM ENTEGRASYONLU) ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -614,7 +627,7 @@ else:
                 # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Şablonlu Ders Programlayıcı")
-                st.caption("⚡ Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin.")
+                st.caption("⚡ Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin. 'Paragraf + Problem' rutinleri doğrudan ilk sırada yer alır.")
 
                 gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
 
@@ -633,9 +646,9 @@ else:
 
                         col_t1, col_t2 = st.columns(2)
                         with col_t1:
-                            s_saat = st.text_input(f"3. Değiştirilecek Saat Aralığı:", value="14:00 - 15:00", key=f"saat_input_{g_adi}")
+                            s_saat = st.text_input(f"3. Değiştirilecek Saat Aralığı:", value="09:00 - 10:00", key=f"saat_input_{g_adi}")
                         with col_t2:
-                            s_not = st.text_input(f"4. Özel Koç Notu / Soru Hedefi:", placeholder="Örn: 30 Soru + Yanlış Taraması", key=f"not_input_{g_adi}")
+                            s_not = st.text_input(f"4. Özel Koç Notu / Soru Hedefi:", placeholder="Örn: 25 Paragraf + 20 Problem", key=f"not_input_{g_adi}")
 
                         if st.button(f"✏️ {g_adi} Günündeki Sadece Bu Saat Dilimini Güncelle", key=f"btn_add_{g_adi}", type="primary"):
                             icerik = f"{s_ders}: {s_konu}"
@@ -669,7 +682,7 @@ else:
 
                 if df_matris.empty:
                     excel_sablon = [
-                        {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "📖 TYT Türkçe: Paragrafta Anlam", "Salı": "📖 TYT Türkçe: Paragrafta Anlam", "Çarşamba": "📖 TYT Türkçe: Paragrafta Anlam", "Perşembe": "📖 TYT Türkçe: Paragrafta Anlam", "Cuma": "📖 TYT Türkçe: Paragrafta Anlam", "Cumartesi": "TYT GENEL DENEME SINAVI", "Pazar": "TYT BRANŞ DENEMESİ"},
+                        {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "⚡ Paragraf (25s) + Problem (20s)", "Salı": "⚡ Paragraf (25s) + Problem (20s)", "Çarşamba": "⚡ Paragraf (25s) + Problem (20s)", "Perşembe": "⚡ Paragraf (25s) + Problem (20s)", "Cuma": "⚡ Paragraf (25s) + Problem (20s)", "Cumartesi": "TYT GENEL DENEME SINAVI", "Pazar": "TYT BRANŞ DENEMESİ"},
                         {"Saat Aralığı": "10:00 - 10:15", "Pazartesi": "Mola", "Salı": "Mola", "Çarşamba": "Mola", "Perşembe": "Mola", "Cuma": "Mola", "Cumartesi": "Deneme Devam", "Pazar": "Deneme Devam"},
                         {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "📐 TYT Matematik: Temel Kavramlar", "Salı": "📏 TYT Geometri: Üçgenler", "Çarşamba": "📐 TYT Matematik: Üslü & Köklü", "Perşembe": "📏 TYT Geometri: Çokgenler", "Cuma": "📐 TYT Matematik: Kümeler", "Cumartesi": "Deneme Analizi", "Pazar": "Branş Deneme Analizi"},
                         {"Saat Aralığı": "12:30 - 13:30", "Pazartesi": "Öğle Yemeği & Dinlenme", "Salı": "Öğle Yemeği & Dinlenme", "Çarşamba": "Öğle Yemeği & Dinlenme", "Perşembe": "Öğle Yemeği & Dinlenme", "Cuma": "Öğle Yemeği & Dinlenme", "Cumartesi": "Öğle Yemeği & Dinlenme", "Pazar": "Öğle Yemeği & Dinlenme"},
@@ -721,11 +734,9 @@ else:
                 st.divider()
                 st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
                 
-                # UYGULAMANIN CANLI TAM ALAN ADINI VE PARAMETRESİNİ DİNAMİK ALMA
                 raw_url = st.query_params.get("host_url", "")
                 if not raw_url:
-                    # Codespaces / Streamlit ortamındaki tam adres yapısı
-                    host_domain = "https://blank-app-ybp6arlr8h.streamlit.app/"
+                    host_domain = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
                 else:
                     host_domain = raw_url
 
