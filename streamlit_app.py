@@ -533,7 +533,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (ÖĞRETMEN PAYLAŞIM LİNKİ GÜNCELLEMESİ) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ (ÖĞRETMEN PAYLAŞIM LİNKİ DÜZELTİLMİŞ) ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -737,7 +737,7 @@ else:
 
                 c_link1, c_link2 = st.columns([0.7, 0.3])
                 with c_link1:
-                    st.text_input("Paylaşım Linki Parametresi:", value=share_url, readonly=True, label_visibility="collapsed")
+                    st.text_input("Paylaşım Linki Parametresi:", value=share_url, disabled=True, label_visibility="collapsed")
                 with c_link2:
                     st.link_button("🔗 Soruları İncele Sayfasına Git", share_url, use_container_width=True)
 
