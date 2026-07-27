@@ -162,7 +162,7 @@ MOTIVASYON_SOZLERI = [
 ]
 
 TYT_KONULAR = {
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kurall Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "EBOB-EKOK", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran-Orantı", "Problemler", "Mantık & Kümeler", "Fonksiyonlar", "Olasılık"],
     "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Çember ve Daire", "Katı Cisimler"],
     "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kaldırma Kuvveti & Basınç", "Isı, Sıcaklık", "Doğrusal Hareket", "Newton Yasaları", "İş, Güç, Enerji", "Elektrostatik", "Optik", "Dalgalar"],
@@ -293,6 +293,10 @@ if cursor.fetchone()[0] == 0:
     cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", make_hash("Koc123!")))
     conn.commit()
 
+# URL PARAMETRESİ İLE DOĞRUDAN SORU İNCELEME KONTROLÜ
+query_params = st.query_params
+link_ogrenci = query_params.get("ogrenci", None)
+
 # BANNER / BAŞLIK
 st.markdown("""
 <div style="text-align: center; padding: 10px 0 15px 0;">
@@ -302,383 +306,449 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-main_tab1, main_tab2, main_tab3 = st.tabs([
-    "👨‍🎓 ÖĞRENCİ GİRİŞİ & PANELİ",
-    "👨‍🏫 KOÇ YÖNETİM PANELİ",
-    "👨‍👩‍👧‍👦 VELİ TAKİP EKRANI"
-])
-
-# ==================== 👨‍🎓 ÖĞRENCİ PANELİ ====================
-with main_tab1:
-    if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
-    if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
-        
-    if st.session_state["motivasyon_goster"]:
-        m_col1, m_col2 = st.columns([0.9, 0.1])
-        with m_col1:
-            st.markdown(f'''
-            <div class="hero-motivation-card">
-                <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:4px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
-                <div style="font-size:16px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
-            </div>
-            ''', unsafe_allow_html=True)
-        with m_col2:
-            if st.button("❌ KAPAT", key="kapat_motivasyon", use_container_width=True):
-                st.session_state["motivasyon_goster"] = False
-                st.rerun()
+# EĞER DIŞARIDAN LİNK İLE GELİNMİŞSE DOĞRUDAN SORU İNCELEME EKRANINI AÇ
+if link_ogrenci:
+    st.info(f"🔗 **Doğrudan Soru İnceleme Bağlantısı:** Öğrenci: **{link_ogrenci}**")
+    link_sifre = st.text_input("🔑 İnceleme Şifreniz / Öğrenci PIN veya Veli PIN Giriniz:", type="password")
     
-    tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
-        "🔑 GİRİŞ / KAYIT",
-        "🎯 HEDEF TAKİBİ",
-        "📅 DERS PROGRAMI (EXCEL TABLOSU)",
-        "📝 GÜNLÜK ÇALIŞMA & SORU YÜKLEME",
-        "📊 DENEMELER & KARNE YÜKLEME",
-        "🗺️ KONU HAKİMİYETİ"
-    ])
-    
-    with tab_giris:
-        st.markdown("<h3 style='font-weight:700; font-size:18px;'>Öğrenci Hesabı Girişi / Kaydı</h3>", unsafe_allow_html=True)
-        cursor.execute("SELECT kullanici_adi FROM koclar")
-        koc_listesi = [r[0] for r in cursor.fetchall()] or ["koc1"]
-            
-        with st.form("ogrenci_giris_kayit_formu"):
-            col1, col2, col3, col4, col5 = st.columns(5)
-            with col1: ad_soyad = st.text_input("Adınız ve Soyadınız:").strip().title()
-            with col2: sifre = st.text_input("Öğrenci Şifreniz / PIN:", type="password")
-            with col3: veli_pin = st.text_input("👨‍👩‍👧‍👦 Veli Erişim PIN Kodu:", value="123456")
-            with col4: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav Modu:", ["TYT (Sadece TYT Çalışması)", "YKS (TYT + AYT)", "LGS (8. Sınıf)"])
-            with col5: secilen_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
-            ogr_giris_btn = st.form_submit_button("Giriş Yap / Hesabı Oluştur", type="primary", use_container_width=True)
-            
-        if ogr_giris_btn and ad_soyad and sifre:
-            cursor.execute("SELECT sifre, koc_adi, sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (ad_soyad,))
-            user = cursor.fetchone()
-            if user is None:
-                cursor.execute("INSERT INTO ogrenciler (ad_soyad, sifre, veli_pin, sinav_turu, koc_adi) VALUES (?, ?, ?, ?, ?)", (ad_soyad, make_hash(sifre), veli_pin, sinav_turu, secilen_koc))
-                conn.commit()
-                st.success(f"🎉 Hoş geldin {ad_soyad}!")
-                st.session_state["aktif_ogrenci"] = ad_soyad
-            else:
-                if verify_hash(sifre, user[0]):
-                    cursor.execute("UPDATE ogrenciler SET koc_adi = ?, sinav_turu = ?, veli_pin = ? WHERE ad_soyad = ?", (secilen_koc, sinav_turu, veli_pin, ad_soyad))
-                    conn.commit()
-                    st.success(f"🔓 Giriş başarılı! Hoş geldin {ad_soyad} ({sinav_turu}).")
-                    st.session_state["aktif_ogrenci"] = ad_soyad
-                else:
-                    st.error("Hatalı şifre!")
-                
-    aktif_ogr = st.session_state.get("aktif_ogrenci", None)
-    
-    if not aktif_ogr:
-        st.info("ℹ️ Lütfen ilk sekmeden 'Giriş / Kayıt' yapın.")
-    else:
-        cursor.execute("SELECT sinav_turu, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
-        r_info = cursor.fetchone()
-        ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
-        m_vpin = r_info[2] if (r_info and r_info[2]) else "123456"
+    if link_sifre:
+        cursor.execute("SELECT sifre, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (link_ogrenci,))
+        row_chk = cursor.fetchone()
         
-        st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Mod: **{ogr_sinav}** | 🔑 **Veli PIN:** `{m_vpin}`")
-        
-        if "TYT (Sadece" in ogr_sinav:
-            AKTIF_KONULAR = TYT_KONULAR
-        elif "YKS" in ogr_sinav:
-            AKTIF_KONULAR = {**TYT_KONULAR, **AYT_KONULAR}
-        else:
-            AKTIF_KONULAR = LGS_KONULAR
-
-        AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
-        MAX_NET_LIMIT = 120.0 if "TYT" in ogr_sinav or "YKS" in ogr_sinav else 90.0
-
-        with tab_hedef:
-            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Net Hedef Takip Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
-            with st.form("hedef_kaydet_form"):
-                ozel_hedef_net = st.number_input("Hedef Netiniz:", 10.0, float(MAX_NET_LIMIT), 95.0, 1.0)
-                if st.form_submit_button("🎯 Hedefimi Kaydet", type="primary", use_container_width=True):
-                    cursor.execute("UPDATE ogrenciler SET hedef_net = ? WHERE ad_soyad = ?", (float(ozel_hedef_net), aktif_ogr))
-                    conn.commit()
-                    st.success("🎉 Hedef kaydedildi!")
-
-        # 📊 ÖĞRENCİ EXCEL DERS PROGRAMI TABLOSU
-        with tab_program:
-            st.markdown("### 📊 Haftalık Ders Programı (Excel Tablo Görünümü)")
-            df_matris_ogr = pd.read_sql_query("""
-                SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
-                       carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
-                       cumartesi AS 'Cumartesi', pazar AS 'Pazar'
-                FROM excel_program_matris WHERE ad_soyad = ?
-            """, conn, params=(aktif_ogr,))
-
-            if not df_matris_ogr.empty:
-                st.dataframe(df_matris_ogr, use_container_width=True, height=520)
-            else:
-                st.info("Sorumlu koçunuz henüz 7 günlük haftalık programınızı hazırlamadı.")
-
-        with tab_gunluk:
-            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Yapılamayan Soru Yükleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
-            c1, c2, c3 = st.columns(3)
-            with c1: tarih_giris = st.date_input("Tarih", datetime.date.today())
-            with c2: sure_giris = st.number_input("Çalışma Süresi (Saat)", 0.0, 16.0, 5.5, 0.5)
-            with c3: verim_giris = st.slider("Verim Puanı (1-10)", 1, 10, 8)
-            not_giris = st.text_area("Çalışma Notları / Koçunuza Not:", height=70)
+        if row_chk and (verify_hash(link_sifre, row_chk[0]) or link_sifre == row_chk[1] or link_sifre == "123456"):
+            st.success(f"🔓 Erişim Onaylandı! **{link_ogrenci}** Öğrencisinin Soruları Yükleniyor...")
+            df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(link_ogrenci,))
             
-            st.divider()
-            ders_sekmeleri = st.tabs(AKTIF_DERSLER)
-            ders_verileri = {}
-
-            for idx, ders_adi in enumerate(AKTIF_DERSLER):
-                with ders_sekmeleri[idx]:
-                    secilen_konu = st.selectbox(f"Çalıştığınız Konu ({ders_adi}):", ["Genel Soru Çözümü / Karma"] + AKTIF_KONULAR[ders_adi], key=f"k_s_{ders_adi}")
-                    col_s1, col_s2, col_s3, col_s4 = st.columns(4)
-                    with col_s1: ts = st.number_input("Toplam Soru", 0, 500, 0, key=f"t_{ders_adi}")
-                    with col_s2: ds = st.number_input("Doğru", 0, 500, 0, key=f"d_{ders_adi}")
-                    with col_s3: ys = st.number_input("Yanlış", 0, 500, 0, key=f"y_{ders_adi}")
-                    with col_s4: bs = st.number_input("Boş", 0, 500, 0, key=f"b_{ders_adi}")
-                    ders_verileri[ders_adi] = (secilen_konu, ts, ds, ys, bs)
-
-                    yuklenen_sorular = st.file_uploader(f"📸 Soru Görselleri / PDF Seçin ({ders_adi}):", type=["png", "jpg", "jpeg", "pdf"], accept_multiple_files=True, key=f"upload_soru_{ders_adi}")
-                    if yuklenen_sorular and st.button(f"📤 Seçilen Soruları Kaydet ({ders_adi})", key=f"btn_save_soru_{ders_adi}"):
-                        for file in yuklenen_sorular:
-                            file_ext = os.path.splitext(file.name)[1]
-                            unique_name = f"{aktif_ogr}_{str(tarih_giris)}_{hashlib.md5(file.name.encode()).hexdigest()[:8]}{file_ext}"
-                            save_path = os.path.join(UPLOAD_DIR, unique_name)
-                            with open(save_path, "wb") as f: f.write(file.getbuffer())
-                            cursor.execute("INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?, ?)", (aktif_ogr, str(tarih_giris), ders_adi, secilen_konu, save_path, file.name))
-                        conn.commit()
-                        st.success(f"🎉 {len(yuklenen_sorular)} soru başarıyla yüklendi!")
-
-            if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
-                for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
-                    if t_s > 0:
-                        cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
-                conn.commit()
-                st.success("🎉 Çalışmalarınız kaydedildi!")
-
-        with tab_deneme:
-            st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Karne Yükleme</h3>", unsafe_allow_html=True)
-            with st.form("deneme_form"):
-                cd1, cd2, cd3 = st.columns(3)
-                with cd1: yayin = st.text_input("Yayın / Deneme Adı:")
-                with cd2: d_tur = st.selectbox("Tür:", ["Genel Deneme", "Branş Denemesi"])
-                with cd3: toplam_net = st.number_input("Netiniz:", 0.0, float(MAX_NET_LIMIT), 75.0)
-                karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle:", type=["pdf", "png", "jpg", "jpeg"])
-                
-                if st.form_submit_button("Deneme Karnesini Kaydet", type="primary", use_container_width=True) and yayin:
-                    karne_path = "Dosya Yok"
-                    if karne_dosya:
-                        file_ext = os.path.splitext(karne_dosya.name)[1]
-                        k_name = f"Karne_{aktif_ogr}_{str(datetime.date.today())}_{hashlib.md5(karne_dosya.name.encode()).hexdigest()[:6]}{file_ext}"
-                        karne_path = os.path.join(KARNE_DIR, k_name)
-                        with open(karne_path, "wb") as f: f.write(karne_dosya.getbuffer())
-
-                    cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(datetime.date.today()), yayin, d_tur, float(toplam_net), karne_path, ''))
-                    conn.commit()
-                    st.success("🎉 Deneme karneniz kaydedildi!")
-
-        with tab_konular:
-            st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🗺️ Ders Ders Konu Hakimiyet Puanlaması (1 - 5)</h3>", unsafe_allow_html=True)
-            konu_sekmeleri = st.tabs(list(AKTIF_KONULAR.keys()))
-            for idx, (d_adi, k_list) in enumerate(AKTIF_KONULAR.items()):
-                with konu_sekmeleri[idx]:
-                    for kn in k_list:
-                        cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
-                        r = cursor.fetchone()
-                        p_val = r[0] if r else 3
-                        yp = st.select_slider(f"**{kn}**", options=[1, 2, 3, 4, 5], value=p_val, key=f"{aktif_ogr}_{kn}")
-                        cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
-                    conn.commit()
-
-# ==================== 👨‍🏫 KOÇ PANELİ (ŞABLON KORUMALI & KISMİ GÜNCELLEMELİ) ====================
-with main_tab2:
-    st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
-    st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
-
-    if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
-
-    if not st.session_state["aktif_koc"]:
-        koc_tab1, koc_tab2 = st.tabs(["🔑 KOÇ GİRİŞİ YAP", "➕ YENİ KOÇ HESABI TANIMLA"])
-        with koc_tab1:
-            with st.form("koc_giris_formu"):
-                k_adi_giris = st.text_input("Koç Kullanıcı Adı:").strip()
-                k_sifre_giris = st.text_input("Şifre:", type="password")
-                if st.form_submit_button("Koç Paneline Giriş Yap", type="primary", use_container_width=True):
-                    cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_adi_giris,))
-                    row = cursor.fetchone()
-                    if row and verify_hash(k_sifre_giris, row[0]):
-                        st.session_state["aktif_koc"] = k_adi_giris
-                        st.rerun()
-                    else: st.error("❌ Hatalı şifre!")
-
-        with koc_tab2:
-            with st.form("yeni_koc_tanimla_formu"):
-                yeni_koc_adi = st.text_input("Yeni Koç Kullanıcı Adı:").strip()
-                yeni_koc_sifre = st.text_input("Yeni Koç Şifresi:", type="password")
-                katilim_kodu = st.text_input("Sistem Katılım Kodu (YKS2026KOC):", type="password")
-                if st.form_submit_button("Hesabı Oluştur", type="primary", use_container_width=True):
-                    if yeni_koc_adi and yeni_koc_sifre and katilim_kodu == SISTEM_YONETICI_KATILIM_KODU:
-                        cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", (yeni_koc_adi, make_hash(yeni_koc_sifre)))
-                        conn.commit()
-                        st.success("🎉 Koç hesabı oluşturuldu!")
-    else:
-        aktif_koc_adi = st.session_state['aktif_koc']
-        st.success(f"🔓 Oturum Açık: **{aktif_koc_adi}** (Sorumlu Koç: Deniz Yılmaz)")
-
-        cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler")
-        ogrenci_rows = cursor.fetchall()
-        
-        if ogrenci_rows:
-            ogr_dict = {f"{r[0]} ({r[1]})": r[0] for r in ogrenci_rows}
-            secilen_ogr = ogr_dict[st.selectbox("🔍 Yönetilecek Öğrenciyi Seçin:", list(ogr_dict.keys()))]
-            
-            cursor.execute("SELECT sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
-            s_turu = cursor.fetchone()[0]
-
-            if "TYT (Sadece" in s_turu:
-                KOC_MUFREDAT = TYT_KONULAR
-            elif "YKS" in s_turu:
-                KOC_MUFREDAT = {**TYT_KONULAR, **AYT_KONULAR}
+            if df_link_sorular.empty:
+                st.warning("Bu öğrenci için henüz yapılamayan soru yüklenmemiş.")
             else:
-                KOC_MUFREDAT = LGS_KONULAR
-
-            # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
-            st.divider()
-            st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Şablonlu Ders Programlayıcı")
-            st.caption("⚡ **İpucu:** Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin. Sadece seçtiğiniz o aralık güncellenecek, diğer günler aynen korunacaktır.")
-
-            gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
-
-            for idx, g_adi in enumerate(GUNLER):
-                with gun_sekmeleri[idx]:
-                    st.markdown(f"#### 📌 {g_adi} Günü İçin Hücre Güncelle")
-                    col_s1, col_s2 = st.columns(2)
-                    with col_s1:
-                        s_ders = st.selectbox(f"1. Ders Seçin ({g_adi}):", list(KOC_MUFREDAT.keys()) + ["--- Mola / Serbest ---", "--- Deneme Sınavı ---"], key=f"d_sec_{g_adi}")
-                    with col_s2:
-                        if s_ders in KOC_MUFREDAT:
-                            konu_opts = KOC_MUFREDAT[s_ders]
-                        else:
-                            konu_opts = ["Mola / Dinlenme", "TYT Genel Deneme", "Branş Denemesi", "Haftalık Değerlendirme"]
-                        s_konu = st.selectbox(f"2. Müfredat Konusu Seçin ({g_adi}):", konu_opts, key=f"k_sec_{g_adi}")
-
-                    col_t1, col_t2 = st.columns(2)
-                    with col_t1:
-                        s_saat = st.text_input(f"3. Değiştirilecek Saat Aralığı:", value="14:00 - 15:00", key=f"saat_input_{g_adi}")
-                    with col_t2:
-                        s_not = st.text_input(f"4. Özel Koç Notu / Soru Hedefi:", placeholder="Örn: 30 Soru + Yanlış Taraması", key=f"not_input_{g_adi}")
-
-                    if st.button(f"✏️ {g_adi} Günündeki Sadece Bu Saat Dilimini Güncelle", key=f"btn_add_{g_adi}", type="primary"):
-                        icerik = f"{s_ders}: {s_konu}"
-                        if s_not: icerik += f" ({s_not})"
-
-                        gun_sutun_map = {
-                            "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
-                            "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
-                        }
-                        target_col = gun_sutun_map[g_adi]
-
-                        # UPSERT (Varsa sadece o hücreyi değiştir, yoksa yeni saat satırı aç)
-                        cursor.execute(f"""
-                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {target_col})
-                            VALUES (?, ?, ?)
-                            ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {target_col} = ?
-                        """, (secilen_ogr, s_saat, icerik, icerik))
-                        conn.commit()
-                        st.success(f"🎉 {g_adi} günü ({s_saat}) dilimi güncellendi! Diğer günlerdeki programınız aynen korundu.")
-                        st.rerun()
-
-            # 📊 TÜM HAFTALIK EXCEL MATRİSİ ÖNİZLEME VE CANLI DÜZENLEME
-            st.divider()
-            st.markdown("### 📊 7 Günlük Kayıtlı Excel Ders Programınız")
-            st.caption("✨ Tıpkı Excel'deki gibi doğrudan hücrenin üzerine tıklayarak anlık değişiklik de yapabilirsiniz.")
-
-            df_matris = pd.read_sql_query("""
-                SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
-                       carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
-                       cumartesi AS 'Cumartesi', pazar AS 'Pazar'
-                FROM excel_program_matris WHERE ad_soyad = ?
-            """, conn, params=(secilen_ogr,))
-
-            # Veritabanında daha önceden kayıtlı hiçbir şey yoksa ilk kez varsayılan şablonu doldur
-            if df_matris.empty:
-                excel_sablon = [
-                    {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "📖 TYT Türkçe: Paragrafta Anlam", "Salı": "📖 TYT Türkçe: Paragrafta Anlam", "Çarşamba": "📖 TYT Türkçe: Paragrafta Anlam", "Perşembe": "📖 TYT Türkçe: Paragrafta Anlam", "Cuma": "📖 TYT Türkçe: Paragrafta Anlam", "Cumartesi": "TYT GENEL DENEME SINAVI", "Pazar": "TYT BRANŞ DENEMESİ"},
-                    {"Saat Aralığı": "10:00 - 10:15", "Pazartesi": "Mola", "Salı": "Mola", "Çarşamba": "Mola", "Perşembe": "Mola", "Cuma": "Mola", "Cumartesi": "Deneme Devam", "Pazar": "Deneme Devam"},
-                    {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "📐 TYT Matematik: Temel Kavramlar", "Salı": "📏 TYT Geometri: Üçgenler", "Çarşamba": "📐 TYT Matematik: Üslü & Köklü", "Perşembe": "📏 TYT Geometri: Çokgenler", "Cuma": "📐 TYT Matematik: Kümeler", "Cumartesi": "Deneme Analizi", "Pazar": "Branş Deneme Analizi"},
-                    {"Saat Aralığı": "12:30 - 13:30", "Pazartesi": "Öğle Yemeği & Dinlenme", "Salı": "Öğle Yemeği & Dinlenme", "Çarşamba": "Öğle Yemeği & Dinlenme", "Perşembe": "Öğle Yemeği & Dinlenme", "Cuma": "Öğle Yemeği & Dinlenme", "Cumartesi": "Öğle Yemeği & Dinlenme", "Pazar": "Öğle Yemeği & Dinlenme"},
-                    {"Saat Aralığı": "14:00 - 15:00", "Pazartesi": "📐 MATEMATİK ÖZEL DERSİ", "Salı": "🧪 TYT Kimya: Atom ve Periyodik Sistem", "Çarşamba": "📐 MATEMATİK ÖZEL DERSİ", "Perşembe": "🧪 TYT Kimya: Karışımlar", "Cuma": "📐 MATEMATİK ÖZEL DERSİ", "Cumartesi": "📐 TYT Matematik: Problemler", "Pazar": "HAFTALIK KOÇLUK DEĞERLENDİRMESİ"}
-                ]
-                df_matris = pd.DataFrame(excel_sablon)
-
-            edited_df = st.data_editor(
-                df_matris,
-                num_rows="dynamic",
-                use_container_width=True,
-                height=480,
-                key=f"excel_editor_{secilen_ogr}"
-            )
-
-            col_btn1, col_btn2 = st.columns([0.7, 0.3])
-            with col_btn1:
-                if st.button("💾 Tablodaki Tüm Düzenlemeleri Kaydet", type="primary", use_container_width=True):
-                    for _, row in edited_df.iterrows():
-                        s_araligi = str(row.get("Saat Aralığı", "")).strip()
-                        if s_araligi:
-                            cursor.execute("""
-                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET
-                                    pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba,
-                                    persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
-                            """, (
-                                secilen_ogr, s_araligi,
-                                str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
-                                str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
-                                str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
-                                str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
-                                str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
-                                str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
-                                str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
-                            ))
-                    conn.commit()
-                    st.success("🎉 Program başarıyla güncellendi ve şablon olarak kaydedildi!")
-
-            with col_btn2:
-                if st.button("🧹 Tüm Tabloyu Temizle / Sıfırla", use_container_width=True):
-                    cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
-                    conn.commit()
-                    st.success("Tablo sıfırlandı.")
-                    st.rerun()
-
-            # 📸 ÇÖZÜLEMEYEN SORULAR & KARNELER
-            st.divider()
-            st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Deneme Karneleri")
-            df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
-            if not df_koc_sorular.empty:
-                for _, s_data in df_koc_sorular.iterrows():
+                for _, s_data in df_link_sorular.iterrows():
                     st.write(f"📌 **{s_data['ders']}** - {s_data['konu']} ({s_data['tarih']})")
                     if os.path.exists(s_data['dosya_yolu']):
-                        if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')): st.image(s_data['dosya_yolu'], width=350)
-                        elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
+                        if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                            st.image(s_data['dosya_yolu'], width=380)
+                        elif s_data['dosya_yolu'].lower().endswith('.pdf'):
+                            st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
                     st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
+        else:
+            st.error("❌ Hatalı şifre!")
+    
+    if st.button("⬅️ Ana Uygulamaya Dön"):
+        st.query_params.clear()
+        st.rerun()
 
-# ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
-with main_tab3:
-    st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
-    if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
+else:
+    main_tab1, main_tab2, main_tab3 = st.tabs([
+        "👨‍🎓 ÖĞRENCİ GİRİŞİ & PANELİ",
+        "👨‍🏫 KOÇ YÖNETİM PANELİ",
+        "👨‍👩‍👧‍👦 VELİ TAKİP EKRANI"
+    ])
 
-    if not st.session_state["aktif_veli_ogrenci"]:
-        with st.form("veli_giris_formu"):
-            col_v1, col_v2 = st.columns(2)
-            with col_v1: v_ogrenci_ad = st.text_input("Öğrencinin Adı ve Soyadı:").strip().title()
-            with col_v2: v_pin_giris = st.text_input("Veli PIN Kodu:", type="password")
-            if st.form_submit_button("Raporu Görüntüle", type="primary", use_container_width=True):
-                cursor.execute("SELECT veli_pin FROM ogrenciler WHERE ad_soyad = ?", (v_ogrenci_ad,))
-                v_row = cursor.fetchone()
-                if v_row and (v_row[0] == v_pin_giris or v_pin_giris == "123456"):
-                    st.session_state["aktif_veli_ogrenci"] = v_ogrenci_ad
+    # ==================== 👨‍🎓 ÖĞRENCİ PANELİ ====================
+    with main_tab1:
+        if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
+        if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
+            
+        if st.session_state["motivasyon_goster"]:
+            m_col1, m_col2 = st.columns([0.9, 0.1])
+            with m_col1:
+                st.markdown(f'''
+                <div class="hero-motivation-card">
+                    <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:4px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
+                    <div style="font-size:16px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
+                </div>
+                ''', unsafe_allow_html=True)
+            with m_col2:
+                if st.button("❌ KAPAT", key="kapat_motivasyon", use_container_width=True):
+                    st.session_state["motivasyon_goster"] = False
                     st.rerun()
-                else: st.error("❌ Hatalı bilgi!")
-    else:
-        v_ogr = st.session_state["aktif_veli_ogrenci"]
-        st.success(f"👤 Takip Edilen Öğrenci: **{v_ogr}**")
-        df_v_calisma = pd.read_sql_query("SELECT tarih, ders, konu, toplam_soru, dogru, yanlis, bos FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
-        st.dataframe(df_v_calisma, use_container_width=True)
+        
+        tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
+            "🔑 GİRİŞ / KAYIT",
+            "🎯 HEDEF TAKİBİ",
+            "📅 DERS PROGRAMI (EXCEL TABLOSU)",
+            "📝 GÜNLÜK ÇALIŞMA & SORU YÜKLEME",
+            "📊 DENEMELER & KARNE YÜKLEME",
+            "🗺️ KONU HAKİMİYETİ"
+        ])
+        
+        with tab_giris:
+            st.markdown("<h3 style='font-weight:700; font-size:18px;'>Öğrenci Hesabı Girişi / Kaydı</h3>", unsafe_allow_html=True)
+            cursor.execute("SELECT kullanici_adi FROM koclar")
+            koc_listesi = [r[0] for r in cursor.fetchall()] or ["koc1"]
+                
+            with st.form("ogrenci_giris_kayit_formu"):
+                col1, col2, col3, col4, col5 = st.columns(5)
+                with col1: ad_soyad = st.text_input("Adınız ve Soyadınız:").strip().title()
+                with col2: sifre = st.text_input("Öğrenci Şifreniz / PIN:", type="password")
+                with col3: veli_pin = st.text_input("👨‍👩‍👧‍👦 Veli Erişim PIN Kodu:", value="123456")
+                with col4: sinav_turu = st.selectbox("🎓 Hazırlanılan Sınav Modu:", ["TYT (Sadece TYT Çalışması)", "YKS (TYT + AYT)", "LGS (8. Sınıf)"])
+                with col5: secilen_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
+                ogr_giris_btn = st.form_submit_button("Giriş Yap / Hesabı Oluştur", type="primary", use_container_width=True)
+                
+            if ogr_giris_btn and ad_soyad and sifre:
+                cursor.execute("SELECT sifre, koc_adi, sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (ad_soyad,))
+                user = cursor.fetchone()
+                if user is None:
+                    cursor.execute("INSERT INTO ogrenciler (ad_soyad, sifre, veli_pin, sinav_turu, koc_adi) VALUES (?, ?, ?, ?, ?)", (ad_soyad, make_hash(sifre), veli_pin, sinav_turu, secilen_koc))
+                    conn.commit()
+                    st.success(f"🎉 Hoş geldin {ad_soyad}!")
+                    st.session_state["aktif_ogrenci"] = ad_soyad
+                else:
+                    if verify_hash(sifre, user[0]):
+                        cursor.execute("UPDATE ogrenciler SET koc_adi = ?, sinav_turu = ?, veli_pin = ? WHERE ad_soyad = ?", (secilen_koc, sinav_turu, veli_pin, ad_soyad))
+                        conn.commit()
+                        st.success(f"🔓 Giriş başarılı! Hoş geldin {ad_soyad} ({sinav_turu}).")
+                        st.session_state["aktif_ogrenci"] = ad_soyad
+                    else:
+                        st.error("Hatalı şifre!")
+                    
+        aktif_ogr = st.session_state.get("aktif_ogrenci", None)
+        
+        if not aktif_ogr:
+            st.info("ℹ️ Lütfen ilk sekmeden 'Giriş / Kayıt' yapın.")
+        else:
+            cursor.execute("SELECT sinav_turu, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+            r_info = cursor.fetchone()
+            ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
+            m_vpin = r_info[2] if (r_info and r_info[2]) else "123456"
+            
+            st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Mod: **{ogr_sinav}** | 🔑 **Veli PIN:** `{m_vpin}`")
+            
+            if "TYT (Sadece" in ogr_sinav:
+                AKTIF_KONULAR = TYT_KONULAR
+            elif "YKS" in ogr_sinav:
+                AKTIF_KONULAR = {**TYT_KONULAR, **AYT_KONULAR}
+            else:
+                AKTIF_KONULAR = LGS_KONULAR
+
+            AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
+            MAX_NET_LIMIT = 120.0 if "TYT" in ogr_sinav or "YKS" in ogr_sinav else 90.0
+
+            with tab_hedef:
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Net Hedef Takip Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                with st.form("hedef_kaydet_form"):
+                    ozel_hedef_net = st.number_input("Hedef Netiniz:", 10.0, float(MAX_NET_LIMIT), 95.0, 1.0)
+                    if st.form_submit_button("🎯 Hedefimi Kaydet", type="primary", use_container_width=True):
+                        cursor.execute("UPDATE ogrenciler SET hedef_net = ? WHERE ad_soyad = ?", (float(ozel_hedef_net), aktif_ogr))
+                        conn.commit()
+                        st.success("🎉 Hedef kaydedildi!")
+
+            # 📊 ÖĞRENCİ EXCEL DERS PROGRAMI TABLOSU
+            with tab_program:
+                st.markdown("### 📊 Haftalık Ders Programı (Excel Tablo Görünümü)")
+                df_matris_ogr = pd.read_sql_query("""
+                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                    FROM excel_program_matris WHERE ad_soyad = ?
+                """, conn, params=(aktif_ogr,))
+
+                if not df_matris_ogr.empty:
+                    st.dataframe(df_matris_ogr, use_container_width=True, height=520)
+                else:
+                    st.info("Sorumlu koçunuz henüz 7 günlük haftalık programınızı hazırlamadı.")
+
+            with tab_gunluk:
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Yapılamayan Soru Yükleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                c1, c2, c3 = st.columns(3)
+                with c1: tarih_giris = st.date_input("Tarih", datetime.date.today())
+                with c2: sure_giris = st.number_input("Çalışma Süresi (Saat)", 0.0, 16.0, 5.5, 0.5)
+                with c3: verim_giris = st.slider("Verim Puanı (1-10)", 1, 10, 8)
+                not_giris = st.text_area("Çalışma Notları / Koçunuza Not:", height=70)
+                
+                st.divider()
+                ders_sekmeleri = st.tabs(AKTIF_DERSLER)
+                ders_verileri = {}
+
+                for idx, ders_adi in enumerate(AKTIF_DERSLER):
+                    with ders_sekmeleri[idx]:
+                        secilen_konu = st.selectbox(f"Çalıştığınız Konu ({ders_adi}):", ["Genel Soru Çözümü / Karma"] + AKTIF_KONULAR[ders_adi], key=f"k_s_{ders_adi}")
+                        col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+                        with col_s1: ts = st.number_input("Toplam Soru", 0, 500, 0, key=f"t_{ders_adi}")
+                        with col_s2: ds = st.number_input("Doğru", 0, 500, 0, key=f"d_{ders_adi}")
+                        with col_s3: ys = st.number_input("Yanlış", 0, 500, 0, key=f"y_{ders_adi}")
+                        with col_s4: bs = st.number_input("Boş", 0, 500, 0, key=f"b_{ders_adi}")
+                        ders_verileri[ders_adi] = (secilen_konu, ts, ds, ys, bs)
+
+                        yuklenen_sorular = st.file_uploader(f"📸 Soru Görselleri / PDF Seçin ({ders_adi}):", type=["png", "jpg", "jpeg", "pdf"], accept_multiple_files=True, key=f"upload_soru_{ders_adi}")
+                        if yuklenen_sorular and st.button(f"📤 Seçilen Soruları Kaydet ({ders_adi})", key=f"btn_save_soru_{ders_adi}"):
+                            for file in yuklenen_sorular:
+                                file_ext = os.path.splitext(file.name)[1]
+                                unique_name = f"{aktif_ogr}_{str(tarih_giris)}_{hashlib.md5(file.name.encode()).hexdigest()[:8]}{file_ext}"
+                                save_path = os.path.join(UPLOAD_DIR, unique_name)
+                                with open(save_path, "wb") as f: f.write(file.getbuffer())
+                                cursor.execute("INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?, ?)", (aktif_ogr, str(tarih_giris), ders_adi, secilen_konu, save_path, file.name))
+                            conn.commit()
+                            st.success(f"🎉 {len(yuklenen_sorular)} soru başarıyla yüklendi!")
+
+                if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
+                    for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
+                        if t_s > 0:
+                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
+                    conn.commit()
+                    st.success("🎉 Çalışmalarınız kaydedildi!")
+
+            with tab_deneme:
+                st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Karne Yükleme</h3>", unsafe_allow_html=True)
+                with st.form("deneme_form"):
+                    cd1, cd2, cd3 = st.columns(3)
+                    with cd1: yayin = st.text_input("Yayın / Deneme Adı:")
+                    with cd2: d_tur = st.selectbox("Tür:", ["Genel Deneme", "Branş Denemesi"])
+                    with cd3: toplam_net = st.number_input("Netiniz:", 0.0, float(MAX_NET_LIMIT), 75.0)
+                    karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle:", type=["pdf", "png", "jpg", "jpeg"])
+                    
+                    if st.form_submit_button("Deneme Karnesini Kaydet", type="primary", use_container_width=True) and yayin:
+                        karne_path = "Dosya Yok"
+                        if karne_dosya:
+                            file_ext = os.path.splitext(karne_dosya.name)[1]
+                            k_name = f"Karne_{aktif_ogr}_{str(datetime.date.today())}_{hashlib.md5(karne_dosya.name.encode()).hexdigest()[:6]}{file_ext}"
+                            karne_path = os.path.join(KARNE_DIR, k_name)
+                            with open(karne_path, "wb") as f: f.write(karne_dosya.getbuffer())
+
+                        cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(datetime.date.today()), yayin, d_tur, float(toplam_net), karne_path, ''))
+                        conn.commit()
+                        st.success("🎉 Deneme karneniz kaydedildi!")
+
+            with tab_konular:
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🗺️ Ders Ders Konu Hakimiyet Puanlaması (1 - 5)</h3>", unsafe_allow_html=True)
+                konu_sekmeleri = st.tabs(list(AKTIF_KONULAR.keys()))
+                for idx, (d_adi, k_list) in enumerate(AKTIF_KONULAR.items()):
+                    with konu_sekmeleri[idx]:
+                        for kn in k_list:
+                            cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
+                            r = cursor.fetchone()
+                            p_val = r[0] if r else 3
+                            yp = st.select_slider(f"**{kn}**", options=[1, 2, 3, 4, 5], value=p_val, key=f"{aktif_ogr}_{kn}")
+                            cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
+                        conn.commit()
+
+    # ==================== 👨‍🏫 KOÇ PANELİ (GÜÇLENDİRİLMİŞ ÖĞRENCİ YÖNETİMİ & SORU LİNKİ) ====================
+    with main_tab2:
+        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
+        st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
+
+        if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
+
+        if not st.session_state["aktif_koc"]:
+            koc_tab1, koc_tab2 = st.tabs(["🔑 KOÇ GİRİŞİ YAP", "➕ YENİ KOÇ HESABI TANIMLA"])
+            with koc_tab1:
+                with st.form("koc_giris_formu"):
+                    k_adi_giris = st.text_input("Koç Kullanıcı Adı:").strip()
+                    k_sifre_giris = st.text_input("Şifre:", type="password")
+                    if st.form_submit_button("Koç Paneline Giriş Yap", type="primary", use_container_width=True):
+                        cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_adi_giris,))
+                        row = cursor.fetchone()
+                        if row and verify_hash(k_sifre_giris, row[0]):
+                            st.session_state["aktif_koc"] = k_adi_giris
+                            st.rerun()
+                        else: st.error("❌ Hatalı şifre!")
+
+            with koc_tab2:
+                with st.form("yeni_koc_tanimla_formu"):
+                    yeni_koc_adi = st.text_input("Yeni Koç Kullanıcı Adı:").strip()
+                    yeni_koc_sifre = st.text_input("Yeni Koç Şifresi:", type="password")
+                    katilim_kodu = st.text_input("Sistem Katılım Kodu (YKS2026KOC):", type="password")
+                    if st.form_submit_button("Hesabı Oluştur", type="primary", use_container_width=True):
+                        if yeni_koc_adi and yeni_koc_sifre and katilim_kodu == SISTEM_YONETICI_KATILIM_KODU:
+                            cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", (yeni_koc_adi, make_hash(yeni_koc_sifre)))
+                            conn.commit()
+                            st.success("🎉 Koç hesabı oluşturuldu!")
+        else:
+            aktif_koc_adi = st.session_state['aktif_koc']
+            st.success(f"🔓 Oturum Açık: **{aktif_koc_adi}** (Sorumlu Koç: Deniz Yılmaz)")
+
+            cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler")
+            ogrenci_rows = cursor.fetchall()
+            
+            if ogrenci_rows:
+                col_sel_ogr, col_del_ogr = st.columns([0.7, 0.3])
+                
+                with col_sel_ogr:
+                    ogr_dict = {f"{r[0]} ({r[1]})": r[0] for r in ogrenci_rows}
+                    secilen_ogr = ogr_dict[st.selectbox("🔍 Yönetilecek Öğrenciyi Seçin:", list(ogr_dict.keys()))]
+
+                # 🗑️ KONTROLLÜ ÖĞRENCİ SİLME İŞLEMİ
+                with col_del_ogr:
+                    st.write("")
+                    st.write("")
+                    if st.button(f"🗑️ {secilen_ogr} Öğrencisini Sil", type="secondary", use_container_width=True):
+                        st.session_state["silme_onayi_ogrenci"] = secilen_ogr
+
+                if st.session_state.get("silme_onayi_ogrenci") == secilen_ogr:
+                    st.warning(f"⚠️ **DİKKAT:** `{secilen_ogr}` isimli öğrenciyi ve ona ait tüm verileri (çalışmalar, sorular, program) silmek üzeresiniz!")
+                    c_del1, c_del2 = st.columns(2)
+                    with c_del1:
+                        if st.button("✅ Evet, Öğrenciyi Kalıcı Olarak Sil", type="primary", use_container_width=True):
+                            cursor.execute("DELETE FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
+                            cursor.execute("DELETE FROM gunluk_calisma WHERE ad_soyad = ?", (secilen_ogr,))
+                            cursor.execute("DELETE FROM yapilamayan_sorular WHERE ad_soyad = ?", (secilen_ogr,))
+                            cursor.execute("DELETE FROM denemeler WHERE ad_soyad = ?", (secilen_ogr,))
+                            cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
+                            conn.commit()
+                            st.session_state["silme_onayi_ogrenci"] = None
+                            st.success(f"🗑️ {secilen_ogr} başarıyla silindi!")
+                            st.rerun()
+                    with c_del2:
+                        if st.button("❌ İptal Et", use_container_width=True):
+                            st.session_state["silme_onayi_ogrenci"] = None
+                            st.rerun()
+
+                cursor.execute("SELECT sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
+                s_turu_row = cursor.fetchone()
+                s_turu = s_turu_row[0] if s_turu_row else "TYT (Sadece TYT Çalışması)"
+
+                if "TYT (Sadece" in s_turu:
+                    KOC_MUFREDAT = TYT_KONULAR
+                elif "YKS" in s_turu:
+                    KOC_MUFREDAT = {**TYT_KONULAR, **AYT_KONULAR}
+                else:
+                    KOC_MUFREDAT = LGS_KONULAR
+
+                # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
+                st.divider()
+                st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Şablonlu Ders Programlayıcı")
+                st.caption("⚡ **İpucu:** Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin. Sadece seçtiğiniz o aralık güncellenecek, diğer günler aynen korunacaktır.")
+
+                gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
+
+                for idx, g_adi in enumerate(GUNLER):
+                    with gun_sekmeleri[idx]:
+                        st.markdown(f"#### 📌 {g_adi} Günü İçin Hücre Güncelle")
+                        col_s1, col_s2 = st.columns(2)
+                        with col_s1:
+                            s_ders = st.selectbox(f"1. Ders Seçin ({g_adi}):", list(KOC_MUFREDAT.keys()) + ["--- Mola / Serbest ---", "--- Deneme Sınavı ---"], key=f"d_sec_{g_adi}")
+                        with col_s2:
+                            if s_ders in KOC_MUFREDAT:
+                                konu_opts = KOC_MUFREDAT[s_ders]
+                            else:
+                                konu_opts = ["Mola / Dinlenme", "TYT Genel Deneme", "Branş Denemesi", "Haftalık Değerlendirme"]
+                            s_konu = st.selectbox(f"2. Müfredat Konusu Seçin ({g_adi}):", konu_opts, key=f"k_sec_{g_adi}")
+
+                        col_t1, col_t2 = st.columns(2)
+                        with col_t1:
+                            s_saat = st.text_input(f"3. Değiştirilecek Saat Aralığı:", value="14:00 - 15:00", key=f"saat_input_{g_adi}")
+                        with col_t2:
+                            s_not = st.text_input(f"4. Özel Koç Notu / Soru Hedefi:", placeholder="Örn: 30 Soru + Yanlış Taraması", key=f"not_input_{g_adi}")
+
+                        if st.button(f"✏️ {g_adi} Günündeki Sadece Bu Saat Dilimini Güncelle", key=f"btn_add_{g_adi}", type="primary"):
+                            icerik = f"{s_ders}: {s_konu}"
+                            if s_not: icerik += f" ({s_not})"
+
+                            gun_sutun_map = {
+                                "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                                "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                            }
+                            target_col = gun_sutun_map[g_adi]
+
+                            cursor.execute(f"""
+                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {target_col})
+                                VALUES (?, ?, ?)
+                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {target_col} = ?
+                            """, (secilen_ogr, s_saat, icerik, icerik))
+                            conn.commit()
+                            st.success(f"🎉 {g_adi} günü ({s_saat}) dilimi güncellendi! Diğer günlerdeki programınız aynen korundu.")
+                            st.rerun()
+
+                # 📊 TÜM HAFTALIK EXCEL MATRİSİ ÖNİZLEME VE CANLI DÜZENLEME
+                st.divider()
+                st.markdown("### 📊 7 Günlük Kayıtlı Excel Ders Programınız")
+                st.caption("✨ Tıpkı Excel'deki gibi doğrudan hücrenin üzerine tıklayarak anlık değişiklik de yapabilirsiniz.")
+
+                df_matris = pd.read_sql_query("""
+                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                    FROM excel_program_matris WHERE ad_soyad = ?
+                """, conn, params=(secilen_ogr,))
+
+                if df_matris.empty:
+                    excel_sablon = [
+                        {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "📖 TYT Türkçe: Paragrafta Anlam", "Salı": "📖 TYT Türkçe: Paragrafta Anlam", "Çarşamba": "📖 TYT Türkçe: Paragrafta Anlam", "Perşembe": "📖 TYT Türkçe: Paragrafta Anlam", "Cuma": "📖 TYT Türkçe: Paragrafta Anlam", "Cumartesi": "TYT GENEL DENEME SINAVI", "Pazar": "TYT BRANŞ DENEMESİ"},
+                        {"Saat Aralığı": "10:00 - 10:15", "Pazartesi": "Mola", "Salı": "Mola", "Çarşamba": "Mola", "Perşembe": "Mola", "Cuma": "Mola", "Cumartesi": "Deneme Devam", "Pazar": "Deneme Devam"},
+                        {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "📐 TYT Matematik: Temel Kavramlar", "Salı": "📏 TYT Geometri: Üçgenler", "Çarşamba": "📐 TYT Matematik: Üslü & Köklü", "Perşembe": "📏 TYT Geometri: Çokgenler", "Cuma": "📐 TYT Matematik: Kümeler", "Cumartesi": "Deneme Analizi", "Pazar": "Branş Deneme Analizi"},
+                        {"Saat Aralığı": "12:30 - 13:30", "Pazartesi": "Öğle Yemeği & Dinlenme", "Salı": "Öğle Yemeği & Dinlenme", "Çarşamba": "Öğle Yemeği & Dinlenme", "Perşembe": "Öğle Yemeği & Dinlenme", "Cuma": "Öğle Yemeği & Dinlenme", "Cumartesi": "Öğle Yemeği & Dinlenme", "Pazar": "Öğle Yemeği & Dinlenme"},
+                        {"Saat Aralığı": "14:00 - 15:00", "Pazartesi": "📐 MATEMATİK ÖZEL DERSİ", "Salı": "🧪 TYT Kimya: Atom ve Periyodik Sistem", "Çarşamba": "📐 MATEMATİK ÖZEL DERSİ", "Perşembe": "🧪 TYT Kimya: Karışımlar", "Cuma": "📐 MATEMATİK ÖZEL DERSİ", "Cumartesi": "📐 TYT Matematik: Problemler", "Pazar": "HAFTALIK KOÇLUK DEĞERLENDİRMESİ"}
+                    ]
+                    df_matris = pd.DataFrame(excel_sablon)
+
+                edited_df = st.data_editor(
+                    df_matris,
+                    num_rows="dynamic",
+                    use_container_width=True,
+                    height=480,
+                    key=f"excel_editor_{secilen_ogr}"
+                )
+
+                col_btn1, col_btn2 = st.columns([0.7, 0.3])
+                with col_btn1:
+                    if st.button("💾 Tablodaki Tüm Düzenlemeleri Kaydet", type="primary", use_container_width=True):
+                        for _, row in edited_df.iterrows():
+                            s_araligi = str(row.get("Saat Aralığı", "")).strip()
+                            if s_araligi:
+                                cursor.execute("""
+                                    INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET
+                                        pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba,
+                                        persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
+                                """, (
+                                    secilen_ogr, s_araligi,
+                                    str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
+                                    str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
+                                    str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
+                                    str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
+                                    str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
+                                    str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
+                                    str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
+                                ))
+                        conn.commit()
+                        st.success("🎉 Program başarıyla güncellendi ve şablon olarak kaydedildi!")
+
+                with col_btn2:
+                    if st.button("🧹 Tüm Tabloyu Temizle / Sıfırla", use_container_width=True):
+                        cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
+                        conn.commit()
+                        st.success("Tablo sıfırlandı.")
+                        st.rerun()
+
+                # 📸 ÇÖZÜLEMEYEN SORULAR & BAĞLANTI LİNKİ
+                st.divider()
+                st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Bağlantı Paylaşımı")
+                
+                # Soru Paylaşım Linki Oluşturma
+                soru_linki = f"?ogrenci={secilen_ogr.replace(' ', '%20')}"
+                st.code(soru_linki, language="text")
+                st.caption("💡 Bu bağlantıyı veya parametreyi kullanarak öğrencinin sorularına şifresiyle doğrudan erişebilirsiniz.")
+
+                df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+                if not df_koc_sorular.empty:
+                    for _, s_data in df_koc_sorular.iterrows():
+                        st.write(f"📌 **{s_data['ders']}** - {s_data['konu']} ({s_data['tarih']})")
+                        if os.path.exists(s_data['dosya_yolu']):
+                            if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')): st.image(s_data['dosya_yolu'], width=350)
+                            elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
+                        st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
+
+    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
+    with main_tab3:
+        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
+        if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
+
+        if not st.session_state["aktif_veli_ogrenci"]:
+            with st.form("veli_giris_formu"):
+                col_v1, col_v2 = st.columns(2)
+                with col_v1: v_ogrenci_ad = st.text_input("Öğrencinin Adı ve Soyadı:").strip().title()
+                with col_v2: v_pin_giris = st.text_input("Veli PIN Kodu:", type="password")
+                if st.form_submit_button("Raporu Görüntüle", type="primary", use_container_width=True):
+                    cursor.execute("SELECT veli_pin FROM ogrenciler WHERE ad_soyad = ?", (v_ogrenci_ad,))
+                    v_row = cursor.fetchone()
+                    if v_row and (v_row[0] == v_pin_giris or v_pin_giris == "123456"):
+                        st.session_state["aktif_veli_ogrenci"] = v_ogrenci_ad
+                        st.rerun()
+                    else: st.error("❌ Hatalı bilgi!")
+        else:
+            v_ogr = st.session_state["aktif_veli_ogrenci"]
+            st.success(f"👤 Takip Edilen Öğrenci: **{v_ogr}**")
+            df_v_calisma = pd.read_sql_query("SELECT tarih, ders, konu, toplam_soru, dogru, yanlis, bos FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
+            st.dataframe(df_v_calisma, use_container_width=True)
