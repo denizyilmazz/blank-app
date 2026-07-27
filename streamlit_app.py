@@ -23,7 +23,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🎨 Modern Mobil Uyumlu CSS Teması
+# 🎨 Modern Mobil Uyumlu CSS Teması & Özel Kart Stilleri
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -89,6 +89,16 @@ st.markdown("""
         color: #4c1d95;
         margin-top: 12px;
         margin-bottom: 15px;
+    }
+
+    /* 🔗 Özel Tıklanabilir Paylaşım Kartı Stili */
+    .share-link-card {
+        background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+        color: white;
+        padding: 20px 24px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.3);
+        margin-bottom: 20px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -308,7 +318,7 @@ st.markdown("""
 
 # EĞER DIŞARIDAN LİNK İLE GELİNMİŞSE DOĞRUDAN SORU İNCELEME EKRANINI AÇ
 if link_ogrenci:
-    st.info(f"🔗 **Doğrudan Soru İnceleme Bağlantısı:** Öğrenci: **{link_ogrenci}**")
+    st.info(f"🔗 **Öğretmen Soru İnceleme Ekranı:** Öğrenci: **{link_ogrenci}**")
     link_sifre = st.text_input("🔑 İnceleme Şifreniz / Öğrenci PIN veya Veli PIN Giriniz:", type="password")
     
     if link_sifre:
@@ -316,7 +326,7 @@ if link_ogrenci:
         row_chk = cursor.fetchone()
         
         if row_chk and (verify_hash(link_sifre, row_chk[0]) or link_sifre == row_chk[1] or link_sifre == "123456"):
-            st.success(f"🔓 Erişim Onaylandı! **{link_ogrenci}** Öğrencisinin Soruları Yükleniyor...")
+            st.success(f"🔓 Erişim Onaylandı! **{link_ogrenci}** Öğrencisinin Yapılamayan Soruları Yükleniyor...")
             df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(link_ogrenci,))
             
             if df_link_sorular.empty:
@@ -523,7 +533,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (GÜÇLENDİRİLMİŞ ÖĞRENCİ YÖNETİMİ & SORU LİNKİ) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ (ÖĞRETMEN PAYLAŞIM LİNKİ GÜNCELLEMESİ) ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -568,7 +578,6 @@ else:
                     ogr_dict = {f"{r[0]} ({r[1]})": r[0] for r in ogrenci_rows}
                     secilen_ogr = ogr_dict[st.selectbox("🔍 Yönetilecek Öğrenciyi Seçin:", list(ogr_dict.keys()))]
 
-                # 🗑️ KONTROLLÜ ÖĞRENCİ SİLME İŞLEMİ
                 with col_del_ogr:
                     st.write("")
                     st.write("")
@@ -576,10 +585,10 @@ else:
                         st.session_state["silme_onayi_ogrenci"] = secilen_ogr
 
                 if st.session_state.get("silme_onayi_ogrenci") == secilen_ogr:
-                    st.warning(f"⚠️ **DİKKAT:** `{secilen_ogr}` isimli öğrenciyi ve ona ait tüm verileri (çalışmalar, sorular, program) silmek üzeresiniz!")
+                    st.warning(f"⚠️ **DİKKAT:** `{secilen_ogr}` isimli öğrenciyi silmek üzeresiniz!")
                     c_del1, c_del2 = st.columns(2)
                     with c_del1:
-                        if st.button("✅ Evet, Öğrenciyi Kalıcı Olarak Sil", type="primary", use_container_width=True):
+                        if st.button("✅ Evet, Sil", type="primary", use_container_width=True):
                             cursor.execute("DELETE FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
                             cursor.execute("DELETE FROM gunluk_calisma WHERE ad_soyad = ?", (secilen_ogr,))
                             cursor.execute("DELETE FROM yapilamayan_sorular WHERE ad_soyad = ?", (secilen_ogr,))
@@ -587,7 +596,7 @@ else:
                             cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
                             conn.commit()
                             st.session_state["silme_onayi_ogrenci"] = None
-                            st.success(f"🗑️ {secilen_ogr} başarıyla silindi!")
+                            st.success(f"🗑️ {secilen_ogr} silindi!")
                             st.rerun()
                     with c_del2:
                         if st.button("❌ İptal Et", use_container_width=True):
@@ -608,7 +617,7 @@ else:
                 # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Şablonlu Ders Programlayıcı")
-                st.caption("⚡ **İpucu:** Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin. Sadece seçtiğiniz o aralık güncellenecek, diğer günler aynen korunacaktır.")
+                st.caption("⚡ Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin.")
 
                 gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
 
@@ -647,13 +656,12 @@ else:
                                 ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {target_col} = ?
                             """, (secilen_ogr, s_saat, icerik, icerik))
                             conn.commit()
-                            st.success(f"🎉 {g_adi} günü ({s_saat}) dilimi güncellendi! Diğer günlerdeki programınız aynen korundu.")
+                            st.success(f"🎉 {g_adi} günü ({s_saat}) dilimi güncellendi!")
                             st.rerun()
 
                 # 📊 TÜM HAFTALIK EXCEL MATRİSİ ÖNİZLEME VE CANLI DÜZENLEME
                 st.divider()
                 st.markdown("### 📊 7 Günlük Kayıtlı Excel Ders Programınız")
-                st.caption("✨ Tıpkı Excel'deki gibi doğrudan hücrenin üzerine tıklayarak anlık değişiklik de yapabilirsiniz.")
 
                 df_matris = pd.read_sql_query("""
                     SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
@@ -703,7 +711,7 @@ else:
                                     str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
                                 ))
                         conn.commit()
-                        st.success("🎉 Program başarıyla güncellendi ve şablon olarak kaydedildi!")
+                        st.success("🎉 Program başarıyla güncellendi!")
 
                 with col_btn2:
                     if st.button("🧹 Tüm Tabloyu Temizle / Sıfırla", use_container_width=True):
@@ -712,14 +720,26 @@ else:
                         st.success("Tablo sıfırlandı.")
                         st.rerun()
 
-                # 📸 ÇÖZÜLEMEYEN SORULAR & BAĞLANTI LİNKİ
+                # 📸 ÇÖZÜLEMEYEN SORULAR & GÖRSEL ÖĞRETMEN PAYLAŞIM KARTI
                 st.divider()
                 st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Bağlantı Paylaşımı")
                 
-                # Soru Paylaşım Linki Oluşturma
-                soru_linki = f"?ogrenci={secilen_ogr.replace(' ', '%20')}"
-                st.code(soru_linki, language="text")
-                st.caption("💡 Bu bağlantıyı veya parametreyi kullanarak öğrencinin sorularına şifresiyle doğrudan erişebilirsiniz.")
+                # BİREBİR PAYLAŞILABİLİR KART VE TIKLANABİLİR LİNK
+                clean_name = secilen_ogr.replace(' ', '%20')
+                share_url = f"?ogrenci={clean_name}"
+
+                st.markdown(f"""
+                <div class="share-link-card">
+                    <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">🔗 Öğretmen Soru İnceleme Bağlantısı</div>
+                    <div style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">Branş öğretmenlerinin doğrudan {secilen_ogr} öğrencisinin çözemediği soruları görmesi için bu bağlantıyı gönderebilirsiniz:</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                c_link1, c_link2 = st.columns([0.7, 0.3])
+                with c_link1:
+                    st.text_input("Paylaşım Linki Parametresi:", value=share_url, readonly=True, label_visibility="collapsed")
+                with c_link2:
+                    st.link_button("🔗 Soruları İncele Sayfasına Git", share_url, use_container_width=True)
 
                 df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if not df_koc_sorular.empty:
