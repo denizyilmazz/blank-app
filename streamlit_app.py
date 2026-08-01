@@ -1268,7 +1268,7 @@ else:
                             elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
                         st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
 
-    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
+    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ (GÜNCELLENDİ) ====================
     with main_tab3:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
         if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
@@ -1289,11 +1289,68 @@ else:
             col_v_head1, col_v_head2 = st.columns([0.8, 0.2])
             with col_v_head1:
                 v_ogr = st.session_state["aktif_veli_ogrenci"]
-                st.success(f"👤 Takip Edilen Öğrenci: **{v_ogr}**")
+                cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net, hedef_sira FROM ogrenciler WHERE ad_soyad = ?", (v_ogr,))
+                v_h_info = cursor.fetchone()
+                h_uni = v_h_info[0] if (v_h_info and v_h_info[0]) else "Belirtilmedi"
+                h_bolum = v_h_info[1] if (v_h_info and v_h_info[1]) else "Belirtilmedi"
+                h_net = v_h_info[2] if (v_h_info and v_h_info[2]) else 0.0
+                h_sira = v_h_info[3] if (v_h_info and len(v_h_info)>3 and v_h_info[3]) else "Belirtilmedi"
+
+                st.success(f"👤 Öğrenci Raporu: **{v_ogr}** | 🎯 Hedef: **{h_uni} - {h_bolum}** (Net: {h_net})")
             with col_v_head2:
                 if st.button("🚪 ÇIKIŞ YAP", key="veli_logout_btn", use_container_width=True):
                     st.session_state["aktif_veli_ogrenci"] = None
                     st.rerun()
 
-            df_v_calisma = pd.read_sql_query("SELECT tarih, ders, konu, toplam_soru, dogru, yanlis, bos FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
-            st.dataframe(df_v_calisma, use_container_width=True)
+            # VELİ İÇİN 3 SEKME: GÜNLÜK SORU TAKİBİ, DENEME SONUÇLARI, HAFTALIK PROGRAM
+            v_tab1, v_tab2, v_tab3 = st.tabs([
+                "📝 Günlük Çalışma & Çözülen Soru Raporu",
+                "📊 Deneme Sonuçları & Karneler",
+                "📅 Haftalık Ders Programı"
+            ])
+
+            with v_tab1:
+                st.markdown(f"#### 📈 {v_ogr} — Günlük Soru Çözüm Geçmişi")
+                df_v_calisma = pd.read_sql_query("""
+                    SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', 
+                           toplam_soru AS 'Toplam Soru', dogru AS 'Doğru', yanlis AS 'Yanlış', 
+                           sure AS 'Süre (Saat)', verim AS 'Verim (1-10)'
+                    FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC
+                """, conn, params=(v_ogr,))
+                
+                if not df_v_calisma.empty:
+                    st.dataframe(df_v_calisma, use_container_width=True, height=400)
+                    
+                    # Toplam Soru İstatistiği
+                    cursor.execute("SELECT SUM(toplam_soru) FROM gunluk_calisma WHERE ad_soyad = ?", (v_ogr,))
+                    t_soru = cursor.fetchone()[0] or 0
+                    st.info(f"🏆 Öğrencinin Sistemde Çözdüğü **Toplam Soru Miktarı:** `{t_soru}` Soru")
+                else:
+                    st.info("Öğrenci henüz günlük çalışma kaydı girmemiştir.")
+
+            with v_tab2:
+                st.markdown(f"#### 📊 {v_ogr} — Deneme Sınavı Sonuçları")
+                df_v_deneme = pd.read_sql_query("""
+                    SELECT tarih AS 'Tarih', yayin AS 'Yayın / Deneme Adı', tur AS 'Sınav Türü', 
+                           toplam_net AS 'Toplam Net', koc_notu AS 'Koç Notu'
+                    FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC
+                """, conn, params=(v_ogr,))
+
+                if not df_v_deneme.empty:
+                    st.dataframe(df_v_deneme, use_container_width=True, height=350)
+                else:
+                    st.info("Öğrenci henüz deneme sonucu kaydetmemiştir.")
+
+            with v_tab3:
+                st.markdown(f"#### 📅 {v_ogr} — Güncel Haftalık Ders Programı")
+                df_v_prog = pd.read_sql_query("""
+                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                    FROM excel_program_matris WHERE ad_soyad = ?
+                """, conn, params=(v_ogr,))
+
+                if not df_v_prog.empty:
+                    st.dataframe(df_v_prog, use_container_width=True, height=400)
+                else:
+                    st.info("Koç henüz bu öğrenci için haftalık ders programı çizelgesi oluşturmamıştır.")
