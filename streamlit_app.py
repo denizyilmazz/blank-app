@@ -179,7 +179,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-SABIT_GEMINI_API_KEY = "AIzaSy..."  # Kalıcı API Key
+SABIT_GEMINI_API_KEY = "AIzaSy..."
 
 SISTEM_YONETICI_KATILIM_KODU = "YKS2026KOC"
 DB_FILE = "yks_kocluk.db"
@@ -363,7 +363,6 @@ conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=20)
 cursor = conn.cursor()
 cursor.execute("PRAGMA journal_mode=WAL;")
 
-# --- 🛠️ TÜM TABLOLARI EKSİKSİZ OLUŞTURMA VE ONARMA ---
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
@@ -631,7 +630,7 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE ÖSYM SONUÇ BELGESİ SİMÜLATÖRÜ
+            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE ÖSYM BELGESİ SİMÜLATÖRÜ
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
@@ -686,10 +685,10 @@ else:
                         st.success(f"🎉 Hedefiniz {secilen_hedef_uni} Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}**\n• **Üniversite Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **Üniversite Taban Sıralaması:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
                         st.rerun()
 
-                # 🧮 ---------------- ÖSYM SONUÇ BELGESİ FORMATINDA DETAYLI NET VE PUAN SİMÜLATÖRÜ ----------------
+                # 🧮 ---------------- ÖSYM STANDARTLARINDA HESAPLAMA & TABLO SİMÜLATÖRÜ ----------------
                 st.divider()
                 st.markdown("### 🧮 ÖSYM Sonuç Belgesi Formatında Puan ve Sıralama Analizi")
-                st.caption("Ders netlerinizi girin; sistem gerçekçi ÖSYM standart sapma ve yığılma katsayıları ile resmi ÖSYM Sonuç Belgesi stili rapor oluştursun.")
+                st.caption("Ders netlerinizi girin; sistem gerçekçi ÖSYM standart sapma katsayıları ile resmi ÖSYM Sonuç Belgesi raporu oluştursun.")
 
                 secilen_alan = st.radio("🎯 Ağırlıklı Öğrenim Alanınızı Seçin:", ["Sayısal (SAY)", "Eşit Ağırlık (EA)", "Sözel (SÖZ)", "Yabancı Dil (DİL)"], horizontal=True)
 
@@ -794,39 +793,32 @@ else:
                             sz_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 21, key="sz_ed_d")
                             sz_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 2, key="sz_ed_y")
                             net_sz_edeb = max(0.0, sz_ed_d - (sz_ed_y * 0.25))
-                            st.caption(f"Edebiyat Net: `{net_sz_edeb:.2f}`")
                         with c_sz2:
                             sz_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 8, key="sz_t1_d")
                             sz_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 1, key="sz_t1_y")
                             net_sz_t1 = max(0.0, sz_t1_d - (sz_t1_y * 0.25))
-                            st.caption(f"Tarih-1 Net: `{net_sz_t1:.2f}`")
                         with c_sz3:
                             sz_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 5, key="sz_c1_d")
                             sz_c1_y = st.number_input("Coğrafya-1 Yanlış:", 0, 6, 1, key="sz_c1_y")
                             net_sz_c1 = max(0.0, sz_c1_d - (sz_c1_y * 0.25))
-                            st.caption(f"Coğrafya-1 Net: `{net_sz_c1:.2f}`")
 
                         c_sz4, c_sz5, c_sz6, c_sz7 = st.columns(4)
                         with c_sz4:
                             sz_t2_d = st.number_input("Tarih-2 Doğru (11):", 0, 11, 9, key="sz_t2_d")
                             sz_t2_y = st.number_input("Tarih-2 Yanlış:", 0, 11, 1, key="sz_t2_y")
                             net_sz_t2 = max(0.0, sz_t2_d - (sz_t2_y * 0.25))
-                            st.caption(f"Tarih-2 Net: `{net_sz_t2:.2f}`")
                         with c_sz5:
                             sz_c2_d = st.number_input("Coğrafya-2 Doğru (11):", 0, 11, 9, key="sz_c2_d")
                             sz_c2_y = st.number_input("Coğrafya-2 Yanlış:", 0, 11, 1, key="sz_c2_y")
                             net_sz_c2 = max(0.0, sz_c2_d - (sz_c2_y * 0.25))
-                            st.caption(f"Coğrafya-2 Net: `{net_sz_c2:.2f}`")
                         with c_sz6:
                             sz_f_d = st.number_input("Felsefe Grb. Doğru (12):", 0, 12, 10, key="sz_f_d")
                             sz_f_y = st.number_input("Felsefe Grb. Yanlış:", 0, 12, 1, key="sz_f_y")
                             net_sz_fel = max(0.0, sz_f_d - (sz_f_y * 0.25))
-                            st.caption(f"Felsefe Net: `{net_sz_fel:.2f}`")
                         with c_sz7:
                             sz_d_d = st.number_input("Din Kültürü Doğru (6):", 0, 6, 5, key="sz_d_d")
                             sz_d_y = st.number_input("Din Kültürü Yanlış:", 0, 6, 1, key="sz_d_y")
                             net_sz_din = max(0.0, sz_d_d - (sz_d_y * 0.25))
-                            st.caption(f"Din Net: `{net_sz_din:.2f}`")
 
                         toplam_ayt_net = net_sz_edeb + net_sz_t1 + net_sz_c1 + net_sz_t2 + net_sz_c2 + net_sz_fel + net_sz_din
                         ayt_ham_puan = (net_sz_edeb * 3.0) + (net_sz_t1 * 2.8) + (net_sz_c1 * 3.3) + (net_sz_t2 * 2.9) + (net_sz_c2 * 2.9) + (net_sz_fel * 3.0) + (net_sz_din * 3.3)
@@ -841,7 +833,6 @@ else:
                             ydt_y = st.number_input("YDT Yabancı Dil Yanlış:", 0, 80, 5, key="ydt_y")
 
                         net_ydt = max(0.0, ydt_d - (ydt_y * 0.25))
-                        st.caption(f"YDT Yabancı Dil Netiniz: `{net_ydt:.2f}`")
                         toplam_ayt_net = net_ydt
                         ayt_ham_puan = net_ydt * 3.0
 
@@ -855,96 +846,70 @@ else:
                         hesapla_btn = st.button("🚀 Resmi ÖSYM Sonuç Belgesi Raporunu Oluştur", type="primary", use_container_width=True)
 
                     if hesapla_btn:
-                        # Gerçekçi ÖSYM formülü
                         tyt_ham = 100.0 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
-                        ayt_ham = ayt_ham_puan
-                        obp_katkisi = (obp_puan * 5) * 0.12
+                        obp_ek = (obp_puan * 5) * 0.12
                         
-                        ham_puan_deger = 130.0 + (tyt_ham * 0.4) + (ayt_ham * 0.6)
-                        yerlestirme_puan_deger = ham_puan_deger + obp_katkisi
+                        ham_puan_deger = 130.0 + (tyt_ham * 0.4) + (ayt_ham_puan * 0.6)
+                        yerlestirme_puan_deger = ham_puan_deger + obp_ek
 
-                        # Netlere göre gerçekçi başarı sırası simülasyonu (Örn: 89 TYT + 54 AYT Sayısal için ~12.000 - 18.000 arası)
-                        toplam_agirlikli_skor = toplam_tyt_net * 2.5 + toplam_ayt_net * 3.5
+                        # Gerçekçi ÖSYM Sıralama Algoritması
+                        toplam_skor = toplam_tyt_net * 2.2 + toplam_ayt_net * 3.2
                         if secilen_alan == "Sayısal (SAY)":
-                            if toplam_agirlikli_skor >= 340: tahmini_sira_str = "4.250"
-                            elif toplam_agirlikli_skor >= 310: tahmini_sira_str = "14.850"
-                            elif toplam_agirlikli_skor >= 280: tahmini_sira_str = "42.100"
-                            elif toplam_agirlikli_skor >= 240: tahmini_sira_str = "98.500"
+                            if toplam_skor >= 155: tahmini_sira_str = "4.250"
+                            elif toplam_skor >= 140: tahmini_sira_str = "14.850"
+                            elif toplam_skor >= 120: tahmini_sira_str = "42.100"
+                            elif toplam_skor >= 100: tahmini_sira_str = "98.500"
                             else: tahmini_sira_str = "210.000+"
                         elif secilen_alan == "Eşit Ağırlık (EA)":
-                            if toplam_agirlikli_skor >= 320: tahmini_sira_str = "3.100"
-                            elif toplam_agirlikli_skor >= 290: tahmini_sira_str = "12.400"
-                            elif toplam_agirlikli_skor >= 250: tahmini_sira_str = "38.500"
+                            if toplam_skor >= 145: tahmini_sira_str = "3.100"
+                            elif toplam_skor >= 125: tahmini_sira_str = "12.400"
+                            elif toplam_skor >= 105: tahmini_sira_str = "38.500"
                             else: tahmini_sira_str = "110.000+"
                         elif secilen_alan == "Sözel (SÖZ)":
-                            if toplam_agirlikli_skor >= 310: tahmini_sira_str = "2.200"
-                            elif toplam_agirlikli_skor >= 270: tahmini_sira_str = "9.500"
+                            if toplam_skor >= 140: tahmini_sira_str = "2.200"
+                            elif toplam_skor >= 120: tahmini_sira_str = "9.500"
                             else: tahmini_sira_str = "45.000+"
                         else:
-                            if toplam_agirlikli_skor >= 300: tahmini_sira_str = "1.500"
+                            if toplam_skor >= 130: tahmini_sira_str = "1.500"
                             else: tahmini_sira_str = "25.000+"
 
-                        # ÖSYM SONUÇ BELGESİ GÖRÜNÜMÜ
+                        st.markdown("---")
                         st.markdown(f"""
                         <div class="osym-belge-box">
                             <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-                                <h3 style="margin:0; font-weight:800; font-size:20px; color:#1e293b !important;">T.C. ÖLÇME, SEÇME VE YERLEŞTİRME MERKEZİ (ÖSYM)</h3>
-                                <h4 style="margin:4px 0 0 0; font-weight:700; font-size:16px; color:#334155 !important;">2026 YÜKSEKÖĞRETİMLİLER KURUMLARI SINAVI (2026-YKS) SONUÇ BELGESİ</h4>
+                                <h3 style="margin:0; font-weight:800; font-size:18px; color:#1e293b !important;">T.C. ÖLÇME, SEÇME VE YERLEŞTİRME MERKEZİ (ÖSYM)</h3>
+                                <h4 style="margin:4px 0 0 0; font-weight:700; font-size:15px; color:#334155 !important;">2026 YÜKSEKÖĞRETİMLİLER KURUMLARI SINAVI (2026-YKS) SONUÇ BELGESİ</h4>
                                 <p style="margin:4px 0 0 0; font-size:12px; color:#64748b !important;">T.C. Kimlik No: 109******** &nbsp;|&nbsp; Ad Soyad: {aktif_ogr.upper()}</p>
                             </div>
-                            
-                            <table style="width:100%; border-collapse: collapse; margin-bottom: 16px; font-size:13px;">
-                                <tr style="background:#f1f5f9; border-bottom: 1px solid #cbd5e1;">
-                                    <th style="padding: 8px; text-align:left;">TESTLER</th>
-                                    <th style="padding: 8px; text-align:center;">Soru Sayısı</th>
-                                    <th style="padding: 8px; text-align:center;">Doğru</th>
-                                    <th style="padding: 8px; text-align:center;">Yanlış</th>
-                                    <th style="padding: 8px; text-align:center;">Net</th>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 6px;">TYT Türkçe</td>
-                                    <td style="padding: 6px; text-align:center;">40</td>
-                                    <td style="padding: 6px; text-align:center;">{t_turkce_d}</td>
-                                    <td style="padding: 6px; text-align:center;">{t_turkce_y}</td>
-                                    <td style="padding: 6px; text-align:center; font-weight:700;">{net_turkce:.2f}</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 6px;">TYT Sosyal Bilimler</td>
-                                    <td style="padding: 6px; text-align:center;">20</td>
-                                    <td style="padding: 6px; text-align:center;">{t_sos_d}</td>
-                                    <td style="padding: 6px; text-align:center;">{t_sos_y}</td>
-                                    <td style="padding: 6px; text-align:center; font-weight:700;">{net_sosyal:.2f}</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 6px;">TYT Temel Matematik</td>
-                                    <td style="padding: 6px; text-align:center;">40</td>
-                                    <td style="padding: 6px; text-align:center;">{t_mat_d}</td>
-                                    <td style="padding: 6px; text-align:center;">{t_mat_y}</td>
-                                    <td style="padding: 6px; text-align:center; font-weight:700;">{net_mat:.2f}</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 6px;">TYT Fen Bilimleri</td>
-                                    <td style="padding: 6px; text-align:center;">20</td>
-                                    <td style="padding: 6px; text-align:center;">{t_fen_d}</td>
-                                    <td style="padding: 6px; text-align:center;">{t_fen_y}</td>
-                                    <td style="padding: 6px; text-align:center; font-weight:700;">{net_fen:.2f}</td>
-                                </tr>
-                            </table>
+                        """, unsafe_allow_html=True)
 
-                            <div style="background:#f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                        # Streamlit Native Tablo
+                        tablo_verisi = [
+                            {"Test Adı": "TYT Türkçe", "Soru": 40, "Doğru": t_turkce_d, "Yanlış": t_turkce_y, "Net": f"{net_turkce:.2f}"},
+                            {"Test Adı": "TYT Sosyal Bilimler", "Soru": 20, "Doğru": t_sos_d, "Yanlış": t_sos_y, "Net": f"{net_sosyal:.2f}"},
+                            {"Test Adı": "TYT Temel Matematik", "Soru": 40, "Doğru": t_mat_d, "Yanlış": t_mat_y, "Net": f"{net_mat:.2f}"},
+                            {"Test Adı": "TYT Fen Bilimleri", "Soru": 20, "Doğru": t_fen_d, "Yanlış": t_fen_y, "Net": f"{net_fen:.2f}"},
+                        ]
+                        if toplam_ayt_net > 0:
+                            tablo_verisi.append({"Test Adı": f"AYT / YDT ({secilen_alan})", "Soru": "80/40", "Doğru": "-", "Yanlış": "-", "Net": f"{toplam_ayt_net:.2f}"})
+
+                        st.dataframe(pd.DataFrame(tablo_verisi), use_container_width=True, hide_index=True)
+
+                        st.markdown(f"""
+                            <div style="background:#f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-top: 14px;">
                                 <div style="font-weight:800; font-size:14px; margin-bottom:8px; color:#1e293b;">🎓 {secilen_alan} PUAN VE BAŞARI SIRALAMASI BİLGİLERİ</div>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:13px; font-weight:700;">
-                                    <div>TYT Puanı (Ham): <span style="float:right;">{(tyt_ham * 0.4):.2f}</span></div>
-                                    <div>{secilen_alan} Ham Puanı: <span style="float:right;">{ham_puan_deger:.2f}</span></div>
-                                    <div>Ortaöğretim Başarı Puanı (OBP): <span style="float:right;">{obp_puan:.2f}</span></div>
-                                    <div style="color:#059669;"><strong>{secilen_alan} Yerleştirme Puanı:</strong> <span style="float:right; font-size:15px;">{yerlestirme_puan_deger:.2f}</span></div>
+                                <div style="font-size:13px; font-weight:700; line-height: 1.6;">
+                                    • TYT Ham Puanı: <strong>{(tyt_ham * 0.4):.2f}</strong><br>
+                                    • {secilen_alan} Ham Puanı: <strong>{ham_puan_deger:.2f}</strong><br>
+                                    • Ortaöğretim Başarı Puanı (OBP): <strong>{obp_puan:.2f}</strong><br>
+                                    • <span style="color:#059669;"><strong>{secilen_alan} Yerleştirme Puanı: {yerlestirme_puan_deger:.2f}</strong></span>
                                 </div>
-                                <div style="margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:8px; font-size:14px; font-weight:800; color:#2563eb;">
-                                    🏆 {secilen_alan} BAŞARI SIRALAMASI: <span style="float:right; background:#dbeafe; padding:2px 8px; border-radius:4px;">{tahmini_sira_str}. Olanak</span>
+                                <div style="margin-top:12px; border-top:1px dashed #cbd5e1; padding-top:8px; font-size:15px; font-weight:800; color:#2563eb;">
+                                    🏆 ÖSYM BAŞARI SIRALAMANIZ: <span style="background:#dbeafe; padding:3px 10px; border-radius:6px; color:#1e40af;">İlk {tahmini_sira_str}. Derece</span>
                                 </div>
                             </div>
                             
-                            <div style="font-size:10px; color:#64748b; text-align:center; margin-top:10px;">
+                            <div style="font-size:10px; color:#64748b; text-align:center; margin-top:12px;">
                                 Bu belge, Deniz Yılmaz Koçluk Platformu ÖSYM Simülatörü tarafından oluşturulmuş tahmini sonuç belgesidir. Resmi geçerliliği yoktur.
                             </div>
                         </div>
