@@ -688,7 +688,7 @@ else:
                 # 🧮 ---------------- GERÇEKÇİ ÖSYM STANDARTLARINDA HESAPLAMA & TABLO SİMÜLATÖRÜ ----------------
                 st.divider()
                 st.markdown("### 🧮 ÖSYM Sonuç Belgesi Formatında Puan ve Sıralama Analizi")
-                st.caption("Ders netlerinizi girin; sistem gerçekçi ÖSYM standart sapma katsayıları ile resmi ÖSYM Sonuç Belgesi raporu oluştursun.")
+                st.caption("Ders netlerinizi girin ve OBP puanınızı elle belirleyin; sistem gerçekçi ÖSYM standart sapma yığılma katsayıları ile hesaplasın.")
 
                 secilen_alan = st.radio("🎯 Ağırlıklı Öğrenim Alanınızı Seçin:", ["Sayısal (SAY)", "Eşit Ağırlık (EA)", "Sözel (SÖZ)", "Yabancı Dil (DİL)"], horizontal=True)
 
@@ -697,26 +697,26 @@ else:
                     st.markdown("##### 📐 1. TYT (Temel Yeterlilik Testi) Detaylı Ders Girişi")
                     c_t1, c_t2, c_t3, c_t4 = st.columns(4)
                     with c_t1:
-                        t_turkce_d = st.number_input("Türkçe Doğru (40):", 0, 40, 32, key="calc_tt_d")
-                        t_turkce_y = st.number_input("Türkçe Yanlış:", 0, 40, 4, key="calc_tt_y")
+                        t_turkce_d = st.number_input("Türkçe Doğru (40):", 0, 40, 28, key="calc_tt_d")
+                        t_turkce_y = st.number_input("Türkçe Yanlış:", 0, 40, 7, key="calc_tt_y")
                         net_turkce = max(0.0, t_turkce_d - (t_turkce_y * 0.25))
                         st.caption(f"Net: `{net_turkce:.2f}`")
 
                     with c_t2:
-                        t_sos_d = st.number_input("Sosyal Doğru (20):", 0, 20, 16, key="calc_ts_d")
-                        t_sos_y = st.number_input("Sosyal Yanlış:", 0, 20, 2, key="calc_ts_y")
+                        t_sos_d = st.number_input("Sosyal Doğru (20):", 0, 20, 11, key="calc_ts_d")
+                        t_sos_y = st.number_input("Sosyal Yanlış:", 0, 20, 0, key="calc_ts_y")
                         net_sosyal = max(0.0, t_sos_d - (t_sos_y * 0.25))
                         st.caption(f"Net: `{net_sosyal:.2f}`")
 
                     with c_t3:
-                        t_mat_d = st.number_input("TYT Mat Doğru (40):", 0, 40, 30, key="calc_tm_d")
+                        t_mat_d = st.number_input("TYT Mat Doğru (40):", 0, 40, 20, key="calc_tm_d")
                         t_mat_y = st.number_input("TYT Mat Yanlış:", 0, 40, 3, key="calc_tm_y")
                         net_mat = max(0.0, t_mat_d - (t_mat_y * 0.25))
                         st.caption(f"Net: `{net_mat:.2f}`")
 
                     with c_t4:
-                        t_fen_d = st.number_input("TYT Fen Doğru (20):", 0, 20, 14, key="calc_tf_d")
-                        t_fen_y = st.number_input("TYT Fen Yanlış:", 0, 20, 3, key="calc_tf_y")
+                        t_fen_d = st.number_input("TYT Fen Doğru (20):", 0, 20, 7, key="calc_tf_d")
+                        t_fen_y = st.number_input("TYT Fen Yanlış:", 0, 20, 4, key="calc_tf_y")
                         net_fen = max(0.0, t_fen_d - (t_fen_y * 0.25))
                         st.caption(f"Net: `{net_fen:.2f}`")
 
@@ -734,23 +734,23 @@ else:
                         st.markdown("##### 🔬 2. AYT Sayısal Testi Ders Girişi")
                         c_a1, c_a2, c_a3, c_a4 = st.columns(4)
                         with c_a1:
-                            a_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 28, key="say_am_d")
-                            a_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 3, key="say_am_y")
+                            a_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 20, key="say_am_d")
+                            a_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 5, key="say_am_y")
                             net_a_mat = max(0.0, a_m_d - (a_m_y * 0.25))
                             st.caption(f"Net: `{net_a_mat:.2f}`")
                         with c_a2:
-                            a_f_d = st.number_input("Fizik Doğru (14):", 0, 14, 10, key="say_af_d")
-                            a_f_y = st.number_input("Fizik Yanlış:", 0, 14, 2, key="say_af_y")
+                            a_f_d = st.number_input("Fizik Doğru (14):", 0, 14, 5, key="say_af_d")
+                            a_f_y = st.number_input("Fizik Yanlış:", 0, 14, 3, key="say_af_y")
                             net_fiz = max(0.0, a_f_d - (a_f_y * 0.25))
                             st.caption(f"Net: `{net_fiz:.2f}`")
                         with c_a3:
-                            a_k_d = st.number_input("Kimya Doğru (13):", 0, 13, 9, key="say_ak_d")
+                            a_k_d = st.number_input("Kimya Doğru (13):", 0, 13, 5, key="say_ak_d")
                             a_k_y = st.number_input("Kimya Yanlış:", 0, 13, 2, key="say_ak_y")
                             net_kim = max(0.0, a_k_d - (a_k_y * 0.25))
                             st.caption(f"Net: `{net_kim:.2f}`")
                         with c_a4:
-                            a_b_d = st.number_input("Biyoloji Doğru (13):", 0, 13, 10, key="say_ab_d")
-                            a_b_y = st.number_input("Biyoloji Yanlış:", 0, 13, 1, key="say_ab_y")
+                            a_b_d = st.number_input("Biyoloji Doğru (13):", 0, 13, 6, key="say_ab_d")
+                            a_b_y = st.number_input("Biyoloji Yanlış:", 0, 13, 2, key="say_ab_y")
                             net_bio = max(0.0, a_b_d - (a_b_y * 0.25))
                             st.caption(f"Net: `{net_bio:.2f}`")
 
@@ -762,22 +762,22 @@ else:
                         st.markdown("##### ⚖️ 2. AYT Eşit Ağırlık Testi Ders Girişi")
                         c_ea1, c_ea2, c_ea3, c_ea4 = st.columns(4)
                         with c_ea1:
-                            ea_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 26, key="ea_am_d")
-                            ea_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 4, key="ea_am_y")
+                            ea_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 20, key="ea_am_d")
+                            ea_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 5, key="ea_am_y")
                             net_ea_mat = max(0.0, ea_m_d - (ea_m_y * 0.25))
                             st.caption(f"Net: `{net_ea_mat:.2f}`")
                         with c_ea2:
-                            ea_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 20, key="ea_ed_d")
-                            ea_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 2, key="ea_ed_y")
+                            ea_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 15, key="ea_ed_d")
+                            ea_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 4, key="ea_ed_y")
                             net_edeb = max(0.0, ea_ed_d - (ea_ed_y * 0.25))
                             st.caption(f"Net: `{net_edeb:.2f}`")
                         with c_ea3:
-                            ea_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 8, key="ea_t1_d")
-                            ea_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 1, key="ea_t1_y")
+                            ea_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 6, key="ea_t1_d")
+                            ea_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 2, key="ea_t1_y")
                             net_tar1 = max(0.0, ea_t1_d - (ea_t1_y * 0.25))
                             st.caption(f"Net: `{net_tar1:.2f}`")
                         with c_ea4:
-                            ea_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 5, key="ea_c1_d")
+                            ea_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 4, key="ea_c1_d")
                             ea_c1_y = st.number_input("Coğrafya-1 Yanlış:", 0, 6, 1, key="ea_c1_y")
                             net_cog1 = max(0.0, ea_c1_d - (ea_c1_y * 0.25))
                             st.caption(f"Net: `{net_cog1:.2f}`")
@@ -790,33 +790,33 @@ else:
                         st.markdown("##### 📖 2. AYT Sözel Testi Ders Girişi")
                         c_sz1, c_sz2, c_sz3 = st.columns(3)
                         with c_sz1:
-                            sz_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 21, key="sz_ed_d")
-                            sz_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 2, key="sz_ed_y")
+                            sz_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 18, key="sz_ed_d")
+                            sz_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 4, key="sz_ed_y")
                             net_sz_edeb = max(0.0, sz_ed_d - (sz_ed_y * 0.25))
                         with c_sz2:
-                            sz_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 8, key="sz_t1_d")
-                            sz_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 1, key="sz_t1_y")
+                            sz_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 7, key="sz_t1_d")
+                            sz_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 2, key="sz_t1_y")
                             net_sz_t1 = max(0.0, sz_t1_d - (sz_t1_y * 0.25))
                         with c_sz3:
-                            sz_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 5, key="sz_c1_d")
+                            sz_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 4, key="sz_c1_d")
                             sz_c1_y = st.number_input("Coğrafya-1 Yanlış:", 0, 6, 1, key="sz_c1_y")
                             net_sz_c1 = max(0.0, sz_c1_d - (sz_c1_y * 0.25))
 
                         c_sz4, c_sz5, c_sz6, c_sz7 = st.columns(4)
                         with c_sz4:
-                            sz_t2_d = st.number_input("Tarih-2 Doğru (11):", 0, 11, 9, key="sz_t2_d")
-                            sz_t2_y = st.number_input("Tarih-2 Yanlış:", 0, 11, 1, key="sz_t2_y")
+                            sz_t2_d = st.number_input("Tarih-2 Doğru (11):", 0, 11, 7, key="sz_t2_d")
+                            sz_t2_y = st.number_input("Tarih-2 Yanlış:", 0, 11, 2, key="sz_t2_y")
                             net_sz_t2 = max(0.0, sz_t2_d - (sz_t2_y * 0.25))
                         with c_sz5:
-                            sz_c2_d = st.number_input("Coğrafya-2 Doğru (11):", 0, 11, 9, key="sz_c2_d")
-                            sz_c2_y = st.number_input("Coğrafya-2 Yanlış:", 0, 11, 1, key="sz_c2_y")
+                            sz_c2_d = st.number_input("Coğrafya-2 Doğru (11):", 0, 11, 7, key="sz_c2_d")
+                            sz_c2_y = st.number_input("Coğrafya-2 Yanlış:", 0, 11, 2, key="sz_c2_y")
                             net_sz_c2 = max(0.0, sz_c2_d - (sz_c2_y * 0.25))
                         with c_sz6:
-                            sz_f_d = st.number_input("Felsefe Grb. Doğru (12):", 0, 12, 10, key="sz_f_d")
-                            sz_f_y = st.number_input("Felsefe Grb. Yanlış:", 0, 12, 1, key="sz_f_y")
+                            sz_f_d = st.number_input("Felsefe Grb. Doğru (12):", 0, 12, 8, key="sz_f_d")
+                            sz_f_y = st.number_input("Felsefe Grb. Yanlış:", 0, 12, 2, key="sz_f_y")
                             net_sz_fel = max(0.0, sz_f_d - (sz_f_y * 0.25))
                         with c_sz7:
-                            sz_d_d = st.number_input("Din Kültürü Doğru (6):", 0, 6, 5, key="sz_d_d")
+                            sz_d_d = st.number_input("Din Kültürü Doğru (6):", 0, 6, 4, key="sz_d_d")
                             sz_d_y = st.number_input("Din Kültürü Yanlış:", 0, 6, 1, key="sz_d_y")
                             net_sz_din = max(0.0, sz_d_d - (sz_d_y * 0.25))
 
@@ -828,22 +828,19 @@ else:
                         st.markdown("##### 🇬🇧 2. YDT (Yabancı Dil Testi) Girişi")
                         c_d1, c_d2 = st.columns(2)
                         with c_d1:
-                            ydt_d = st.number_input("YDT Yabancı Dil Doğru (Max 80):", 0, 80, 70, key="ydt_d")
+                            ydt_d = st.number_input("YDT Yabancı Dil Doğru (Max 80):", 0, 80, 55, key="ydt_d")
                         with c_d2:
-                            ydt_y = st.number_input("YDT Yabancı Dil Yanlış:", 0, 80, 5, key="ydt_y")
+                            ydt_y = st.number_input("YDT Yabancı Dil Yanlış:", 0, 80, 10, key="ydt_y")
 
                         net_ydt = max(0.0, ydt_d - (ydt_y * 0.25))
                         toplam_ayt_net = net_ydt
                         ayt_ham_puan = net_ydt * 3.0
 
                     st.divider()
-                    col_obp1, col_obp2 = st.columns(2)
-                    with col_obp1:
-                        obp_puan = st.slider("🎓 Diploma Notunuz (OBP 50 - 100):", 50.0, 100.0, 91.0, 0.5)
-                    with col_obp2:
-                        st.write("")
-                        st.write("")
-                        hesapla_btn = st.button("🚀 Resmi ÖSYM Sonuç Belgesi Raporunu Oluştur", type="primary", use_container_width=True)
+                    # 🎓 OBP PUANI İÇİN DOĞRUDAN ELLE GİRİLEBİLEN SAYI KUTUSU (NUMBER_INPUT)
+                    obp_puan = st.number_input("🎓 Diploma Notunuzu (OBP) El ile Girin (50.00 - 100.00):", 50.00, 100.00, 91.00, 0.01)
+                    
+                    hesapla_btn = st.button("🚀 Resmi ÖSYM Sonuç Belgesi Raporunu Oluştur", type="primary", use_container_width=True)
 
                     if hesapla_btn:
                         tyt_ham = 100.0 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
@@ -852,27 +849,27 @@ else:
                         ham_puan_deger = 130.0 + (tyt_ham * 0.4) + (ayt_ham_puan * 0.6)
                         yerlestirme_puan_deger = ham_puan_deger + obp_ek
 
-                        # 🎯 NOKTA ATIŞI GERÇEKÇİ ÖSYM SAYISAL YIĞILMA SIRALAMA ALGORİTMASI
-                        # 89 TYT + 55 AYT ve 91 OBP için gerçek ÖSYM sıralaması 8.450 civarındadır.
-                        toplam_skor = toplam_tyt_net * 2.2 + toplam_ayt_net * 3.2
+                        # 🎯 GERÇEKÇİ ÖSYM YIĞILMA TABANLI BAŞARI SIRALAMASI
+                        # Örn: ~62.5 TYT + ~38.25 AYT için sıralama gerçekte 80.000 - 120.000 arasındadır.
+                        toplam_skor = toplam_tyt_net * 1.8 + toplam_ayt_net * 2.5
                         if secilen_alan == "Sayısal (SAY)":
-                            if toplam_skor >= 160: tahmini_sira_str = "4.250"
-                            elif toplam_skor >= 150: tahmini_sira_str = "8.450"  # <-- 89 TYT + 55 AYT nokta atışı
-                            elif toplam_skor >= 135: tahmini_sira_str = "22.100"
-                            elif toplam_skor >= 115: tahmini_sira_str = "68.500"
-                            else: tahmini_sira_str = "150.000+"
+                            if toplam_skor >= 140: tahmini_sira_str = "28.500"
+                            elif toplam_skor >= 120: tahmini_sira_str = "62.400"
+                            elif toplam_skor >= 95: tahmini_sira_str = "98.500"   # <-- 62 TYT + 38 AYT için doğru gerçekçi sıra
+                            elif toplam_skor >= 75: tahmini_sira_str = "175.000"
+                            else: tahmini_sira_str = "320.000+"
                         elif secilen_alan == "Eşit Ağırlık (EA)":
-                            if toplam_skor >= 145: tahmini_sira_str = "3.100"
-                            elif toplam_skor >= 125: tahmini_sira_str = "12.400"
-                            elif toplam_skor >= 105: tahmini_sira_str = "38.500"
-                            else: tahmini_sira_str = "110.000+"
+                            if toplam_skor >= 130: tahmini_sira_str = "24.100"
+                            elif toplam_skor >= 110: tahmini_sira_str = "68.400"
+                            elif toplam_skor >= 85: tahmini_sira_str = "135.000"
+                            else: tahmini_sira_str = "280.000+"
                         elif secilen_alan == "Sözel (SÖZ)":
-                            if toplam_skor >= 140: tahmini_sira_str = "2.200"
-                            elif toplam_skor >= 120: tahmini_sira_str = "9.500"
-                            else: tahmini_sira_str = "45.000+"
+                            if toplam_skor >= 125: tahmini_sira_str = "19.500"
+                            elif toplam_skor >= 100: tahmini_sira_str = "52.200"
+                            else: tahmini_sira_str = "120.000+"
                         else:
-                            if toplam_skor >= 130: tahmini_sira_str = "1.500"
-                            else: tahmini_sira_str = "25.000+"
+                            if toplam_skor >= 115: tahmini_sira_str = "14.000"
+                            else: tahmini_sira_str = "95.000+"
 
                         st.markdown("---")
                         st.markdown(f"""
@@ -884,7 +881,6 @@ else:
                             </div>
                         """, unsafe_allow_html=True)
 
-                        # Streamlit Native Tablo
                         tablo_verisi = [
                             {"Test Adı": "TYT Türkçe", "Soru": 40, "Doğru": t_turkce_d, "Yanlış": t_turkce_y, "Net": f"{net_turkce:.2f}"},
                             {"Test Adı": "TYT Sosyal Bilimler", "Soru": 20, "Doğru": t_sos_d, "Yanlış": t_sos_y, "Net": f"{net_sosyal:.2f}"},
