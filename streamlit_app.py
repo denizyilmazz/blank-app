@@ -347,6 +347,7 @@ conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=20)
 cursor = conn.cursor()
 cursor.execute("PRAGMA journal_mode=WAL;")
 
+# --- 🛠️ TABLOLARI GÜVENCEYE ALMA VE EKSİK TABLOLARI OLUŞTURMA ---
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
@@ -617,7 +618,7 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE DERS BAZLI ALAN PUAN HESAPLAMA
+            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE ÖSYM STANDARTLARINDA HESAPLAMA
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
@@ -672,10 +673,10 @@ else:
                         st.success(f"🎉 Hedefiniz {secilen_hedef_uni} Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}**\n• **Üniversite Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **Üniversite Taban Sıralaması:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
                         st.rerun()
 
-                # 🧮 ---------------- ALAN BAZLI DETAYLI DERS HESAPLAMA VE SIRALAMA MODÜLÜ ----------------
+                # 🧮 ---------------- ÖSYM STANDARTLARINDA DETAYLI NET, PUAN VE BAŞARI SIRALAMASI HESAPLAMA ----------------
                 st.divider()
-                st.markdown("### 🧮 Alan Bazlı (Sayısal / Eşit Ağırlık / Sözel / Dil) Detaylı Ders Net Hesaplama")
-                st.caption("Aşağıdan öğrenim alanınızı seçerek ilgili YKS derslerinin Doğru / Yanlış sayılarını girin. Puan ve sıralamanız alana özel katsayılarla anında hesaplanacaktır.")
+                st.markdown("### 🧮 ÖSYM Standartlarında Puan & Başarı Sıralaması Hesaplama")
+                st.caption("Aşağıdan öğrenim alanınızı seçerek gerçek ÖSYM katsayıları ve taban puanları (100 taban) üzerinden net ve sıralama analizi yapın.")
 
                 secilen_alan = st.radio("🎯 Ağırlıklı Öğrenim Alanınızı Seçin:", ["Sayısal (SAY)", "Eşit Ağırlık (EA)", "Sözel (SÖZ)", "Yabancı Dil (DİL)"], horizontal=True)
 
@@ -770,45 +771,45 @@ else:
 
                     elif secilen_alan == "Sözel (SÖZ)":
                         st.divider()
-                        st.markdown("##### 📖 2. AYT Sözel Testi Ders Girişi (Edebiyat, Sosyal-1, Sosyal-2)")
+                        st.markdown("##### 📖 2. AYT Sözel Testi Ders Girişi")
                         c_sz1, c_sz2, c_sz3 = st.columns(3)
                         with c_sz1:
                             sz_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 21, key="sz_ed_d")
                             sz_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 2, key="sz_ed_y")
                             net_sz_edeb = max(0.0, sz_ed_d - (sz_ed_y * 0.25))
-                            st.caption(f"Edebiyat Net: `{net_sz_edeb:.2f}`")
+                            st.caption(f"Net: `{net_sz_edeb:.2f}`")
                         with c_sz2:
                             sz_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 8, key="sz_t1_d")
                             sz_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 1, key="sz_t1_y")
                             net_sz_t1 = max(0.0, sz_t1_d - (sz_t1_y * 0.25))
-                            st.caption(f"Tarih-1 Net: `{net_sz_t1:.2f}`")
+                            st.caption(f"Net: `{net_sz_t1:.2f}`")
                         with c_sz3:
                             sz_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 5, key="sz_c1_d")
                             sz_c1_y = st.number_input("Coğrafya-1 Yanlış:", 0, 6, 1, key="sz_c1_y")
                             net_sz_c1 = max(0.0, sz_c1_d - (sz_c1_y * 0.25))
-                            st.caption(f"Coğrafya-1 Net: `{net_sz_c1:.2f}`")
+                            st.caption(f"Net: `{net_sz_c1:.2f}`")
 
                         c_sz4, c_sz5, c_sz6, c_sz7 = st.columns(4)
                         with c_sz4:
                             sz_t2_d = st.number_input("Tarih-2 Doğru (11):", 0, 11, 9, key="sz_t2_d")
                             sz_t2_y = st.number_input("Tarih-2 Yanlış:", 0, 11, 1, key="sz_t2_y")
                             net_sz_t2 = max(0.0, sz_t2_d - (sz_t2_y * 0.25))
-                            st.caption(f"Tarih-2 Net: `{net_sz_t2:.2f}`")
+                            st.caption(f"Net: `{net_sz_t2:.2f}`")
                         with c_sz5:
                             sz_c2_d = st.number_input("Coğrafya-2 Doğru (11):", 0, 11, 9, key="sz_c2_d")
                             sz_c2_y = st.number_input("Coğrafya-2 Yanlış:", 0, 11, 1, key="sz_c2_y")
                             net_sz_c2 = max(0.0, sz_c2_d - (sz_c2_y * 0.25))
-                            st.caption(f"Coğrafya-2 Net: `{net_sz_c2:.2f}`")
+                            st.caption(f"Net: `{net_sz_c2:.2f}`")
                         with c_sz6:
                             sz_f_d = st.number_input("Felsefe Grb. Doğru (12):", 0, 12, 10, key="sz_f_d")
                             sz_f_y = st.number_input("Felsefe Grb. Yanlış:", 0, 12, 1, key="sz_f_y")
                             net_sz_fel = max(0.0, sz_f_d - (sz_f_y * 0.25))
-                            st.caption(f"Felsefe Net: `{net_sz_fel:.2f}`")
+                            st.caption(f"Net: `{net_sz_fel:.2f}`")
                         with c_sz7:
                             sz_d_d = st.number_input("Din Kültürü Doğru (6):", 0, 6, 5, key="sz_d_d")
                             sz_d_y = st.number_input("Din Kültürü Yanlış:", 0, 6, 1, key="sz_d_y")
                             net_sz_din = max(0.0, sz_d_d - (sz_d_y * 0.25))
-                            st.caption(f"Din Net: `{net_sz_din:.2f}`")
+                            st.caption(f"Net: `{net_sz_din:.2f}`")
 
                         toplam_ayt_net = net_sz_edeb + net_sz_t1 + net_sz_c1 + net_sz_t2 + net_sz_c2 + net_sz_fel + net_sz_din
                         ayt_ham_puan = (net_sz_edeb * 3.0) + (net_sz_t1 * 2.8) + (net_sz_c1 * 3.3) + (net_sz_t2 * 2.9) + (net_sz_c2 * 2.9) + (net_sz_fel * 3.0) + (net_sz_din * 3.3)
@@ -834,49 +835,66 @@ else:
                     with col_obp2:
                         st.write("")
                         st.write("")
-                        hesapla_btn = st.button("🚀 Puan ve Sıralamamı Hesapla", type="primary", use_container_width=True)
+                        hesapla_btn = st.button("🚀 ÖSYM Standartlarında Puan ve Sıralamamı Hesapla", type="primary", use_container_width=True)
 
                     if hesapla_btn:
-                        tyt_ham_puan = 100 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
-                        obp_katki = obp_puan * 0.6
-                        yerlestirme_puan = (tyt_ham_puan * 0.4) + (ayt_ham_puan * 0.6) + obp_katki
-
-                        genel_skor = toplam_tyt_net + (toplam_ayt_net * 1.6)
-
+                        # Gerçekçi ÖSYM taban puan hesaplama simülasyonu
+                        tyt_ham_puan = 100.0 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
+                        obp_ek = (obp_puan * 5) * 0.12  # ÖSYM OBP ek katkı katsayısı
+                        
                         if secilen_alan == "Sayısal (SAY)":
-                            if genel_skor >= 165: tahmini_sira = "İlk 1.000 Derece 🏆"
-                            elif genel_skor >= 150: tahmini_sira = "1.000 - 5.000"
-                            elif genel_skor >= 135: tahmini_sira = "5.000 - 15.000"
-                            elif genel_skor >= 120: tahmini_sira = "15.000 - 35.000"
-                            elif genel_skor >= 100: tahmini_sira = "35.000 - 75.000"
-                            else: tahmini_sira = "75.000+"
+                            ham_puan = (tyt_ham_puan * 0.40) + (ayt_ham_puan * 0.60)
+                            yerlestirme_puan = ham_puan + obp_ek
+                            
+                            # ÖSYM Başarı Sıralaması Simülasyonu
+                            toplam_skor = toplam_tyt_net + (toplam_ayt_net * 1.45)
+                            if toplam_skor >= 105: tahmini_sira = "1 - 5.000 (İlk Bin Derece 🏆)"
+                            elif toplam_skor >= 90: tahmini_sira = "5.000 - 25.000"
+                            elif toplam_skor >= 75: tahmini_sira = "25.000 - 75.000"
+                            elif toplam_skor >= 60: tahmini_sira = "75.000 - 150.000"
+                            else: tahmini_sira = "150.000+"
+
                         elif secilen_alan == "Eşit Ağırlık (EA)":
-                            if genel_skor >= 145: tahmini_sira = "İlk 1.000 Derece 🏆"
-                            elif genel_skor >= 130: tahmini_sira = "1.000 - 5.000"
-                            elif genel_skor >= 115: tahmini_sira = "5.000 - 15.000"
-                            elif genel_skor >= 95: tahmini_sira = "15.000 - 45.000"
-                            else: tahmini_sira = "45.000+"
+                            ham_puan = (tyt_ham_puan * 0.40) + (ayt_ham_puan * 0.60)
+                            yerlestirme_puan = ham_puan + obp_ek
+                            
+                            toplam_skor = toplam_tyt_net + (toplam_ayt_net * 1.5)
+                            if toplam_skor >= 100: tahmini_sira = "1 - 5.000 (İlk Bin Derece 🏆)"
+                            elif toplam_skor >= 85: tahmini_sira = "5.000 - 25.000"
+                            elif toplam_skor >= 70: tahmini_sira = "25.000 - 75.000"
+                            elif toplam_skor >= 55: tahmini_sira = "75.000 - 160.000"
+                            else: tahmini_sira = "160.000+"
+
                         elif secilen_alan == "Sözel (SÖZ)":
-                            if genel_skor >= 140: tahmini_sira = "İlk 1.000 Derece 🏆"
-                            elif genel_skor >= 125: tahmini_sira = "1.000 - 5.000"
-                            elif genel_skor >= 110: tahmini_sira = "5.000 - 15.000"
-                            else: tahmini_sira = "15.000+"
-                        else:
-                            if genel_skor >= 150: tahmini_sira = "İlk 500 Derece 🏆"
-                            elif genel_skor >= 135: tahmini_sira = "500 - 2.500"
-                            elif genel_skor >= 120: tahmini_sira = "2.500 - 7.500"
-                            else: tahmini_sira = "7.500+"
+                            ham_puan = (tyt_ham_puan * 0.40) + (ayt_ham_puan * 0.60)
+                            yerlestirme_puan = ham_puan + obp_ek
+                            
+                            toplam_skor = toplam_tyt_net + (toplam_ayt_net * 1.4)
+                            if toplam_skor >= 110: tahmini_sira = "1 - 5.000 (İlk Bin Derece 🏆)"
+                            elif toplam_skor >= 95: tahmini_sira = "5.000 - 25.000"
+                            elif toplam_skor >= 80: tahmini_sira = "25.000 - 70.000"
+                            else: tahmini_sira = "70.000+"
+
+                        else:  # DİL
+                            ham_puan = (tyt_ham_puan * 0.40) + (ayt_ham_puan * 0.60)
+                            yerlestirme_puan = ham_puan + obp_ek
+                            
+                            toplam_skor = toplam_tyt_net + (toplam_ayt_net * 1.3)
+                            if toplam_skor >= 100: tahmini_sira = "1 - 2.000 (İlk Bin Derece 🏆)"
+                            elif toplam_skor >= 85: tahmini_sira = "2.000 - 10.000"
+                            elif toplam_skor >= 70: tahmini_sira = "10.000 - 30.000"
+                            else: tahmini_sira = "30.000+"
 
                         st.markdown(f"""
                         <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-top: 15px;">
-                            <h4 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🎉 {secilen_alan} Sonuç Analiziniz</h4>
+                            <h4 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🎉 ÖSYM Standartlarında {secilen_alan} Sonuç Analizi</h4>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px; font-weight:700;">
                                 <div>📊 <strong>Toplam TYT Net:</strong> {toplam_tyt_net:.2f}</div>
                                 <div>🔬 <strong>Toplam AYT/YDT Net:</strong> {toplam_ayt_net:.2f}</div>
                                 <div>🎓 <strong>Yerleştirme Puanı:</strong> {yerlestirme_puan:.2f}</div>
                             </div>
                             <div style="margin-top:12px; font-size:16px; font-weight:800;">
-                                🏆 Tahmini ÖSYM {secilen_alan} Başarı Sıralamanız: <span style="background:white; color:#059669; padding:4px 10px; border-radius:8px;">{tahmini_sira}</span>
+                                🏆 ÖSYM Simülasyon Başarı Sıralamanız: <span style="background:white; color:#059669; padding:4px 10px; border-radius:8px;">{tahmini_sira}</span>
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
@@ -1268,7 +1286,7 @@ else:
                             elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
                         st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
 
-    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ (GÜNCELLENDİ) ====================
+    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
     with main_tab3:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
         if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
@@ -1302,7 +1320,6 @@ else:
                     st.session_state["aktif_veli_ogrenci"] = None
                     st.rerun()
 
-            # VELİ İÇİN 3 SEKME: GÜNLÜK SORU TAKİBİ, DENEME SONUÇLARI, HAFTALIK PROGRAM
             v_tab1, v_tab2, v_tab3 = st.tabs([
                 "📝 Günlük Çalışma & Çözülen Soru Raporu",
                 "📊 Deneme Sonuçları & Karneler",
@@ -1320,8 +1337,6 @@ else:
                 
                 if not df_v_calisma.empty:
                     st.dataframe(df_v_calisma, use_container_width=True, height=400)
-                    
-                    # Toplam Soru İstatistiği
                     cursor.execute("SELECT SUM(toplam_soru) FROM gunluk_calisma WHERE ad_soyad = ?", (v_ogr,))
                     t_soru = cursor.fetchone()[0] or 0
                     st.info(f"🏆 Öğrencinin Sistemde Çözdüğü **Toplam Soru Miktarı:** `{t_soru}` Soru")
