@@ -267,40 +267,117 @@ def ai_karne_detayli_analiz_et(file_path, yayin, tur, toplam_net):
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
     "🚀 Başarı, her gün ertelemeden tekrarlanan küçük çabaların birikimidir!",
-    "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
+    "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!",
+    "💪 Zorluklar, potansiyelini keşfetmen için var olan basamaklardır. Pes etmek yok!",
+    "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
         "Endüstri Mühendisliği (SAY)": {"taban_net": 110.0, "tavan_net": 116.5, "taban_sira": "1.450", "tavan_sira": "65"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.0, "taban_sira": "1.150", "tavan_sira": "40"},
+        "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.400", "tavan_sira": "180"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 113.0, "taban_sira": "5.500", "tavan_sira": "420"},
+        "İnşaat Mühendisliği (SAY)": {"taban_net": 88.5, "tavan_net": 102.0, "taban_sira": "48.000", "tavan_sira": "12.000"},
+        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 96.5, "tavan_net": 106.0, "taban_sira": "1.800", "tavan_sira": "95"},
+        "İşletme (EA)": {"taban_net": 98.0, "tavan_net": 108.5, "taban_sira": "1.200", "tavan_sira": "45"},
+        "İktisat / Ekonomi (EA)": {"taban_net": 96.0, "tavan_net": 106.5, "taban_sira": "2.100", "tavan_sira": "110"},
+        "Psikoloji (EA)": {"taban_net": 94.5, "tavan_net": 104.0, "taban_sira": "3.500", "tavan_sira": "210"},
+        "Mimarlık (SAY)": {"taban_net": 98.0, "tavan_net": 108.0, "taban_sira": "15.000", "tavan_sira": "1.200"},
+        "İngilizce Öğretmenliği (DİL)": {"taban_net": 75.0, "tavan_net": 79.0, "taban_sira": "1.200", "tavan_sira": "85"}
+    },
+    "Boğaziçi Üniversitesi (İstanbul)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 114.5, "tavan_net": 119.0, "taban_sira": "280", "tavan_sira": "1"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.5, "taban_sira": "1.100", "tavan_sira": "45"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 112.5, "tavan_net": 118.5, "taban_sira": "650", "tavan_sira": "12"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "3.100", "tavan_sira": "210"},
+        "İşletme (EA)": {"taban_net": 102.5, "tavan_net": 112.0, "taban_sira": "420", "tavan_sira": "5"},
+        "İktisat / Ekonomi (EA)": {"taban_net": 100.0, "tavan_net": 110.5, "taban_sira": "680", "tavan_sira": "18"},
+        "Psikoloji (EA)": {"taban_net": 98.5, "tavan_net": 108.0, "taban_sira": "1.250", "tavan_sira": "35"},
+        "İngilizce Öğretmenliği (DİL)": {"taban_net": 76.5, "tavan_net": 79.5, "taban_sira": "850", "tavan_sira": "12"}
+    },
+    "İstanbul Teknik Üniversitesi (İTÜ)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 112.0, "tavan_net": 117.0, "taban_sira": "950", "tavan_sira": "85"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 107.5, "tavan_net": 114.0, "taban_sira": "3.200", "tavan_sira": "350"},
+        "Yapay Zeka Mühendisliği (SAY)": {"taban_net": 111.5, "tavan_net": 116.5, "taban_sira": "1.200", "tavan_sira": "110"},
+        "Uçak Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "2.800", "tavan_sira": "210"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.500", "tavan_sira": "180"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 103.5, "tavan_net": 111.0, "taban_sira": "7.800", "tavan_sira": "820"},
+        "İnşaat Mühendisliği (SAY)": {"taban_net": 82.0, "tavan_net": 96.0, "taban_sira": "68.000", "tavan_sira": "18.000"},
+        "Mimarlık (SAY)": {"taban_net": 96.0, "tavan_net": 106.0, "taban_sira": "18.500", "tavan_sira": "1.800"}
+    },
+    "Hacettepe Üniversitesi (Ankara)": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 114.0, "tavan_net": 118.5, "taban_sira": "1.100", "tavan_sira": "8"},
+        "Diş Hekimliği (SAY)": {"taban_net": 102.5, "tavan_net": 109.0, "taban_sira": "18.500", "tavan_sira": "3.200"},
+        "Eczacılık (SAY)": {"taban_net": 95.0, "tavan_net": 103.5, "taban_sira": "38.000", "tavan_sira": "12.000"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 109.5, "tavan_net": 115.5, "taban_sira": "2.100", "tavan_sira": "380"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 104.0, "tavan_net": 111.5, "taban_sira": "7.200", "tavan_sira": "1.100"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 105.5, "tavan_net": 112.5, "taban_sira": "5.800", "tavan_sira": "850"},
+        "Psikoloji (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "9.500", "tavan_sira": "850"}
+    },
+    "Galatasaray Üniversitesi (İstanbul)": {
+        "Hukuk Fakültesi (EA)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "650", "tavan_sira": "25"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 114.5, "taban_sira": "3.500", "tavan_sira": "480"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 112.0, "taban_sira": "6.200", "tavan_sira": "850"},
+        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 95.0, "tavan_net": 104.0, "taban_sira": "2.200", "tavan_sira": "180"}
     }
 }
 
-YOK_ATLAS_UNIVERSTITELER = sorted(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + ["Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)"])
-GENEL_BOLUM_LISTESI = sorted(["Tıp Fakültesi (SAY)", "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Hukuk Fakültesi (EA)"])
+YOK_ATLAS_UNIVERSTITELER = sorted(list(set(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + [
+    "Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)",
+    "Hacettepe Üniversitesi (Ankara)", "Bilkent Üniversitesi (Ankara)", "Koç Üniversitesi (İstanbul)",
+    "Sabancı Üniversitesi (İstanbul)", "İstanbul Üniversitesi", "Marmara Üniversitesi (İstanbul)",
+    "Yıldız Teknik Üniversitesi (İTÜ)", "Ege Üniversitesi (İzmir)", "Dokuz Eylül Üniversitesi (İzmir)",
+    "Ankara Üniversitesi", "Gazi Üniversitesi (Ankara)", "Galatasaray Üniversitesi (İstanbul)",
+    "Bursa Uludağ Üniversitesi", "Eskişehir Osmangazi Üniversitesi", "Anadolu Üniversitesi (Eskişehir)",
+    "Çukurova Üniversitesi (Adana)", "Akdeniz Üniversitesi (Antalya)", "Karadeniz Teknik Üniversitesi (Trabzon)",
+    "Kocaeli Üniversitesi", "Sakarya Üniversitesi", "Gebze Teknik Üniversitesi", "İzmir Yüksek Teknoloji Enstitüsü (İYTE)",
+    "Gaziantep Üniversitesi", "Atatürk Üniversitesi (Erzurum)", "Diğer Tüm Devlet ve Vakıf Üniversiteleri"
+])))
+
+GENEL_BOLUM_LISTESI = sorted([
+    "Tıp Fakültesi (SAY)", "Diş Hekimliği (SAY)", "Eczacılık (SAY)",
+    "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Yazılım Mühendisliği (SAY)",
+    "Yapay Zeka Mühendisliği (SAY)", "Elektrik-Elektronik Mühendisliği (SAY)",
+    "Endüstri Mühendisliği (SAY)", "Makine Mühendisliği (SAY)", "İnşaat Mühendisliği (SAY)",
+    "Havacılık ve Uzay Mühendisliği (SAY)", "Mimarlık (SAY)", "Hemşirelik (SAY)",
+    "Hukuk Fakültesi (EA)", "Psikoloji (EA)", "İşletme (EA)", "İktisat / Ekonomi (EA)",
+    "Siyaset Bilimi ve Uluslararası İlişkiler (EA)", "Yönetim Bilişim Sistemleri (YBS) (EA)",
+    "Özel Eğitim Öğretmenliği (SÖZ)", "Gastronomi ve Mutfak Sanatları (SÖZ)", "Türkçe Öğretmenliği (SÖZ)",
+    "Tarih (SÖZ)", "Türk Dili ve Edebiyatı (SÖZ)", "Coğrafya (SÖZ)", "İlahiyat (SÖZ)",
+    "İngilizce Öğretmenliği (DİL)", "Mütercim-Tercümanlık (İngilizce) (DİL)",
+    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "Diğer Tüm Lisans ve Önlisans Bölümleri"
+])
 
 TYT_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin"],
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Paragrafta Anlam ve Yapı", "Yazım Kuralları"],
-    "📐 TYT Matematik": ["Temel Kavramlar", "Problemler", "Fonksiyonlar"],
-    "📏 TYT Geometri": ["Üçgenler", "Çokgenler ve Dörtgenler"],
-    "⚡ TYT Fizik": ["Basınç", "Isı Sıcaklık", "Optik"],
-    "🧪 TYT Kimya": ["Kimya Bilimi", "Karışımlar"],
-    "🧬 TYT Biyoloji": ["Hücre ve Organeller", "Kalıtım"]
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin", "Paragraf Hız Kampı + Problem Karma"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Yazım Kuralları", "Noktalama İşaretleri"],
+    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Problemler", "Fonksiyonlar"],
+    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Katı Cisimler"],
+    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç", "Isı Sıcaklık", "Hareket", "Optik", "Dalgalar"],
+    "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Karışımlar"],
+    "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji"],
+    "📜 TYT Tarih": ["Tarih Bilimi", "Osmanlı Devleti", "Milli Mücadele Dönemi"],
+    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Harita Bilgisi", "İklim Bilgisi", "Nüfus ve Afetler"],
+    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Ahlak Felsefesi"],
+    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler"]
 }
 
 AYT_KONULAR = {
-    "📐 AYT Matematik": ["Polinomlar", "Logaritma", "Trigonometri", "Türev", "İntegral"],
-    "📏 AYT Geometri": ["Analitik Geometri", "Çember"],
-    "⚡ AYT Fizik": ["Atışlar & İtme-Momentum", "Elektromanyetizma"],
-    "🧪 TYT Kimya": ["Gazlar", "Organik Kimya"],
-    "🧬 TYT Biyoloji": ["İnsan Fizyolojisi", "Fotosentez"]
+    "📐 AYT Matematik": ["Polinomlar", "2. Dereceden Denklemler", "Parabol", "Logaritma", "Diziler", "Trigonometri", "Limit ve Süreklilik", "Türev", "İntegral"],
+    "📏 AYT Geometri": ["Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitiği"],
+    "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Elektromanyetizma", "Modern Fizik"],
+    "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
+    "🧬 TYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
+    "📖 AYT Edebiyat": ["Şiir Bilgisi", "Divan Edebiyatı", "Tanzimat & Servet-i Fünun", "Milli Edebiyat", "Cumhuriyet Dönemi Edebiyatı"]
 }
 
 LGS_KONULAR = {
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözel Mantık"],
-    "📐 LGS Matematik (20 Soru)": ["Üslü İfadeler", "Kareköklü İfadeler"]
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (20s) + Problem (15s) Günlük Rutin"],
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözel Mantık"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Linear Denklemler"],
+    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler"]
 }
 
 GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
@@ -410,6 +487,21 @@ CREATE TABLE IF NOT EXISTS program_dosyalari (
 """)
 conn.commit()
 
+def eksik_sutun_ekle(tablo_adi, sutun_adi, sutun_tanimi):
+    try:
+        cursor.execute(f"ALTER TABLE {tablo_adi} ADD COLUMN {sutun_adi} {sutun_tanimi}")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+
+eksik_sutun_ekle("ogrenciler", "hedef_uni", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "hedef_bolum", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "hedef_net", "FLOAT DEFAULT 80.0")
+eksik_sutun_ekle("ogrenciler", "hedef_sira", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "koc_adi", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "sinav_turu", "TEXT DEFAULT 'TYT (Sadece TYT Çalışması)'")
+eksik_sutun_ekle("ogrenciler", "veli_pin", "TEXT DEFAULT '123456'")
+
 cursor.execute("SELECT COUNT(*) FROM koclar")
 if cursor.fetchone()[0] == 0:
     cursor.execute("INSERT INTO koclar (kullanici_adi, sifre) VALUES (?, ?)", ("koc1", make_hash("Koc123!")))
@@ -427,7 +519,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 📌 BRANŞ BAZLI ÖĞRETMEN INCELEME EKRANI (Linkte 'ogrenci' ve 'ders' parametresi varsa)
 if link_ogrenci:
     ders_baslik_str = f"({link_ders} Branşı)" if link_ders else "(Tüm Dersler)"
     st.markdown(f"""
@@ -467,6 +558,23 @@ else:
     ])
 
     with main_tab1:
+        if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
+        if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
+            
+        if st.session_state["motivasyon_goster"]:
+            m_col1, m_col2 = st.columns([0.9, 0.1])
+            with m_col1:
+                st.markdown(f'''
+                <div class="hero-motivation-card">
+                    <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:4px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
+                    <div style="font-size:16px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
+                </div>
+                ''', unsafe_allow_html=True)
+            with m_col2:
+                if st.button("❌ KAPAT", key="kapat_motivasyon", use_container_width=True):
+                    st.session_state["motivasyon_goster"] = False
+                    st.rerun()
+        
         aktif_ogr = st.session_state.get("aktif_ogrenci", None)
 
         if not aktif_ogr:
@@ -492,17 +600,20 @@ else:
                 cursor.execute("SELECT kullanici_adi FROM koclar")
                 koc_listesi = [r[0] for r in cursor.fetchall()] or ["koc1"]
                 with st.form("ogrenci_kayit_formu"):
-                    reg_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
-                    reg_sifre = st.text_input("Şifre Belirleyin:", type="password")
-                    reg_vpin = st.text_input("👨‍👩‍👧‍👦 Veli PIN Kodu:", value="123456")
-                    reg_sinav = st.selectbox("🎓 Hazırlanılan Sınav:", ["TYT (Sadece TYT Çalışması)", "YKS (TYT + AYT)", "LGS (8. Sınıf)"])
-                    reg_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
+                    c_reg1, c_reg2 = st.columns(2)
+                    with c_reg1: reg_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
+                    with c_reg2: reg_sifre = st.text_input("Şifre Belirleyin:", type="password")
+                    
+                    c_reg3, c_reg4, c_reg5 = st.columns(3)
+                    with c_reg3: reg_vpin = st.text_input("👨‍👩‍👧‍👦 Veli PIN Kodu:", value="123456")
+                    with c_reg4: reg_sinav = st.selectbox("🎓 Hazırlanılan Sınav:", ["TYT (Sadece TYT Çalışması)", "YKS (TYT + AYT)", "LGS (8. Sınıf)"])
+                    with c_reg5: reg_koc = st.selectbox("👨‍🏫 Sorumlu Koçunuz:", koc_listesi)
 
                     if st.form_submit_button("Hesabımı Oluştur", type="primary", use_container_width=True):
                         if reg_ad and reg_sifre:
                             cursor.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = ?", (reg_ad,))
                             if cursor.fetchone():
-                                st.error(f"⚠️ `{reg_ad}` zaten var!")
+                                st.error(f"⚠️ `{reg_ad}` adında bir öğrenci zaten sistemde var!")
                             else:
                                 cursor.execute("INSERT INTO ogrenciler (ad_soyad, sifre, veli_pin, sinav_turu, koc_adi) VALUES (?, ?, ?, ?, ?)",
                                                (reg_ad, make_hash(reg_sifre), reg_vpin, reg_sinav, reg_koc))
@@ -513,18 +624,26 @@ else:
         else:
             col_o_head1, col_o_head2 = st.columns([0.8, 0.2])
             with col_o_head1:
-                cursor.execute("SELECT sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+                cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_sira FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
                 r_info = cursor.fetchone()
                 ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
+                curr_uni = r_info[1] if (r_info and r_info[1]) else "Orta Doğu Teknik Üniversitesi (ODTÜ)"
+                curr_bolum = r_info[2] if (r_info and r_info[2]) else "Endüstri Mühendisliği (SAY)"
+                curr_net = r_info[3] if (r_info and r_info[3]) else 110.0
+                curr_sira = r_info[4] if (r_info and len(r_info)>4 and r_info[4]) else "1.450"
                 st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Sınav Modu: **{ogr_sinav}**")
+            
             with col_o_head2:
                 if st.button("🚪 ÇIKIŞ YAP", key="ogr_logout_btn", use_container_width=True):
                     st.session_state["aktif_ogrenci"] = None
                     st.rerun()
 
-            if "TYT (Sadece" in ogr_sinav: AKTIF_KONULAR = TYT_KONULAR
-            elif "YKS" in ogr_sinav: AKTIF_KONULAR = {**TYT_KONULAR, **AYT_KONULAR}
-            else: AKTIF_KONULAR = LGS_KONULAR
+            if "TYT (Sadece" in ogr_sinav:
+                AKTIF_KONULAR = TYT_KONULAR
+            elif "YKS" in ogr_sinav:
+                AKTIF_KONULAR = {**TYT_KONULAR, **AYT_KONULAR}
+            else:
+                AKTIF_KONULAR = LGS_KONULAR
 
             AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
             MAX_NET_LIMIT = 120.0 if "TYT" in ogr_sinav or "YKS" in ogr_sinav else 90.0
@@ -538,60 +657,198 @@ else:
             ])
 
             with tab_hedef:
-                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Hedef ve Puan Analizi — {aktif_ogr}</h3>", unsafe_allow_html=True)
-                st.info("YÖK Atlas veritabanı aktif ve güncel.")
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                col_h_u1, col_h_u2 = st.columns(2)
+                with col_h_u1:
+                    u_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
+                    secilen_hedef_uni = st.selectbox("🏛️ Hedeflediğiniz Üniversiteyi Seçin:", YOK_ATLAS_UNIVERSTITELER, index=u_idx)
+
+                uni_bolumleri = YOK_ATLAS_UNI_BOLUM_VERITABANI.get(secilen_hedef_uni, {})
+                kullanilabilir_bolumler = sorted(list(uni_bolumleri.keys())) if uni_bolumleri else GENEL_BOLUM_LISTESI
+
+                with col_h_u2:
+                    b_idx = kullanilabilir_bolumler.index(curr_bolum) if curr_bolum in kullanilabilir_bolumler else 0
+                    secilen_hedef_bolum = st.selectbox("🎓 Hedeflediğiniz Bölüm / Programı Seçin:", kullanilabilir_bolumler, index=b_idx)
+
+                if secilen_hedef_uni in YOK_ATLAS_UNI_BOLUM_VERITABANI and secilen_hedef_bolum in YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni]:
+                    u_data = YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni][secilen_hedef_bolum]
+                    otomatik_taban_net = u_data["taban_net"]
+                    otomatik_tavan_net = u_data["tavan_net"]
+                    otomatik_taban_sira = u_data["taban_sira"]
+                    otomatik_tavan_sira = u_data["tavan_sira"]
+                else:
+                    otomatik_taban_net = 65.0
+                    otomatik_tavan_net = 98.0
+                    otomatik_taban_sira = "120.000"
+                    otomatik_tavan_sira = "1.500"
+
+                st.markdown(f"""
+                <div class="yok-net-box">
+                    <div style="font-size:16px; font-weight:800; color:#1e40af; margin-bottom:10px;">🏛️ YÖK Atlas Kurumsal İstatistikleri: {secilen_hedef_uni} - {secilen_hedef_bolum}</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size:14px; font-weight:700;">
+                        <div>🟢 <strong>Kurum Taban Neti:</strong> <span style="color:#059669; font-size:16px;">{otomatik_taban_net} Net</span></div>
+                        <div>🚀 <strong>Kurum Tavan Neti:</strong> <span style="color:#2563eb; font-size:16px;">{otomatik_tavan_net} Net</span></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                with st.form("yok_atlas_otomatik_hedef_form"):
+                    col_n1, col_n2 = st.columns(2)
+                    with col_n1:
+                        ozel_hedef_net = st.number_input("🎯 Kişisel Net Hedefiniz:", 10.0, float(MAX_NET_LIMIT), float(otomatik_taban_net), 0.5)
+                    with col_n2:
+                        ozel_hedef_sira = st.text_input("📊 Kişisel Başarı Sıralaması Hedefiniz:", value=f"İlk {otomatik_taban_sira}")
+
+                    if st.form_submit_button("🎯 Üniversiteye Özel Hedefimi Kaydet", type="primary", use_container_width=True):
+                        cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ?, hedef_sira = ? WHERE ad_soyad = ?", 
+                                       (secilen_hedef_uni, secilen_hedef_bolum, float(ozel_hedef_net), ozel_hedef_sira, aktif_ogr))
+                        conn.commit()
+                        st.success(f"🎉 Hedefiniz başarıyla kaydedildi!")
+                        st.rerun()
+
+                st.divider()
+                st.markdown("### 🧮 ÖSYM Sonuç Belgesi Formatında Puan ve Sıralama Analizi")
+                secilen_alan = st.radio("🎯 Ağırlıklı Öğrenim Alanınızı Seçin:", ["Sayısal (SAY)", "Eşit Ağırlık (EA)", "Sözel (SÖZ)", "Yabancı Dil (DİL)"], horizontal=True)
+
+                with st.container():
+                    st.markdown('<div class="calc-card">', unsafe_allow_html=True)
+                    st.markdown("##### 📐 1. TYT (Temel Yeterlilik Testi) Detaylı Ders Girişi")
+                    c_t1, c_t2, c_t3, c_t4 = st.columns(4)
+                    with c_t1:
+                        t_turkce_d = st.number_input("Türkçe Doğru (40):", 0, 40, 28, key="calc_tt_d")
+                        t_turkce_y = st.number_input("Türkçe Yanlış:", 0, 40, 7, key="calc_tt_y")
+                        net_turkce = max(0.0, t_turkce_d - (t_turkce_y * 0.25))
+                    with c_t2:
+                        t_sos_d = st.number_input("Sosyal Doğru (20):", 0, 20, 11, key="calc_ts_d")
+                        t_sos_y = st.number_input("Sosyal Yanlış:", 0, 20, 0, key="calc_ts_y")
+                        net_sosyal = max(0.0, t_sos_d - (t_sos_y * 0.25))
+                    with c_t3:
+                        t_mat_d = st.number_input("TYT Mat Doğru (40):", 0, 40, 20, key="calc_tm_d")
+                        t_mat_y = st.number_input("TYT Mat Yanlış:", 0, 40, 0, key="calc_tm_y")
+                        net_mat = max(0.0, t_mat_d - (t_mat_y * 0.25))
+                    with c_t4:
+                        t_fen_d = st.number_input("TYT Fen Doğru (20):", 0, 20, 7, key="calc_tf_d")
+                        t_fen_y = st.number_input("TYT Fen Yanlış:", 0, 20, 4, key="calc_tf_y")
+                        net_fen = max(0.0, t_fen_d - (t_fen_y * 0.25))
+
+                    toplam_tyt_net = net_turkce + net_sosyal + net_mat + net_fen
+                    toplam_ayt_net = 0.0
+                    ayt_ham_puan = 0.0
+
+                    if secilen_alan == "Sayısal (SAY)":
+                        st.divider()
+                        st.markdown("##### 🔬 2. AYT Sayısal Testi Ders Girişi")
+                        c_a1, c_a2, c_a3, c_a4 = st.columns(4)
+                        with c_a1:
+                            a_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 20, key="say_am_d")
+                            a_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 0, key="say_am_y")
+                            net_a_mat = max(0.0, a_m_d - (a_m_y * 0.25))
+                        with c_a2:
+                            a_f_d = st.number_input("Fizik Doğru (14):", 0, 14, 5, key="say_af_d")
+                            a_f_y = st.number_input("Fizik Yanlış:", 0, 14, 0, key="say_af_y")
+                            net_fiz = max(0.0, a_f_d - (a_f_y * 0.25))
+                        with c_a3:
+                            a_k_d = st.number_input("Kimya Doğru (13):", 0, 13, 7, key="say_ak_d")
+                            a_k_y = st.number_input("Kimya Yanlış:", 0, 13, 0, key="say_ak_y")
+                            net_kim = max(0.0, a_k_d - (a_k_y * 0.25))
+                        with c_a4:
+                            a_b_d = st.number_input("Biyoloji Doğru (13):", 0, 13, 7, key="say_ab_d")
+                            a_b_y = st.number_input("Biyoloji Yanlış:", 0, 13, 0, key="say_ab_y")
+                            net_bio = max(0.0, a_b_d - (a_b_y * 0.25))
+
+                        toplam_ayt_net = net_a_mat + net_fiz + net_kim + net_bio
+                        ayt_ham_puan = (net_a_mat * 3.0) + (net_fiz * 2.85) + (net_kim * 3.07) + (net_bio * 3.07)
+
+                    st.divider()
+                    obp_puan = st.number_input("🎓 Diploma Notunuzu (OBP) El ile Girin:", 50.00, 100.00, 91.00, 0.01)
+
+                    tyt_ham = 100.0 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
+                    obp_ek = (obp_puan * 5) * 0.12
+                    ham_puan_deger = 130.0 + (tyt_ham * 0.4) + (ayt_ham_puan * 0.6)
+                    yerlestirme_puan_deger = ham_puan_deger + obp_ek
+                    toplam_net = toplam_tyt_net + toplam_ayt_net
+
+                    if toplam_net >= 130: tahmini_sira_str = "18.500"
+                    elif toplam_net >= 110: tahmini_sira_str = "54.200"
+                    elif toplam_net >= 95: tahmini_sira_str = "124.500"
+                    elif toplam_net >= 75: tahmini_sira_str = "198.000"
+                    else: tahmini_sira_str = "310.000+"
+
+                    st.markdown(f"""
+                    <div class="osym-belge-box">
+                        <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
+                            <h3 style="margin:0; font-weight:800; font-size:18px; color:#1e293b !important;">T.C. ÖSYM SONUÇ BELGESİ</h3>
+                        </div>
+                        <div style="font-size:14px; font-weight:700;">
+                            • Toplam Net: <strong>{toplam_net:.2f}</strong><br>
+                            • Yerleştirme Puanı: <strong>{yerlestirme_puan_deger:.2f}</strong><br>
+                            • Tahmini Başarı Sıralaması: <span style="color:#2563eb;"><strong>{tahmini_sira_str}. Derece</strong></span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             with tab_program:
                 st.markdown("### 📊 Haftalık Ders Programınız (Excel Çizelgesi)")
-                df_matris_ogr = pd.read_sql_query("""
-                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
-                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
-                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
-                    FROM excel_program_matris WHERE ad_soyad = ?
-                """, conn, params=(aktif_ogr,))
+                df_matris_ogr = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
                 if not df_matris_ogr.empty:
                     st.dataframe(df_matris_ogr, use_container_width=True, height=480)
                 else:
-                    st.info("Sorumlu koçunuz henüz haftalık programınızı hazırlamadı.")
+                    st.info("Sorumlu koçunuz henüz programınızı hazırlamadı.")
 
             with tab_gunluk:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Soru Girişi — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 c1, c2, c3 = st.columns(3)
                 with c1: secilen_tarih = st.date_input("Çalışma Tarihi", datetime.date.today(), key="gunluk_tarih_secici")
                 with c2: sure_giris = st.number_input("Süre (Saat)", 0.0, 16.0, 5.5, 0.5)
-                with c3: verim_giris = st.slider("Verim (1-10)", 1, 10, 8)
+                with c3: verim_giris = st.slider("Verim Puanı (1-10)", 1, 10, 8)
+                not_giris = st.text_area("Çalışma Notları:", height=70)
                 
                 ders_sekmeleri = st.tabs(AKTIF_DERSLER)
                 ders_verileri = {}
-                for idx, d_adi in enumerate(AKTIF_DERSLER):
-                    with ders_sekmeleri[idx]:
-                        s_konu = st.selectbox(f"Konu ({d_adi}):", ["Genel"] + AKTIF_KONULAR[d_adi], key=f"ks_{d_adi}")
-                        ts = st.number_input("Toplam Soru", 0, 500, 0, key=f"ts_{d_adi}")
-                        ds = st.number_input("Doğru", 0, 500, 0, key=f"ds_{d_adi}")
-                        ys = st.number_input("Yanlış", 0, 500, 0, key=f"ys_{d_adi}")
-                        bs = st.number_input("Boş", 0, 500, 0, key=f"bs_{d_adi}")
-                        ders_verileri[d_adi] = (s_konu, ts, ds, ys, bs)
 
-                        yuklenen_sorular = st.file_uploader(f"📸 Soru Görselleri ({d_adi}):", type=["png", "jpg", "jpeg", "pdf"], accept_multiple_files=True, key=f"upload_soru_{d_adi}")
-                        if yuklenen_sorular and st.button(f"📤 Seçilen Soruları Kaydet ({d_adi})", key=f"btn_save_soru_{d_adi}"):
+                for idx, ders_adi in enumerate(AKTIF_DERSLER):
+                    with ders_sekmeleri[idx]:
+                        secilen_konu = st.selectbox(f"Konu ({ders_adi}):", ["Genel"] + AKTIF_KONULAR[ders_adi], key=f"k_s_{ders_adi}")
+                        col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+                        with col_s1: ts = st.number_input("Toplam Soru", 0, 500, 0, key=f"t_{ders_adi}")
+                        with col_s2: ds = st.number_input("Doğru", 0, 500, 0, key=f"d_{ders_adi}")
+                        with col_s3: ys = st.number_input("Yanlış", 0, 500, 0, key=f"y_{ders_adi}")
+                        with col_s4: bs = st.number_input("Boş", 0, 500, 0, key=f"b_{ders_adi}")
+                        ders_verileri[ders_adi] = (secilen_konu, ts, ds, ys, bs)
+
+                        yuklenen_sorular = st.file_uploader(f"📸 Soru Görselleri ({ders_adi}):", type=["png", "jpg", "jpeg", "pdf"], accept_multiple_files=True, key=f"upload_soru_{ders_adi}")
+                        if yuklenen_sorular and st.button(f"📤 Kaydet ({ders_adi})", key=f"btn_save_soru_{ders_adi}"):
                             for file in yuklenen_sorular:
                                 file_ext = os.path.splitext(file.name)[1]
                                 unique_name = f"{aktif_ogr}_{str(secilen_tarih)}_{hashlib.md5(file.name.encode()).hexdigest()[:8]}{file_ext}"
                                 save_path = os.path.join(UPLOAD_DIR, unique_name)
                                 with open(save_path, "wb") as f: f.write(file.getbuffer())
-                                cursor.execute("INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), d_adi, s_konu, save_path, file.name))
+                                cursor.execute("INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), ders_adi, secilen_konu, save_path, file.name))
                             conn.commit()
-                            st.success(f"🎉 {len(yuklenen_sorular)} soru başarıyla yüklendi!")
+                            st.success("🎉 Sorular yüklendi!")
 
                 if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
                     for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
                         if t_s > 0:
-                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), ""))
+                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
                     conn.commit()
-                    st.success("🎉 Çalışmalarınız kaydedildi!")
+                    st.success("🎉 Çalışmalar kaydedildi!")
+
+                st.divider()
+                cursor.execute("SELECT SUM(toplam_soru) FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", (aktif_ogr, str(secilen_tarih)))
+                toplam_soru_sonuc = cursor.fetchone()[0]
+                gunluk_total_soru = toplam_soru_sonuc if toplam_soru_sonuc else 0
+
+                st.markdown(f"""
+                <div class="total-soru-banner">
+                    📅 {secilen_tarih} Tarihli Toplam Çalışma Raporu<br>
+                    <span style="font-size:26px; font-weight:800;">🎯 Toplam Çözülen Soru: {gunluk_total_soru} Soru</span>
+                </div>
+                """, unsafe_allow_html=True)
 
             with tab_deneme:
-                st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Yapay Zeka Karne Analizi</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Yapay Zeka Analizi</h3>", unsafe_allow_html=True)
                 with st.form("deneme_form"):
                     cd1, cd2, cd3 = st.columns(3)
                     with cd1: yayin = st.text_input("Yayın / Deneme Adı:")
@@ -600,9 +857,9 @@ else:
                     
                     karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle:", type=["pdf", "png", "jpg", "jpeg"])
                     
-                    if st.form_submit_button("Deneme Sonucunu ve Yapay Zeka Analizini Kaydet", type="primary", use_container_width=True) and yayin:
+                    if st.form_submit_button("Deneme Sonucunu ve Analizi Kaydet", type="primary", use_container_width=True) and yayin:
                         karne_path = "Dosya Yok"
-                        AI_DENEME_RAPORU = "Karne yüklenmediği için yapay zeka analizi oluşturulamadı."
+                        AI_DENEME_RAPORU = "Karne yüklenmedi."
                         if karne_dosya:
                             file_ext = os.path.splitext(karne_dosya.name)[1]
                             k_name = f"Karne_{aktif_ogr}_{str(datetime.date.today())}_{hashlib.md5(karne_dosya.name.encode()).hexdigest()[:6]}{file_ext}"
@@ -613,28 +870,48 @@ else:
                         cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)", 
                                        (aktif_ogr, str(datetime.date.today()), yayin, d_tur, float(toplam_net), karne_path, AI_DENEME_RAPORU))
                         conn.commit()
-                        st.success("🎉 Kaydedildi!")
+                        st.success("🎉 Deneme ve yapay zeka raporu kaydedildi!")
                         st.rerun()
 
+                st.divider()
+                df_ogr_denemeler = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
+                if not df_ogr_denemeler.empty:
+                    for _, d_row in df_ogr_denemeler.iterrows():
+                        st.markdown(f"""
+                        <div class="calc-card" style="margin-bottom: 12px;">
+                            <div style="font-weight:800; font-size:16px;">📌 {d_row['yayin']} — Net: {d_row['toplam_net']}</div>
+                            <div class="ai-analysis-box" style="margin-top: 8px;">{d_row['koc_notu']}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
             with tab_konular:
-                st.markdown("<h3 style='font-weight:700; font-size:18px;'>🗺️ Konu Hakimiyeti Puanlaması</h3>", unsafe_allow_html=True)
-                st.info("Konu takip tablosu aktif.")
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🗺️ Konu Hakimiyeti Puanlaması</h3>", unsafe_allow_html=True)
+                konu_sekmeleri = st.tabs(list(AKTIF_KONULAR.keys()))
+                for idx, (d_adi, k_list) in enumerate(AKTIF_KONULAR.items()):
+                    with konu_sekmeleri[idx]:
+                        for kn in k_list:
+                            cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
+                            r = cursor.fetchone()
+                            p_val = r[0] if r else 3
+                            yp = st.select_slider(f"**{kn}**", options=[1, 2, 3, 4, 5], value=p_val, key=f"{aktif_ogr}_{kn}")
+                            cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
+                        conn.commit()
 
     with main_tab2:
-        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='font-weight:800; font-size:24px;'>👨‍🏫 Koç Yönetim Paneli</h2>", unsafe_allow_html=True)
         if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
 
         if not st.session_state["aktif_koc"]:
             with st.form("koc_giris_formu"):
                 k_adi_giris = st.text_input("Koç Kullanıcı Adı:").strip()
                 k_sifre_giris = st.text_input("Şifre:", type="password")
-                if st.form_submit_button("Koç Paneline Giriş Yap", type="primary", use_container_width=True):
+                if st.form_submit_button("Giriş Yap", type="primary", use_container_width=True):
                     cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_adi_giris,))
                     row = cursor.fetchone()
                     if row and verify_hash(k_sifre_giris, row[0]):
                         st.session_state["aktif_koc"] = k_adi_giris
                         st.rerun()
-                    else: st.error("❌ Hatalı giriş!")
+                    else: st.error("❌ Hatalı şifre!")
         else:
             if st.button("🚪 ÇIKIŞ YAP"):
                 st.session_state["aktif_koc"] = None
@@ -646,21 +923,17 @@ else:
                 ogr_dict = {r[0]: r[0] for r in ogrenci_rows}
                 secilen_ogr = st.selectbox("🔍 Öğrenci Seçin:", list(ogr_dict.keys()))
 
-                # 📌 BRANŞ BAZLI ÖĞRETMEN WHATSAPP PAYLAŞIM ALANI
+                # 📌 BRANŞ BAZLI ÖĞRETMEN WHATSAPP LİNKLERİ
                 st.divider()
                 st.markdown(f"### 💬 {secilen_ogr} İçin Branş Bazlı Öğretmen WhatsApp Paylaşım Linkleri")
-                st.caption("Her öğretmene kendi branşına özel bağlantı göndererek sadece o dersin sorularını görmelerini sağlayabilirsiniz.")
-
                 raw_url = st.query_params.get("host_url", "")
                 host_domain = raw_url if raw_url else "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
 
-                # Tüm aktif dersler için ayrı link oluşturucu
                 for d_adi in AKTIF_DERSLER:
                     encoded_student = quote(secilen_ogr)
                     encoded_ders = quote(d_adi)
                     brans_link = f"{host_domain}/?ogrenci={encoded_student}&ders={encoded_ders}"
-                    
-                    wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin {d_adi} dersinde çözemediği soruları incelemeniz için branşa özel bağlantı: {brans_link}"
+                    wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin {d_adi} dersi soru bağlantısı: {brans_link}"
                     wa_link = f"https://api.whatsapp.com/send?text={quote(wa_msg)}"
 
                     with st.expander(f"📌 {d_adi} Öğretmeni İçin Özel Bağlantı"):
@@ -686,15 +959,15 @@ else:
                                     persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
                             """, (secilen_ogr, s_araligi, str(row.get("Pazartesi", "")), str(row.get("Salı", "")), str(row.get("Çarşamba", "")), str(row.get("Perşembe", "")), str(row.get("Cuma", "")), str(row.get("Cumartesi", "")), str(row.get("Pazar", ""))))
                     conn.commit()
-                    st.success("🎉 Kaydedildi!")
+                    st.success("🎉 Tablo kaydedildi!")
 
     with main_tab3:
-        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='font-weight:800; font-size:24px;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
         if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
 
         if not st.session_state["aktif_veli_ogrenci"]:
             with st.form("veli_giris_formu"):
-                v_ogrenci_ad = st.text_input("Öğrencinin Adı ve Soyadı:").strip().title()
+                v_ogrenci_ad = st.text_input("Öğrenci Adı ve Soyadı:").strip().title()
                 v_pin_giris = st.text_input("Veli PIN Kodu:", type="password")
                 if st.form_submit_button("Raporu Görüntüle", type="primary", use_container_width=True):
                     cursor.execute("SELECT veli_pin FROM ogrenciler WHERE ad_soyad = ?", (v_ogrenci_ad,))
@@ -702,7 +975,7 @@ else:
                     if v_row and (v_row[0] == v_pin_giris or v_pin_giris == "123456"):
                         st.session_state["aktif_veli_ogrenci"] = v_ogrenci_ad
                         st.rerun()
-                    else: st.error("❌ Hatalı bilgi!")
+                    else: st.error("❌ Hatalı PIN!")
         else:
             if st.button("🚪 ÇIKIŞ YAP", use_container_width=True):
                 st.session_state["aktif_veli_ogrenci"] = None
