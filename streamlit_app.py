@@ -141,6 +141,15 @@ st.markdown("""
         padding: 16px 20px;
         margin-bottom: 15px;
     }
+
+    .calc-card {
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        margin-top: 15px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -657,7 +666,7 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP ALANI
+            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE DERS BAZLI PUAN/SIRALAMA HESAPLAMA
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
@@ -667,7 +676,6 @@ else:
                     u_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
                     secilen_hedef_uni = st.selectbox("🏛️ Hedeflediğiniz Üniversiteyi Seçin:", YOK_ATLAS_UNIVERSTITELER, index=u_idx)
 
-                # Seçilen üniversitenin mevcut bölümlerini filtreleme
                 uni_bolumleri = YOK_ATLAS_UNI_BOLUM_VERITABANI.get(secilen_hedef_uni, {})
                 kullanilabilir_bolumler = sorted(list(uni_bolumleri.keys())) if uni_bolumleri else GENEL_BOLUM_LISTESI
 
@@ -675,7 +683,6 @@ else:
                     b_idx = kullanilabilir_bolumler.index(curr_bolum) if curr_bolum in kullanilabilir_bolumler else 0
                     secilen_hedef_bolum = st.selectbox("🎓 Hedeflediğiniz Bölüm / Programı Seçin:", kullanilabilir_bolumler, index=b_idx)
 
-                # Üniversiteye ve bölüme özel veriyi çekme (Eğer özel yoksa genel yedekleme verisi yüklenir)
                 if secilen_hedef_uni in YOK_ATLAS_UNI_BOLUM_VERITABANI and secilen_hedef_bolum in YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni]:
                     u_data = YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni][secilen_hedef_bolum]
                     otomatik_taban_net = u_data["taban_net"]
@@ -713,6 +720,124 @@ else:
                         conn.commit()
                         st.success(f"🎉 Hedefiniz {secilen_hedef_uni} Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}**\n• **Üniversite Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **Üniversite Taban Sıralaması:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
                         st.rerun()
+
+                # 🧮 ---------------- HESAPLAMA VE SIRALAMA MODÜLÜ (ALT KISIM) ----------------
+                st.divider()
+                st.markdown("### 🧮 Ayrı Ayrı Ders Neti Girerek Puan & Başarı Sıralaması Hesaplama")
+                st.caption("Aşağıdaki alanlara güncel denemelerinizdeki Doğru/Yanlış sayılarınızı girerek tahmini ÖSYM Puanınızı ve Başarı Sıralamanızı canlı görün.")
+
+                with st.container():
+                    st.markdown('<div class="calc-card">', unsafe_allow_html=True)
+                    st.markdown("##### 📐 TYT (Temel Yeterlilik Testi) Ders Netleri Girişi")
+                    c_t1, c_t2, c_t3, c_t4 = st.columns(4)
+                    with c_t1:
+                        t_turkce_d = st.number_input("Türkçe Doğru (Max 40):", 0, 40, 30, key="calc_tt_d")
+                        t_turkce_y = st.number_input("Türkçe Yanlış:", 0, 40, 4, key="calc_tt_y")
+                        net_turkce = max(0.0, t_turkce_d - (t_turkce_y * 0.25))
+                        st.caption(f"Net: `{net_turkce:.2f}`")
+
+                    with c_t2:
+                        t_sos_d = st.number_input("Sosyal Doğru (Max 20):", 0, 20, 15, key="calc_ts_d")
+                        t_sos_y = st.number_input("Sosyal Yanlış:", 0, 20, 3, key="calc_ts_y")
+                        net_sosyal = max(0.0, t_sos_d - (t_sos_y * 0.25))
+                        st.caption(f"Net: `{net_sosyal:.2f}`")
+
+                    with c_t3:
+                        t_mat_d = st.number_input("Matematik Doğru (Max 40):", 0, 40, 28, key="calc_tm_d")
+                        t_mat_y = st.number_input("Matematik Yanlış:", 0, 40, 3, key="calc_tm_y")
+                        net_mat = max(0.0, t_mat_d - (t_mat_y * 0.25))
+                        st.caption(f"Net: `{net_mat:.2f}`")
+
+                    with c_t4:
+                        t_fen_d = st.number_input("Fen Doğru (Max 20):", 0, 20, 12, key="calc_tf_d")
+                        t_fen_y = st.number_input("Fen Yanlış:", 0, 20, 4, key="calc_tf_y")
+                        net_fen = max(0.0, t_fen_d - (t_fen_y * 0.25))
+                        st.caption(f"Net: `{net_fen:.2f}`")
+
+                    toplam_tyt_net = net_turkce + net_sosyal + net_mat + net_fen
+
+                    # Eğer YKS modundaysa AYT Netlerini de aç
+                    toplam_ayt_net = 0.0
+                    net_ayt_mat = 0.0
+                    net_fizik = 0.0
+                    net_kimya = 0.0
+                    net_biyo = 0.0
+
+                    if "YKS" in ogr_sinav or "AYT" in ogr_sinav:
+                        st.divider()
+                        st.markdown("##### 🔬 AYT (Alan Yeterlilik Testi) Ders Netleri Girişi (Sayısal / EA)")
+                        c_a1, c_a2, c_a3, c_a4 = st.columns(4)
+                        with c_a1:
+                            a_mat_d = st.number_input("AYT Mat Doğru (Max 40):", 0, 40, 25, key="calc_am_d")
+                            a_mat_y = st.number_input("AYT Mat Yanlış:", 0, 40, 4, key="calc_am_y")
+                            net_ayt_mat = max(0.0, a_mat_d - (a_mat_y * 0.25))
+                            st.caption(f"AYT Mat Net: `{net_ayt_mat:.2f}`")
+
+                        with c_a2:
+                            a_fiz_d = st.number_input("Fizik Doğru (Max 14):", 0, 14, 9, key="calc_af_d")
+                            a_fiz_y = st.number_input("Fizik Yanlış:", 0, 14, 2, key="calc_af_y")
+                            net_fizik = max(0.0, a_fiz_d - (a_fiz_y * 0.25))
+                            st.caption(f"Fizik Net: `{net_fizik:.2f}`")
+
+                        with c_a3:
+                            a_kim_d = st.number_input("Kimya Doğru (Max 13):", 0, 13, 8, key="calc_ak_d")
+                            a_kim_y = st.number_input("Kimya Yanlış:", 0, 13, 2, key="calc_ak_y")
+                            net_kimya = max(0.0, a_kim_d - (a_kim_y * 0.25))
+                            st.caption(f"Kimya Net: `{net_kimya:.2f}`")
+
+                        with c_a4:
+                            a_bio_d = st.number_input("Biyoloji Doğru (Max 13):", 0, 13, 9, key="calc_ab_d")
+                            a_bio_y = st.number_input("Biyoloji Yanlış:", 0, 13, 2, key="calc_ab_y")
+                            net_biyo = max(0.0, a_bio_d - (a_bio_y * 0.25))
+                            st.caption(f"Biyoloji Net: `{net_biyo:.2f}`")
+
+                        toplam_ayt_net = net_ayt_mat + net_fizik + net_kimya + net_biyo
+
+                    st.divider()
+                    col_obp1, col_obp2 = st.columns(2)
+                    with col_obp1:
+                        obp_puan = st.slider("🎓 Diploma Notunuz (OBP 50 - 100):", 50.0, 100.0, 85.0, 0.5)
+                    with col_obp2:
+                        st.write("")
+                        st.write("")
+                        hesapla_btn = st.button("🚀 Puan ve Sıralamamı Hesapla", type="primary", use_container_width=True)
+
+                    if hesapla_btn:
+                        # ÖSYM Tahmini Katsayı Algoritması
+                        tyt_ham_puan = 100 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
+                        obp_katki = obp_puan * 0.6
+
+                        if "YKS" in ogr_sinav or "AYT" in ogr_sinav:
+                            ayt_ham_puan = (net_ayt_mat * 3.0) + (net_fizik * 2.8) + (net_kimya * 3.0) + (net_biyo * 3.0)
+                            yerlestirme_puan = (tyt_ham_puan * 0.4) + (ayt_ham_puan * 0.6) + obp_katki
+                        else:
+                            yerlestirme_puan = tyt_ham_puan + obp_katki
+
+                        # Tahmini Sıralama Hesabı (Kümülatif Eğri Yaklaşımı)
+                        genel_toplam_net = toplam_tyt_net + (toplam_ayt_net * 1.5 if "YKS" in ogr_sinav else 0)
+                        
+                        if genel_toplam_net >= 160: tahmini_sira = "İlk 1.000 Derece 🏆"
+                        elif genel_toplam_net >= 145: tahmini_sira = "1.000 - 5.000"
+                        elif genel_toplam_net >= 130: tahmini_sira = "5.000 - 15.000"
+                        elif genel_toplam_net >= 115: tahmini_sira = "15.000 - 35.000"
+                        elif genel_toplam_net >= 95: tahmini_sira = "35.000 - 75.000"
+                        elif genel_toplam_net >= 75: tahmini_sira = "75.000 - 140.000"
+                        else: tahmini_sira = "140.000+"
+
+                        st.markdown(f"""
+                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-top: 15px;">
+                            <h4 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🎉 Tahmini Sonuç Analiziniz</h4>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px; font-weight:700;">
+                                <div>📊 <strong>Toplam TYT Net:</strong> {toplam_tyt_net:.2f}</div>
+                                <div>🔬 <strong>Toplam AYT Net:</strong> {toplam_ayt_net:.2f}</div>
+                                <div>🎓 <strong>Yerleştirme Puanı:</strong> {yerlestirme_puan:.2f}</div>
+                            </div>
+                            <div style="margin-top:12px; font-size:16px; font-weight:800;">
+                                🏆 Tahmini ÖSYM Başarı Sıralamanız: <span style="background:white; color:#059669; padding:4px 10px; border-radius:8px;">{tahmini_sira}</span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             # 📊 ÖĞRENCİ EXCEL VE HARİCİ DOSYA DERS PROGRAMI
             with tab_program:
