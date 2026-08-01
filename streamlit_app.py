@@ -150,6 +150,18 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         margin-top: 15px;
     }
+
+    .total-soru-banner {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white !important;
+        padding: 18px 24px;
+        border-radius: 16px;
+        font-weight: 800;
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -318,7 +330,7 @@ AYT_KONULAR = {
     "📏 AYT Geometri": ["Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitiği"],
     "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Elektromanyetizma", "Modern Fizik"],
     "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
-    "🧬 AYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
+    "🧬 TYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
     "📖 AYT Edebiyat": ["Şiir Bilgisi", "Divan Edebiyatı", "Tanzimat & Servet-i Fünun", "Milli Edebiyat", "Cumhuriyet Dönemi Edebiyatı"]
 }
 
@@ -697,7 +709,6 @@ else:
 
                     toplam_tyt_net = net_turkce + net_sosyal + net_mat + net_fen
 
-                    # ALANA GÖRE AYT / YDT AÇILAN ALANLAR
                     toplam_ayt_net = 0.0
                     ayt_ham_puan = 0.0
 
@@ -830,7 +841,6 @@ else:
                         obp_katki = obp_puan * 0.6
                         yerlestirme_puan = (tyt_ham_puan * 0.4) + (ayt_ham_puan * 0.6) + obp_katki
 
-                        # Alana özel tahmini ÖSYM kümülatif başarı sırası hesabı
                         genel_skor = toplam_tyt_net + (toplam_ayt_net * 1.6)
 
                         if secilen_alan == "Sayısal (SAY)":
@@ -851,7 +861,7 @@ else:
                             elif genel_skor >= 125: tahmini_sira = "1.000 - 5.000"
                             elif genel_skor >= 110: tahmini_sira = "5.000 - 15.000"
                             else: tahmini_sira = "15.000+"
-                        else:  # DİL
+                        else:
                             if genel_skor >= 150: tahmini_sira = "İlk 500 Derece 🏆"
                             elif genel_skor >= 135: tahmini_sira = "500 - 2.500"
                             elif genel_skor >= 120: tahmini_sira = "2.500 - 7.500"
@@ -902,10 +912,13 @@ else:
                             if pf_row['dosya_yolu'].lower().endswith('.pdf'):
                                 st.markdown(pdf_goster_html(pf_row['dosya_yolu']), unsafe_allow_html=True)
 
+            # 📝 GÜNLÜK ÇALIŞMA & GEÇMİŞE DÖNÜK TARİH SEÇİMİ VE TOTAL SORU ÖZETİ
             with tab_gunluk:
-                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Yapılamayan Soru Yükleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Soru Girişi — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                st.caption("📅 İstediğiniz geçmiş bir tarihi seçerek o güne ait soru girişi yapabilirsiniz.")
+
                 c1, c2, c3 = st.columns(3)
-                with c1: tarih_giris = st.date_input("Tarih", datetime.date.today())
+                with c1: secilen_tarih = st.date_input("Çalışma Tarihi (Geçmişe Dönük Seçilebilir)", datetime.date.today(), key="gunluk_tarih_secici")
                 with c2: sure_giris = st.number_input("Çalışma Süresi (Saat)", 0.0, 16.0, 5.5, 0.5)
                 with c3: verim_giris = st.slider("Verim Puanı (1-10)", 1, 10, 8)
                 not_giris = st.text_area("Çalışma Notları / Koçunuza Not:", height=70)
@@ -928,19 +941,32 @@ else:
                         if yuklenen_sorular and st.button(f"📤 Seçilen Soruları Kaydet ({ders_adi})", key=f"btn_save_soru_{ders_adi}"):
                             for file in yuklenen_sorular:
                                 file_ext = os.path.splitext(file.name)[1]
-                                unique_name = f"{aktif_ogr}_{str(tarih_giris)}_{hashlib.md5(file.name.encode()).hexdigest()[:8]}{file_ext}"
+                                unique_name = f"{aktif_ogr}_{str(secilen_tarih)}_{hashlib.md5(file.name.encode()).hexdigest()[:8]}{file_ext}"
                                 save_path = os.path.join(UPLOAD_DIR, unique_name)
                                 with open(save_path, "wb") as f: f.write(file.getbuffer())
-                                cursor.execute("INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?, ?)", (aktif_ogr, str(tarih_giris), ders_adi, secilen_konu, save_path, file.name))
+                                cursor.execute("INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), ders_adi, secilen_konu, save_path, file.name))
                             conn.commit()
                             st.success(f"🎉 {len(yuklenen_sorular)} soru başarıyla yüklendi!")
 
                 if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
                     for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
                         if t_s > 0:
-                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(tarih_giris), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
+                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
                     conn.commit()
                     st.success("🎉 Çalışmalarınız kaydedildi!")
+
+                # 📊 SEÇİLEN GÜNKÜ TOTAL ÇÖZÜLEN SORU MİKTARI GÖSTERGESİ
+                st.divider()
+                cursor.execute("SELECT SUM(toplam_soru) FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", (aktif_ogr, str(secilen_tarih)))
+                toplam_soru_sonuc = cursor.fetchone()[0]
+                gunluk_total_soru = toplam_soru_sonuc if toplam_soru_sonuc else 0
+
+                st.markdown(f"""
+                <div class="total-soru-banner">
+                    📅 {secilen_tarih} Tarihli Toplam Çalışma Raporu<br>
+                    <span style="font-size:26px; font-weight:800;">🎯 Bütün Derslerin Toplam Çözülen Soru Miktarı: {gun_total_soru := gunluk_total_soru} Soru</span>
+                </div>
+                """, unsafe_allow_html=True)
 
             with tab_deneme:
                 st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Karne Yükleme</h3>", unsafe_allow_html=True)
@@ -1043,7 +1069,6 @@ else:
                     if st.button(f"🗑️ {secilen_ogr} Öğrencisini Sil", type="secondary", use_container_width=True):
                         st.session_state["silme_onayi_ogrenci"] = secilen_ogr
 
-                # Öğrencinin Üniversiteye Özel YÖK Atlas Hedef Gösterimi
                 cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_sira FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
                 ogr_detay = cursor.fetchone()
                 if ogr_detay and ogr_detay[2]:
