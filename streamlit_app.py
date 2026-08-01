@@ -212,136 +212,95 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
-# 🏛️ YÖK ATLAS BÖLÜM, TABAN/TAVAN NET VE TABAN/TAVAN BAŞARI SIRALAMASI VERİTABANI
-YOK_ATLAS_NET_VERITABANI = {
-    "Tıp Fakültesi (SAY)": {"taban_net": 105.5, "tavan_net": 118.0, "taban_sira": "22.500", "tavan_sira": "80", "puan_turu": "SAY"},
-    "Diş Hekimliği (SAY)": {"taban_net": 94.0, "tavan_net": 108.5, "taban_sira": "42.000", "tavan_sira": "12.500", "puan_turu": "SAY"},
-    "Eczacılık (SAY)": {"taban_net": 87.5, "tavan_net": 101.0, "taban_sira": "61.000", "tavan_sira": "25.000", "puan_turu": "SAY"},
-    "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 82.0, "tavan_net": 116.5, "taban_sira": "98.000", "tavan_sira": "150", "puan_turu": "SAY"},
-    "Yazılım Mühendisliği (SAY)": {"taban_net": 78.5, "tavan_net": 108.0, "taban_sira": "115.000", "tavan_sira": "2.100", "puan_turu": "SAY"},
-    "Yapay Zeka Mühendisliği (SAY)": {"taban_net": 92.0, "tavan_net": 115.0, "taban_sira": "48.000", "tavan_sira": "450", "puan_turu": "SAY"},
-    "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 75.0, "tavan_net": 114.0, "taban_sira": "135.000", "tavan_sira": "600", "puan_turu": "SAY"},
-    "Endüstri Mühendisliği (SAY)": {"taban_net": 74.0, "tavan_net": 112.5, "taban_sira": "142.000", "tavan_sira": "1.200", "puan_turu": "SAY"},
-    "Makine Mühendisliği (SAY)": {"taban_net": 68.0, "tavan_net": 109.0, "taban_sira": "175.000", "tavan_sira": "2.800", "puan_turu": "SAY"},
-    "İnşaat Mühendisliği (SAY)": {"taban_net": 52.0, "tavan_net": 95.0, "taban_sira": "285.000", "tavan_sira": "22.000", "puan_turu": "SAY"},
-    "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 90.0, "tavan_net": 114.5, "taban_sira": "54.000", "tavan_sira": "550", "puan_turu": "SAY"},
-    "Uçak Mühendisliği (SAY)": {"taban_net": 88.0, "tavan_net": 112.0, "taban_sira": "62.000", "tavan_sira": "1.100", "puan_turu": "SAY"},
-    "Mekatronik Mühendisliği (SAY)": {"taban_net": 65.0, "tavan_net": 104.0, "taban_sira": "195.000", "tavan_sira": "8.500", "puan_turu": "SAY"},
-    "Biyomedikal Mühendisliği (SAY)": {"taban_net": 58.0, "tavan_net": 92.0, "taban_sira": "240.000", "tavan_sira": "32.000", "puan_turu": "SAY"},
-    "Kimya Mühendisliği (SAY)": {"taban_net": 62.0, "tavan_net": 105.0, "taban_sira": "210.000", "tavan_sira": "7.200", "puan_turu": "SAY"},
-    "Gıda Mühendisliği (SAY)": {"taban_net": 50.0, "tavan_net": 85.0, "taban_sira": "298.000", "tavan_sira": "65.000", "puan_turu": "SAY"},
-    "Mimarlık (SAY)": {"taban_net": 60.0, "tavan_net": 98.0, "taban_sira": "225.000", "tavan_sira": "18.000", "puan_turu": "SAY"},
-    "İç Mimarlık (SAY)": {"taban_net": 55.0, "tavan_net": 88.0, "taban_sira": "260.000", "tavan_sira": "48.000", "puan_turu": "SAY"},
-    "Hemşirelik (SAY)": {"taban_net": 62.5, "tavan_net": 85.0, "taban_sira": "205.000", "tavan_sira": "62.000", "puan_turu": "SAY"},
-    "Beslenme ve Diyetetik (SAY)": {"taban_net": 54.0, "tavan_net": 82.0, "taban_sira": "270.000", "tavan_sira": "78.000", "puan_turu": "SAY"},
-    "Fizyoterapi ve Rehabilitasyon (SAY)": {"taban_net": 56.0, "tavan_net": 86.0, "taban_sira": "250.000", "tavan_sira": "60.000", "puan_turu": "SAY"},
-    "Moleküler Biyoloji ve Genetik (SAY)": {"taban_net": 65.0, "tavan_net": 108.0, "taban_sira": "190.000", "tavan_sira": "4.200", "puan_turu": "SAY"},
-    "Matematik (SAY)": {"taban_net": 58.0, "tavan_net": 110.0, "taban_sira": "235.000", "tavan_sira": "2.500", "puan_turu": "SAY"},
-    "Fizik (SAY)": {"taban_net": 52.0, "tavan_net": 108.0, "taban_sira": "280.000", "tavan_sira": "3.800", "puan_turu": "SAY"},
-    "Kimya (SAY)": {"taban_net": 50.0, "tavan_net": 95.0, "taban_sira": "295.000", "tavan_sira": "22.000", "puan_turu": "SAY"},
-    "Biyoloji (SAY)": {"taban_net": 48.0, "tavan_net": 92.0, "taban_sira": "299.000", "tavan_sira": "31.000", "puan_turu": "SAY"},
-    "İlköğretim Matematik Öğretmenliği (SAY)": {"taban_net": 72.0, "tavan_net": 95.0, "taban_sira": "155.000", "tavan_sira": "24.000", "puan_turu": "SAY"},
-    "Fen Bilgisi Öğretmenliği (SAY)": {"taban_net": 52.0, "tavan_net": 75.0, "taban_sira": "282.000", "tavan_sira": "130.000", "puan_turu": "SAY"},
-    "Dijital Oyun Tasarımı (SAY)": {"taban_net": 70.0, "tavan_net": 102.0, "taban_sira": "165.000", "tavan_sira": "12.000", "puan_turu": "SAY"},
-    "Hukuk Fakültesi (EA)": {"taban_net": 78.0, "tavan_net": 105.0, "taban_sira": "120.000", "tavan_sira": "250", "puan_turu": "EA"},
-    "Psikoloji (EA)": {"taban_net": 68.0, "tavan_net": 104.0, "taban_sira": "185.000", "tavan_sira": "450", "puan_turu": "EA"},
-    "İşletme (EA)": {"taban_net": 52.0, "tavan_net": 110.0, "taban_sira": "420.000", "tavan_sira": "120", "puan_turu": "EA"},
-    "İktisat / Ekonomi (EA)": {"taban_net": 50.0, "tavan_net": 108.0, "taban_sira": "450.000", "tavan_sira": "180", "puan_turu": "EA"},
-    "Endüstriyel Tasarım (EA)": {"taban_net": 58.0, "tavan_net": 92.0, "taban_sira": "280.000", "tavan_sira": "8.500", "puan_turu": "EA"},
-    "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 55.0, "tavan_net": 106.0, "taban_sira": "350.000", "tavan_sira": "320", "puan_turu": "EA"},
-    "Yönetim Bilişim Sistemleri (YBS) (EA)": {"taban_net": 65.0, "tavan_net": 102.0, "taban_sira": "210.000", "tavan_sira": "1.100", "puan_turu": "EA"},
-    "Finans ve Bankacılık (EA)": {"taban_net": 45.0, "tavan_net": 80.0, "taban_sira": "550.000", "tavan_sira": "38.000", "puan_turu": "EA"},
-    "Pazarlama (EA)": {"taban_net": 42.0, "tavan_net": 75.0, "taban_sira": "620.000", "tavan_sira": "52.000", "puan_turu": "EA"},
-    "Sosyoloji (EA)": {"taban_net": 45.0, "tavan_net": 90.0, "taban_sira": "540.000", "tavan_sira": "12.000", "puan_turu": "EA"},
-    "Felsefe (EA)": {"taban_net": 42.0, "tavan_net": 88.0, "taban_sira": "610.000", "tavan_sira": "15.000", "puan_turu": "EA"},
-    "Sınıf Öğretmenliği (EA)": {"taban_net": 66.0, "tavan_net": 85.0, "taban_sira": "195.000", "tavan_sira": "18.000", "puan_turu": "EA"},
-    "PDR / Rehberlik ve Psikolojik Danışmanlık (EA)": {"taban_net": 64.0, "tavan_net": 88.0, "taban_sira": "215.000", "tavan_sira": "14.000", "puan_turu": "EA"},
-    "Okul Öncesi Öğretmenliği (EA)": {"taban_net": 70.0, "tavan_net": 89.0, "taban_sira": "165.000", "tavan_sira": "11.000", "puan_turu": "EA"},
-    "Grafik Tasarım (EA)": {"taban_net": 48.0, "tavan_net": 82.0, "taban_sira": "480.000", "tavan_sira": "32.000", "puan_turu": "EA"},
-    "İç Mimarlık ve Çevre Tasarımı (EA)": {"taban_net": 50.0, "tavan_net": 85.0, "taban_sira": "440.000", "tavan_sira": "24.000", "puan_turu": "EA"},
-    "Lojistik Yönetimi (EA)": {"taban_net": 44.0, "tavan_net": 78.0, "taban_sira": "580.000", "tavan_sira": "45.000", "puan_turu": "EA"},
-    "Özel Eğitim Öğretmenliği (SÖZ)": {"taban_net": 75.0, "tavan_net": 92.0, "taban_sira": "18.000", "tavan_sira": "800", "puan_turu": "SÖZ"},
-    "Türk Dili ve Edebiyatı (SÖZ)": {"taban_net": 50.0, "tavan_net": 85.0, "taban_sira": "140.000", "tavan_sira": "2.500", "puan_turu": "SÖZ"},
-    "Tarih (SÖZ)": {"taban_net": 48.0, "tavan_net": 88.0, "taban_sira": "165.000", "tavan_sira": "1.800", "puan_turu": "SÖZ"},
-    "Coğrafya (SÖZ)": {"taban_net": 46.0, "tavan_net": 82.0, "taban_sira": "185.000", "tavan_sira": "5.200", "puan_turu": "SÖZ"},
-    "Gazetecilik (SÖZ)": {"taban_net": 45.0, "tavan_net": 80.0, "taban_sira": "195.000", "tavan_sira": "7.500", "puan_turu": "SÖZ"},
-    "Radyo, Televizyon ve Sinema (SÖZ)": {"taban_net": 48.0, "tavan_net": 86.0, "taban_sira": "160.000", "tavan_sira": "3.100", "puan_turu": "SÖZ"},
-    "Halkla İlişkiler ve Tanıtım (SÖZ)": {"taban_net": 44.0, "tavan_net": 80.0, "taban_sira": "210.000", "tavan_sira": "8.000", "puan_turu": "SÖZ"},
-    "Çizgi Film ve Animasyon (SÖZ)": {"taban_net": 55.0, "tavan_net": 88.0, "taban_sira": "95.000", "tavan_sira": "1.900", "puan_turu": "SÖZ"},
-    "Gastronomi ve Mutfak Sanatları (SÖZ)": {"taban_net": 58.0, "tavan_net": 89.0, "taban_sira": "78.000", "tavan_sira": "1.400", "puan_turu": "SÖZ"},
-    "Türkçe Öğretmenliği (SÖZ)": {"taban_net": 72.0, "tavan_net": 88.0, "taban_sira": "28.000", "tavan_sira": "1.200", "puan_turu": "SÖZ"},
-    "Sosyal Bilgiler Öğretmenliği (SÖZ)": {"taban_net": 62.0, "tavan_net": 78.0, "taban_sira": "65.000", "tavan_sira": "12.000", "puan_turu": "SÖZ"},
-    "İlahiyat / İslami İlimler (SÖZ)": {"taban_net": 50.0, "tavan_net": 84.0, "taban_sira": "135.000", "tavan_sira": "3.500", "puan_turu": "SÖZ"},
-    "İletişim Tasarımı (SÖZ)": {"taban_net": 46.0, "tavan_net": 80.0, "taban_sira": "180.000", "tavan_sira": "7.000", "puan_turu": "SÖZ"},
-    "İngilizce Öğretmenliği (DİL)": {"taban_net": 68.0, "tavan_net": 78.0, "taban_sira": "14.000", "tavan_sira": "1.100", "puan_turu": "DİL"},
-    "İngiliz Dili ve Edebiyatı (DİL)": {"taban_net": 55.0, "tavan_net": 76.0, "taban_sira": "28.000", "tavan_sira": "2.200", "puan_turu": "DİL"},
-    "Mütercim-Tercümanlık (İngilizce) (DİL)": {"taban_net": 62.0, "tavan_net": 78.5, "taban_sira": "19.000", "tavan_sira": "850", "puan_turu": "DİL"},
-    "Almanca Öğretmenliği (DİL)": {"taban_net": 48.0, "tavan_net": 68.0, "taban_sira": "35.000", "tavan_sira": "12.000", "puan_turu": "DİL"},
-    "Fransızca Mütercim-Tercümanlık (DİL)": {"taban_net": 46.0, "tavan_net": 69.0, "taban_sira": "38.000", "tavan_sira": "10.500", "puan_turu": "DİL"},
-    "Kore Dili ve Edebiyatı (DİL)": {"taban_net": 58.0, "tavan_net": 74.0, "taban_sira": "24.000", "tavan_sira": "4.800", "puan_turu": "DİL"},
-    "Japonca Öğretmenliği (DİL)": {"taban_net": 52.0, "tavan_net": 70.0, "taban_sira": "31.000", "tavan_sira": "8.200", "puan_turu": "DİL"},
-    "Çin Dili ve Edebiyatı (DİL)": {"taban_net": 42.0, "tavan_net": 65.0, "taban_sira": "44.000", "tavan_sira": "16.000", "puan_turu": "DİL"},
-    "Arapça Öğretmenliği (DİL)": {"taban_net": 45.0, "tavan_net": 68.0, "taban_sira": "40.000", "tavan_sira": "12.500", "puan_turu": "DİL"},
-    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)": {"taban_net": 42.0, "tavan_net": 78.0, "taban_sira": "680.000", "tavan_sira": "120.000", "puan_turu": "TYT"},
-    "Ağ ve Siber Güvenlik (TYT)": {"taban_net": 45.0, "tavan_net": 80.0, "taban_sira": "610.000", "tavan_sira": "95.000", "puan_turu": "TYT"},
-    "Web Tasarımı ve Kodlama (TYT)": {"taban_net": 38.0, "tavan_net": 72.0, "taban_sira": "780.000", "tavan_sira": "180.000", "puan_turu": "TYT"},
-    "Anestezi (TYT)": {"taban_net": 52.0, "tavan_net": 75.0, "taban_sira": "480.000", "tavan_sira": "150.000", "puan_turu": "TYT"},
-    "İlk ve Acil Yardım (Paramedik) (TYT)": {"taban_net": 55.0, "tavan_net": 78.0, "taban_sira": "420.000", "tavan_sira": "130.000", "puan_turu": "TYT"},
-    "Tıbbi Görüntüleme Teknikleri (TYT)": {"taban_net": 48.0, "tavan_net": 70.0, "taban_sira": "560.000", "tavan_sira": "210.000", "puan_turu": "TYT"},
-    "Ağız ve Diş Sağlığı (TYT)": {"taban_net": 46.0, "tavan_net": 68.0, "taban_sira": "590.000", "tavan_sira": "240.000", "puan_turu": "TYT"},
-    "Adalet (TYT)": {"taban_net": 40.0, "tavan_net": 65.0, "taban_sira": "720.000", "tavan_sira": "290.000", "puan_turu": "TYT"},
-    "Sivil Havacılık Kabin Hizmetleri (TYT)": {"taban_net": 42.0, "tavan_net": 68.0, "taban_sira": "680.000", "tavan_sira": "250.000", "puan_turu": "TYT"},
-    "Aşçılık (TYT)": {"taban_net": 35.0, "tavan_net": 62.0, "taban_sira": "890.000", "tavan_sira": "320.000", "puan_turu": "TYT"},
-    "Grafik Tasarımı (TYT Önlisans)": {"taban_net": 36.0, "tavan_net": 65.0, "taban_sira": "850.000", "tavan_sira": "280.000", "puan_turu": "TYT"},
-    "Diğer Tüm Lisans ve Önlisans Bölümleri": {"taban_net": 35.0, "tavan_net": 80.0, "taban_sira": "900.000", "tavan_sira": "50.000", "puan_turu": "GENEL"}
+# 🏛️ ÜNİVERSİTE VE BÖLÜM BAZLI ÖZEL YÖK ATLAS VERİTABANI
+YOK_ATLAS_UNI_BOLUM_VERITABANI = {
+    "Boğaziçi Üniversitesi (İstanbul)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 114.5, "tavan_net": 119.0, "taban_sira": "280", "tavan_sira": "1"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.5, "taban_sira": "1.100", "tavan_sira": "45"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 112.5, "tavan_net": 118.5, "taban_sira": "650", "tavan_sira": "12"},
+        "İşletme (EA)": {"taban_net": 102.5, "tavan_net": 112.0, "taban_sira": "420", "tavan_sira": "5"},
+        "İktisat / Ekonomi (EA)": {"taban_net": 100.0, "tavan_net": 110.5, "taban_sira": "680", "tavan_sira": "18"},
+        "Psikoloji (EA)": {"taban_net": 98.5, "tavan_net": 108.0, "taban_sira": "1.250", "tavan_sira": "35"},
+        "İngilizce Öğretmenliği (DİL)": {"taban_net": 76.5, "tavan_net": 79.5, "taban_sira": "850", "tavan_sira": "12"}
+    },
+    "İstanbul Teknik Üniversitesi (İTÜ)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 112.0, "tavan_net": 117.0, "taban_sira": "950", "tavan_sira": "85"},
+        "Yapay Zeka Mühendisliği (SAY)": {"taban_net": 111.5, "tavan_net": 116.5, "taban_sira": "1.200", "tavan_sira": "110"},
+        "Uçak Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "2.800", "tavan_sira": "210"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 107.5, "tavan_net": 114.0, "taban_sira": "3.200", "tavan_sira": "350"},
+        "Mimarlık (SAY)": {"taban_net": 96.0, "tavan_net": 106.0, "taban_sira": "18.500", "tavan_sira": "1.800"}
+    },
+    "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.0, "taban_sira": "1.150", "tavan_sira": "40"},
+        "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.400", "tavan_sira": "180"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 113.0, "taban_sira": "5.500", "tavan_sira": "420"},
+        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 96.5, "tavan_net": 106.0, "taban_sira": "1.800", "tavan_sira": "95"}
+    },
+    "Hacettepe Üniversitesi (Ankara)": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 114.0, "tavan_net": 118.5, "taban_sira": "1.100", "tavan_sira": "8"},
+        "Diş Hekimliği (SAY)": {"taban_net": 102.5, "tavan_net": 109.0, "taban_sira": "18.500", "tavan_sira": "3.200"},
+        "Eczacılık (SAY)": {"taban_net": 95.0, "tavan_net": 103.5, "taban_sira": "38.000", "tavan_sira": "12.000"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 109.5, "tavan_net": 115.5, "taban_sira": "2.100", "tavan_sira": "380"},
+        "Psikoloji (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "9.500", "tavan_sira": "850"}
+    },
+    "Ankara Üniversitesi": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 111.0, "tavan_net": 116.5, "taban_sira": "3.800", "tavan_sira": "120"},
+        "Hukuk Fakültesi (EA)": {"taban_net": 94.0, "tavan_net": 104.5, "taban_sira": "3.800", "tavan_sira": "220"},
+        "Diş Hekimliği (SAY)": {"taban_net": 101.0, "tavan_net": 107.5, "taban_sira": "22.000", "tavan_sira": "5.400"}
+    },
+    "Galatasaray Üniversitesi (İstanbul)": {
+        "Hukuk Fakültesi (EA)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "650", "tavan_sira": "25"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 114.5, "taban_sira": "3.500", "tavan_sira": "480"},
+        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 95.0, "tavan_net": 104.0, "taban_sira": "2.200", "tavan_sira": "180"}
+    },
+    "İstanbul Üniversitesi": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 112.5, "tavan_net": 117.5, "taban_sira": "2.200", "tavan_sira": "45"},
+        "Hukuk Fakültesi (EA)": {"taban_net": 91.5, "tavan_net": 102.0, "taban_sira": "6.200", "tavan_sira": "350"},
+        "Eczacılık (SAY)": {"taban_net": 93.0, "tavan_net": 101.5, "taban_sira": "42.000", "tavan_sira": "15.000"}
+    },
+    "Ege Üniversitesi (İzmir)": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 110.0, "tavan_net": 115.5, "taban_sira": "5.400", "tavan_sira": "320"},
+        "Diş Hekimliği (SAY)": {"taban_net": 99.5, "tavan_net": 106.0, "taban_sira": "25.000", "tavan_sira": "8.200"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 102.0, "tavan_net": 110.0, "taban_sira": "14.000", "tavan_sira": "2.800"}
+    },
+    "Yıldız Teknik Üniversitesi (İTÜ)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.0, "taban_sira": "2.900", "tavan_sira": "410"},
+        "Yazılım Mühendisliği (SAY)": {"taban_net": 106.0, "tavan_net": 113.0, "taban_sira": "5.100", "tavan_sira": "820"},
+        "Mimarlık (SAY)": {"taban_net": 90.0, "tavan_net": 100.0, "taban_sira": "32.000", "tavan_sira": "6.500"}
+    },
+    "Marmara Üniversitesi (İstanbul)": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 109.5, "tavan_net": 115.0, "taban_sira": "6.800", "tavan_sira": "580"},
+        "Hukuk Fakültesi (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "11.500", "tavan_sira": "1.100"},
+        "Diş Hekimliği (SAY)": {"taban_net": 98.5, "tavan_net": 105.0, "taban_sira": "28.000", "tavan_sira": "9.500"}
+    }
 }
 
-YOK_ATLAS_BOLUM_LISTESI = sorted(list(YOK_ATLAS_NET_VERITABANI.keys()))
-
-YOK_ATLAS_UNIVERSTITELER = sorted([
+YOK_ATLAS_UNIVERSTITELER = sorted(list(set(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + [
     "Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)",
     "Hacettepe Üniversitesi (Ankara)", "Bilkent Üniversitesi (Ankara)", "Koç Üniversitesi (İstanbul)",
-    "Sabancı Üniversitesi (İstanbul)", "İstanbul Üniversitesi", "İstanbul Üniversitesi-Cerrahpaşa",
-    "Marmara Üniversitesi (İstanbul)", "Yıldız Teknik Üniversitesi (İTÜ)", "Ege Üniversitesi (İzmir)",
-    "Dokuz Eylül Üniversitesi (İzmir)", "Ankara Üniversitesi", "Gazi Üniversitesi (Ankara)",
-    "Galatasaray Üniversitesi (İstanbul)", "Bahçeşehir Üniversitesi (İstanbul)", "Özyeğin Üniversitesi (İstanbul)",
-    "Yeditepe Üniversitesi (İstanbul)", "TOBB Ekonomi ve Teknoloji Üniversitesi (Ankara)",
+    "Sabancı Üniversitesi (İstanbul)", "İstanbul Üniversitesi", "Marmara Üniversitesi (İstanbul)",
+    "Yıldız Teknik Üniversitesi (İTÜ)", "Ege Üniversitesi (İzmir)", "Dokuz Eylül Üniversitesi (İzmir)",
+    "Ankara Üniversitesi", "Gazi Üniversitesi (Ankara)", "Galatasaray Üniversitesi (İstanbul)",
     "Bursa Uludağ Üniversitesi", "Eskişehir Osmangazi Üniversitesi", "Anadolu Üniversitesi (Eskişehir)",
     "Çukurova Üniversitesi (Adana)", "Akdeniz Üniversitesi (Antalya)", "Karadeniz Teknik Üniversitesi (Trabzon)",
-    "Ondokuz Mayıs Üniversitesi (Samsun)", "Erciyes Üniversitesi (Kayseri)", "Selçuk Üniversitesi (Konya)",
     "Kocaeli Üniversitesi", "Sakarya Üniversitesi", "Gebze Teknik Üniversitesi", "İzmir Yüksek Teknoloji Enstitüsü (İYTE)",
-    "Gaziantep Üniversitesi", "İnönü Üniversitesi (Malatya)", "Fırat Üniversitesi (Elazığ)",
-    "Atatürk Üniversitesi (Erzurum)", "Dicle Üniversitesi (Diyarbakır)", "Sivas Cumhuriyet Üniversitesi",
-    "Muğla Sıtkı Koçman Üniversitesi", "Aydın Adnan Menderes Üniversitesi", "Pamukkale Üniversitesi (Denizli)",
-    "Manisa Celal Bayar Üniversitesi", "Tekirdağ Namık Kemal Üniversitesi", "Çanakkale Onsekiz Mart Üniversitesi",
-    "Balıkesir Üniversitesi", "Zonguldak Bülent Ecevit Üniversitesi", "Bolu Abant İzzet Baysal Üniversitesi",
-    "Düzce Üniversitesi", "Yalova Üniversitesi", "Kırklareli Üniversitesi", "Süleyman Demirel Üniversitesi (Isparta)",
-    "Afyon Kocatepe Üniversitesi", "Mersin Üniversitesi", "Hatay Mustafa Kemal Üniversitesi",
-    "Kahramanmaraş Sütçü İmam Üniversitesi", "Harran Üniversitesi (Şanlıurfa)", "Adıyaman Üniversitesi",
-    "Batman Üniversitesi", "Mardin Artuklu Üniversitesi", "Siirt Üniversitesi", "Şırnak Üniversitesi",
-    "Hakkari Üniversitesi", "Van Yüzüncü Yıl Üniversitesi", "Ağrı İbrahim Çeçen Üniversitesi",
-    "Iğdır Üniversitesi", "Kars Kafkas Üniversitesi", "Ardahan Üniversitesi", "Artvin Çoruh Üniversitesi",
-    "Rize Recep Tayyip Erdoğan Üniversitesi", "Giresun Üniversitesi", "Ordu Üniversitesi",
-    "Amasya Üniversitesi", "Tokat Gaziosmanpaşa Üniversitesi", "Yozgat Bozok Üniversitesi",
-    "Kırşehir Ahi Evran Üniversitesi", "Nevşehir Hacı Bektaş Veli Üniversitesi", "Niğde Ömer Halisdemir Üniversitesi",
-    "Aksaray Üniversitesi", "Karamanoğlu Mehmetbey Üniversitesi (Karaman)", "Kastamonu Üniversitesi",
-    "Sinop Üniversitesi", "Çankırı Karatekin Üniversitesi", "Karabük Üniversitesi", "Bartın Üniversitesi",
-    "Bilecik Şeyh Edebali Üniversitesi", "Kütahya Dumlupınar Üniversitesi", "Uşak Üniversitesi",
-    "Bursa Teknik Üniversitesi", "Eskişehir Teknik Üniversitesi", "Isparta Uygulamalı Bilimler Üniversitesi",
-    "Kayseri Üniversitesi", "Konya Teknik Üniversitesi", "Kütahya Sağlık Bilimleri Üniversitesi",
-    "Malatya Turgut Özal Üniversitesi", "Maraş İstiklal Üniversitesi", "Sivas Bilim ve Teknoloji Üniversitesi",
-    "Tarsus Üniversitesi", "Trabzon Üniversitesi", "Yürek Üniversitesi", "İzmir Demokrasi Üniversitesi",
-    "İzmir Bakırçay Üniversitesi", "Ankara Hacı Bayram Veli Üniversitesi", "Ankara Müzik ve Güzel Sanatlar Üniversitesi",
-    "Ankara Sosyal Bilimler Üniversitesi", "Sağlık Bilimleri Üniversitesi (İstanbul)", "Mimar Sinan Güzel Sanatlar Üniversitesi",
-    "Türk-Alman Üniversitesi (İstanbul)", "Milli Savunma Üniversitesi (MSÜ)", "Polis Akademisi",
-    "Acıbadem Mehmet Ali Aydınlar Üniversitesi", "Atılım Üniversitesi (Ankara)", "Başkent Üniversitesi (Ankara)",
-    "Beykent Üniversitesi (İstanbul)", "Bezmiâlem Vakıf Üniversitesi (İstanbul)", "Çankaya Üniversitesi (Ankara)",
-    "Doğuş Üniversitesi (İstanbul)", "İhsan Doğramacı Bilkent Üniversitesi", "İstanbul Bilgi Üniversitesi",
-    "İstanbul Aydın Üniversitesi", "İstanbul Gelisim Üniversitesi", "İstanbul Medipol Üniversitesi",
-    "İstanbul Sabahattin Zaim Üniversitesi", "İstanbul Ticaret Üniversitesi", "Kadir Has Üniversitesi (İstanbul)",
-    "Kuleli / Maltepe / Işık Üniversitesi", "İzmir Ekonomi Üniversitesi", "Yaşar Üniversitesi (İzmir)",
-    "TED Üniversitesi (Ankara)", "TOBB ETÜ", "Turgut Özal Üniversitesi", "Üsküdar Üniversitesi (İstanbul)",
-    "Yüksek İhtisas Üniversitesi (Ankara)", "Diğer Tüm Devlet ve Vakıf Üniversiteleri"
+    "Gaziantep Üniversitesi", "Atatürk Üniversitesi (Erzurum)", "Diğer Tüm Devlet ve Vakıf Üniversiteleri"
+])))
+
+GENEL_BOLUM_LISTESI = sorted([
+    "Tıp Fakültesi (SAY)", "Diş Hekimliği (SAY)", "Eczacılık (SAY)",
+    "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Yazılım Mühendisliği (SAY)",
+    "Yapay Zeka Mühendisliği (SAY)", "Elektrik-Elektronik Mühendisliği (SAY)",
+    "Endüstri Mühendisliği (SAY)", "Makine Mühendisliği (SAY)", "İnşaat Mühendisliği (SAY)",
+    "Havacılık ve Uzay Mühendisliği (SAY)", "Uçak Mühendisliği (SAY)", "Mekatronik Mühendisliği (SAY)",
+    "Mimarlık (SAY)", "Hemşirelik (SAY)", "Moleküler Biyoloji ve Genetik (SAY)", "Matematik (SAY)",
+    "Hukuk Fakültesi (EA)", "Psikoloji (EA)", "İşletme (EA)", "İktisat / Ekonomi (EA)",
+    "Siyaset Bilimi ve Uluslararası İlişkiler (EA)", "Yönetim Bilişim Sistemleri (YBS) (EA)",
+    "Özel Eğitim Öğretmenliği (SÖZ)", "Gastronomi ve Mutfak Sanatları (SÖZ)", "Türkçe Öğretmenliği (SÖZ)",
+    "İngilizce Öğretmenliği (DİL)", "Mütercim-Tercümanlık (İngilizce) (DİL)",
+    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "İlk ve Acil Yardım (Paramedic) (TYT)",
+    "Diğer Tüm Lisans ve Önlisans Bölümleri"
 ])
 
 TYT_KONULAR = {
@@ -638,8 +597,8 @@ else:
                 ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
                 curr_uni = r_info[1] if (r_info and r_info[1]) else "Boğaziçi Üniversitesi (İstanbul)"
                 curr_bolum = r_info[2] if (r_info and r_info[2]) else "Computer Engineering / Bilgisayar Mühendisliği (SAY)"
-                curr_net = r_info[3] if (r_info and r_info[3]) else 82.0
-                curr_sira = r_info[4] if (r_info and len(r_info)>4 and r_info[4]) else "98.000"
+                curr_net = r_info[3] if (r_info and r_info[3]) else 114.5
+                curr_sira = r_info[4] if (r_info and len(r_info)>4 and r_info[4]) else "280"
                 st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Sınav Modu: **{ogr_sinav}**")
             
             with col_o_head2:
@@ -665,47 +624,61 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 YÖK ATLAS OTOMATİK NET VE BAŞARI SIRALAMALI HEDEF TAKİP ALANI
+            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP ALANI
             with tab_hedef:
-                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 YÖK Atlas Otomatik Net & Başarı Sıralamalı Hedef Takibi — {aktif_ogr}</h3>", unsafe_allow_html=True)
-                st.caption("⚡ Hedeflediğiniz bölümü seçtiğinizde YÖK Atlas'tan o bölüme girenlerin **Taban/Tavan Netleri** ve **Taban/Tavan Başarı Sıralamaları (Dereceleri)** anında yüklenir.")
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
 
-                bolum_idx = YOK_ATLAS_BOLUM_LISTESI.index(curr_bolum) if curr_bolum in YOK_ATLAS_BOLUM_LISTESI else 0
-                secilen_hedef_bolum = st.selectbox("🎓 Hedeflediğiniz Bölüm / Programı Seçin:", YOK_ATLAS_BOLUM_LISTESI, index=bolum_idx)
+                col_h_u1, col_h_u2 = st.columns(2)
+                with col_h_u1:
+                    u_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
+                    secilen_hedef_uni = st.selectbox("🏛️ Hedeflediğiniz Üniversiteyi Seçin:", YOK_ATLAS_UNIVERSTITELER, index=u_idx)
 
-                net_bilgisi = YOK_ATLAS_NET_VERITABANI.get(secilen_hedef_bolum, {"taban_net": 65.0, "tavan_net": 95.0, "taban_sira": "150.000", "tavan_sira": "1.000", "puan_turu": "SAY/EA"})
-                otomatik_taban_net = net_bilgisi["taban_net"]
-                otomatik_tavan_net = net_bilgisi["tavan_net"]
-                otomatik_taban_sira = net_bilgisi["taban_sira"]
-                otomatik_tavan_sira = net_bilgisi["tavan_sira"]
+                # Seçilen üniversitenin mevcut bölümlerini filtreleme
+                uni_bolumleri = YOK_ATLAS_UNI_BOLUM_VERITABANI.get(secilen_hedef_uni, {})
+                kullanilabilir_bolumler = sorted(list(uni_bolumleri.keys())) if uni_bolumleri else GENEL_BOLUM_LISTESI
+
+                with col_h_u2:
+                    b_idx = kullanilabilir_bolumler.index(curr_bolum) if curr_bolum in kullanilabilir_bolumler else 0
+                    secilen_hedef_bolum = st.selectbox("🎓 Hedeflediğiniz Bölüm / Programı Seçin:", kullanilabilir_bolumler, index=b_idx)
+
+                # Üniversiteye ve bölüme özel veriyi çekme
+                if secilen_hedef_uni in YOK_ATLAS_UNI_BOLUM_VERITABANI and secilen_hedef_bolum in YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni]:
+                    u_data = YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni][secilen_hedef_bolum]
+                    otomatik_taban_net = u_data["taban_net"]
+                    otomatik_tavan_net = u_data["tavan_net"]
+                    otomatik_taban_sira = u_data["taban_sira"]
+                    otomatik_tavan_sira = u_data["tavan_sira"]
+                else:
+                    otomatik_taban_net = 65.0
+                    otomatik_tavan_net = 98.0
+                    otomatik_taban_sira = "120.000"
+                    otomatik_tavan_sira = "1.500"
 
                 st.markdown(f"""
                 <div class="yok-net-box">
-                    <div style="font-size:16px; font-weight:800; color:#1e40af; margin-bottom:10px;">📊 YÖK Atlas İstatistik Paneli: {secilen_hedef_bolum}</div>
+                    <div style="font-size:16px; font-weight:800; color:#1e40af; margin-bottom:10px;">🏛️ YÖK Atlas Kurumsal İstatistikleri: {secilen_hedef_uni} - {secilen_hedef_bolum}</div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size:14px; font-weight:700;">
-                        <div>🟢 <strong>YÖK Taban Net (Gereken):</strong> <span style="color:#059669; font-size:16px;">{otomatik_taban_net} Net</span></div>
-                        <div>🚀 <strong>YÖK Tavan Net (Birinci):</strong> <span style="color:#2563eb; font-size:16px;">{otomatik_tavan_net} Net</span></div>
-                        <div>📉 <strong>YÖK Taban Sıralama (Son Giren):</strong> <span style="color:#059669; font-size:16px;">{otomatik_taban_sira}. Derece</span></div>
-                        <div>🏆 <strong>YÖK Tavan Sıralama (Zirve Derece):</strong> <span style="color:#2563eb; font-size:16px;">{otomatik_tavan_sira}. Derece</span></div>
+                        <div>🟢 <strong>Kurum Taban Neti (En Son Giren):</strong> <span style="color:#059669; font-size:16px;">{otomatik_taban_net} Net</span></div>
+                        <div>🚀 <strong>Kurum Tavan Neti (Birinci):</strong> <span style="color:#2563eb; font-size:16px;">{otomatik_tavan_net} Net</span></div>
+                        <div>📉 <strong>Kurum Taban Sıralaması (Son Giren):</strong> <span style="color:#059669; font-size:16px;">{otomatik_taban_sira}. Derece</span></div>
+                        <div>🏆 <strong>Kurum Tavan Sıralaması (Zirve):</strong> <span style="color:#2563eb; font-size:16px;">{otomatik_tavan_sira}. Derece</span></div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                uni_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
-                secilen_hedef_uni = st.selectbox("🏛️ Hedeflediğiniz Üniversiteyi Seçin:", YOK_ATLAS_UNIVERSTITELER, index=uni_idx)
-
                 with st.form("yok_atlas_otomatik_hedef_form"):
                     col_n1, col_n2 = st.columns(2)
                     with col_n1:
-                        ozel_hedef_net = st.number_input("🎯 Hedeflediğiniz Netiniz (Varsayılan YÖK Taban Neti):", 10.0, float(MAX_NET_LIMIT), float(otomatik_taban_net), 0.5)
+                        ozel_hedef_net = st.number_input("🎯 Kişisel Net Hedefiniz:", 10.0, float(MAX_NET_LIMIT), float(otomatik_taban_net), 0.5)
                     with col_n2:
-                        ozel_hedef_sira = st.text_input("📊 Hedef Başarı Sıralamanız (Varsayılan YÖK Taban Derecesi):", value=f"İlk {otomatik_taban_sira}")
+                        ozel_hedef_sira = st.text_input("📊 Kişisel Başarı Sıralaması Hedefiniz:", value=f"İlk {otomatik_taban_sira}")
 
-                    if st.form_submit_button("🎯 Otomatik Net & Sıralama Hedefimi Kaydet", type="primary", use_container_width=True):
+                    if st.form_submit_button("🎯 Üniversiteye Özel Hedefimi Kaydet", type="primary", use_container_width=True):
                         cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ?, hedef_sira = ? WHERE ad_soyad = ?", 
                                        (secilen_hedef_uni, secilen_hedef_bolum, float(ozel_hedef_net), ozel_hedef_sira, aktif_ogr))
                         conn.commit()
-                        st.success(f"🎉 Hedefiniz YÖK Atlas Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}** ({secilen_hedef_uni})\n• **Otomatik YÖK Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **YÖK Taban Başarı Sırası:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
+                        st.success(f"🎉 Hedefiniz {secilen_hedef_uni} Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}**\n• **Üniversite Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **Üniversite Taban Sıralaması:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
                         st.rerun()
 
             # 📊 ÖĞRENCİ EXCEL VE HARİCİ DOSYA DERS PROGRAMI
@@ -879,12 +852,12 @@ else:
                     if st.button(f"🗑️ {secilen_ogr} Öğrencisini Sil", type="secondary", use_container_width=True):
                         st.session_state["silme_onayi_ogrenci"] = secilen_ogr
 
-                # Öğrencinin Otomatik YÖK Atlas Hedef ve Sıralama Gösterimi
+                # Öğrencinin Üniversiteye Özel YÖK Atlas Hedef Gösterimi
                 cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_sira FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
                 ogr_detay = cursor.fetchone()
                 if ogr_detay and ogr_detay[2]:
                     sira_val = ogr_detay[4] if len(ogr_detay)>4 and ogr_detay[4] else "Belirtilmedi"
-                    st.info(f"🎯 **Öğrencinin YÖK Atlas Hedefi:** **{ogr_detay[2]}** ({ogr_detay[1]})\n\n• **Hedef Net:** `{ogr_detay[3]}` | • **Hedef Başarı Sıralaması:** `{sira_val}`")
+                    st.info(f"🏛️ **Öğrencinin YÖK Atlas Hedefi:** **{ogr_detay[1]}** — **{ogr_detay[2]}**\n\n• **Hedef Net:** `{ogr_detay[3]}` | • **Hedef Başarı Sıralaması:** `{sira_val}`")
 
                 if st.session_state.get("silme_onayi_ogrenci") == secilen_ogr:
                     st.warning(f"⚠️ **DİKKAT:** `{secilen_ogr}` isimli öğrenciyi silmek üzeresiniz!")
