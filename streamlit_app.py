@@ -24,21 +24,23 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🎨 Modern Mobil Uyumlu CSS Teması
+# 🎨 Gece Modu (Dark Mode) Uyumlu ve Mobil İçin Birebir Kontrastlı CSS
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
-    html, body, [class*="css"] {
+    /* Global Metin ve Renk Taraması */
+    html, body, [class*="css"], .stMarkdown, p, div, label, span {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
+        color: #0f172a !important;
     }
 
     #MainMenu, footer, header, .stDeployButton {display: none !important;}
 
+    /* Arka Plan Garantisi */
     .stApp {
         background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%) !important;
         background-attachment: fixed !important;
-        color: #0f172a;
     }
 
     .main .block-container {
@@ -47,58 +49,96 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
+    /* Sekme Başlıkları ve Mobil Uyum */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
-        background: rgba(255, 255, 255, 0.95);
+        background: #ffffff !important;
         padding: 8px;
         border-radius: 16px;
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #cbd5e1 !important;
     }
 
     .stTabs [data-baseweb="tab"] {
         height: 48px;
-        background-color: transparent;
+        background-color: #f8fafc !important;
         border-radius: 10px;
         padding: 8px 16px;
         font-weight: 700;
         font-size: 13px;
-        color: #475569;
-        border: none !important;
+        color: #334155 !important;
+        border: 1px solid #e2e8f0 !important;
     }
 
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         color: #ffffff !important;
+        border: none !important;
     }
 
+    .stTabs [aria-selected="true"] span {
+        color: #ffffff !important;
+    }
+
+    /* 📱 Gece Modunda Görünmeyen Giriş Kutuları ve Şifre Alanları Düzeltmesi */
+    input, textarea, select, div[data-baseweb="select"] {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Selectbox Açılır Menü Renkleri */
+    div[data-baseweb="select"] * {
+        color: #0f172a !important;
+        background-color: #ffffff !important;
+    }
+
+    /* Form ve İnput Etiketleri (Labels) */
+    .stTextInput > label, .stSelectbox > label, .stNumberInput > label, .stTextArea > label {
+        color: #1e293b !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        margin-bottom: 4px !important;
+    }
+
+    /* Hero Motivasyon Kartı */
     .hero-motivation-card {
         background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
-        color: #ffffff;
+        color: #ffffff !important;
         padding: 20px 24px;
         border-radius: 20px;
         font-weight: 700;
         margin-bottom: 20px;
     }
 
+    .hero-motivation-card * {
+        color: #ffffff !important;
+    }
+
     .ai-analysis-box {
-        background: #faf5ff;
-        border-left: 5px solid #a855f7;
+        background: #faf5ff !important;
+        border-left: 5px solid #a855f7 !important;
         padding: 16px 20px;
         border-radius: 14px;
         font-size: 14px;
-        color: #4c1d95;
+        color: #4c1d95 !important;
         margin-top: 12px;
         margin-bottom: 15px;
     }
 
     .share-link-card {
         background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
-        color: white;
+        color: white !important;
         padding: 20px 24px;
         border-radius: 16px;
         box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
         margin-bottom: 20px;
+    }
+
+    .share-link-card * {
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -170,6 +210,82 @@ MOTIVASYON_SOZLERI = [
     "💪 Zorluklar, potansiyelini keşfetmen için var olan basamaklardır. Pes etmek yok!",
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
+
+YOK_ATLAS_UNIVERSTITELER = sorted([
+    "Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)",
+    "Hacettepe Üniversitesi (Ankara)", "Bilkent Üniversitesi (Ankara)", "Koç Üniversitesi (İstanbul)",
+    "Sabancı Üniversitesi (İstanbul)", "İstanbul Üniversitesi", "İstanbul Üniversitesi-Cerrahpaşa",
+    "Marmara Üniversitesi (İstanbul)", "Yıldız Teknik Üniversitesi (İTÜ)", "Ege Üniversitesi (İzmir)",
+    "Dokuz Eylül Üniversitesi (İzmir)", "Ankara Üniversitesi", "Gazi Üniversitesi (Ankara)",
+    "Galatasaray Üniversitesi (İstanbul)", "Bahçeşehir Üniversitesi (İstanbul)", "Özyeğin Üniversitesi (İstanbul)",
+    "Yeditepe Üniversitesi (İstanbul)", "TOBB Ekonomi ve Teknoloji Üniversitesi (Ankara)",
+    "Bursa Uludağ Üniversitesi", "Eskişehir Osmangazi Üniversitesi", "Anadolu Üniversitesi (Eskişehir)",
+    "Çukurova Üniversitesi (Adana)", "Akdeniz Üniversitesi (Antalya)", "Karadeniz Teknik Üniversitesi (Trabzon)",
+    "Ondokuz Mayıs Üniversitesi (Samsun)", "Erciyes Üniversitesi (Kayseri)", "Selçuk Üniversitesi (Konya)",
+    "Kocaeli Üniversitesi", "Sakarya Üniversitesi", "Gebze Teknik Üniversitesi", "İzmir Yüksek Teknoloji Enstitüsü (İYTE)",
+    "Gaziantep Üniversitesi", "İnönü Üniversitesi (Malatya)", "Fırat Üniversitesi (Elazığ)",
+    "Atatürk Üniversitesi (Erzurum)", "Dicle Üniversitesi (Diyarbakır)", "Sivas Cumhuriyet Üniversitesi",
+    "Muğla Sıtkı Koçman Üniversitesi", "Aydın Adnan Menderes Üniversitesi", "Pamukkale Üniversitesi (Denizli)",
+    "Manisa Celal Bayar Üniversitesi", "Tekirdağ Namık Kemal Üniversitesi", "Çanakkale Onsekiz Mart Üniversitesi",
+    "Balıkesir Üniversitesi", "Zonguldak Bülent Ecevit Üniversitesi", "Bolu Abant İzzet Baysal Üniversitesi",
+    "Düzce Üniversitesi", "Yalova Üniversitesi", "Kırklareli Üniversitesi", "Süleyman Demirel Üniversitesi (Isparta)",
+    "Afyon Kocatepe Üniversitesi", "Mersin Üniversitesi", "Hatay Mustafa Kemal Üniversitesi",
+    "Kahramanmaraş Sütçü İmam Üniversitesi", "Harran Üniversitesi (Şanlıurfa)", "Adıyaman Üniversitesi",
+    "Batman Üniversitesi", "Mardin Artuklu Üniversitesi", "Siirt Üniversitesi", "Şırnak Üniversitesi",
+    "Hakkari Üniversitesi", "Van Yüzüncü Yıl Üniversitesi", "Ağrı İbrahim Çeçen Üniversitesi",
+    "Iğdır Üniversitesi", "Kars Kafkas Üniversitesi", "Ardahan Üniversitesi", "Artvin Çoruh Üniversitesi",
+    "Rize Recep Tayyip Erdoğan Üniversitesi", "Giresun Üniversitesi", "Ordu Üniversitesi",
+    "Amasya Üniversitesi", "Tokat Gaziosmanpaşa Üniversitesi", "Yozgat Bozok Üniversitesi",
+    "Kırşehir Ahi Evran Üniversitesi", "Nevşehir Hacı Bektaş Veli Üniversitesi", "Niğde Ömer Halisdemir Üniversitesi",
+    "Aksaray Üniversitesi", "Karamanoğlu Mehmetbey Üniversitesi (Karaman)", "Kastamonu Üniversitesi",
+    "Sinop Üniversitesi", "Çankırı Karatekin Üniversitesi", "Karabük Üniversitesi", "Bartın Üniversitesi",
+    "Bilecik Şeyh Edebali Üniversitesi", "Kütahya Dumlupınar Üniversitesi", "Uşak Üniversitesi",
+    "Bursa Teknik Üniversitesi", "Eskişehir Teknik Üniversitesi", "Isparta Uygulamalı Bilimler Üniversitesi",
+    "Kayseri Üniversitesi", "Konya Teknik Üniversitesi", "Kütahya Sağlık Bilimleri Üniversitesi",
+    "Malatya Turgut Özal Üniversitesi", "Maraş İstiklal Üniversitesi", "Sivas Bilim ve Teknoloji Üniversitesi",
+    "Tarsus Üniversitesi", "Trabzon Üniversitesi", "Yürek Üniversitesi", "İzmir Demokrasi Üniversitesi",
+    "İzmir Bakırçay Üniversitesi", "Ankara Hacı Bayram Veli Üniversitesi", "Ankara Müzik ve Güzel Sanatlar Üniversitesi",
+    "Ankara Sosyal Bilimler Üniversitesi", "Sağlık Bilimleri Üniversitesi (İstanbul)", "Mimar Sinan Güzel Sanatlar Üniversitesi",
+    "Türk-Alman Üniversitesi (İstanbul)", "Milli Savunma Üniversitesi (MSÜ)", "Polis Akademisi",
+    "Acıbadem Mehmet Ali Aydınlar Üniversitesi", "Atılım Üniversitesi (Ankara)", "Başkent Üniversitesi (Ankara)",
+    "Beykent Üniversitesi (İstanbul)", "Bezmiâlem Vakıf Üniversitesi (İstanbul)", "Çankaya Üniversitesi (Ankara)",
+    "Doğuş Üniversitesi (İstanbul)", "İhsan Doğramacı Bilkent Üniversitesi", "İstanbul Bilgi Üniversitesi",
+    "İstanbul Aydın Üniversitesi", "İstanbul Gelisim Üniversitesi", "İstanbul Medipol Üniversitesi",
+    "İstanbul Sabahattin Zaim Üniversitesi", "İstanbul Ticaret Üniversitesi", "Kadir Has Üniversitesi (İstanbul)",
+    "Kuleli / Maltepe / Işık Üniversitesi", "İzmir Ekonomi Üniversitesi", "Yaşar Üniversitesi (İzmir)",
+    "TED Üniversitesi (Ankara)", "TOBB ETÜ", "Turgut Özal Üniversitesi", "Üsküdar Üniversitesi (İstanbul)",
+    "Yüksek İhtisas Üniversitesi (Ankara)", "Diğer Tüm Devlet ve Vakıf Üniversiteleri"
+])
+
+YOK_ATLAS_BOLUMLER = sorted([
+    "Tıp Fakültesi (SAY)", "Diş Hekimliği (SAY)", "Eczacılık (SAY)",
+    "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Yazılım Mühendisliği (SAY)",
+    "Yapay Zeka Mühendisliği (SAY)", "Elektrik-Elektronik Mühendisliği (SAY)",
+    "Endüstri Mühendisliği (SAY)", "Makine Mühendisliği (SAY)", "İnşaat Mühendisliği (SAY)",
+    "Havacılık ve Uzay Mühendisliği (SAY)", "Uçak Mühendisliği (SAY)", "Mekatronik Mühendisliği (SAY)",
+    "Biyomedikal Mühendisliği (SAY)", "Kimya Mühendisliği (SAY)", "Gıda Mühendisliği (SAY)",
+    "Mimarlık (SAY)", "İç Mimarlık (SAY)", "Hemşirelik (SAY)", "Beslenme ve Diyetetik (SAY)",
+    "Fizyoterapi ve Rehabilitasyon (SAY)", "Moleküler Biyoloji ve Genetik (SAY)", "Matematik (SAY)",
+    "Fizik (SAY)", "Kimya (SAY)", "Biyoloji (SAY)", "İlköğretim Matematik Öğretmenliği (SAY)",
+    "Fen Bilgisi Öğretmenliği (SAY)", "Dijital Oyun Tasarımı (SAY)",
+    "Hukuk Fakültesi (EA)", "Psikoloji (EA)", "İşletme (EA)", "İktisat / Ekonomi (EA)",
+    "Endüstriyel Tasarım (EA)", "Siyaset Bilimi ve Uluslararası İlişkiler (EA)", "Yönetim Bilişim Sistemleri (YBS) (EA)",
+    "Finans ve Bankacılık (EA)", "Pazarlama (EA)", "Sosyoloji (EA)", "Felsefe (EA)",
+    "Sınıf Öğretmenliği (EA)", "PDR / Rehberlik ve Psikolojik Danışmanlık (EA)", "Okul Öncesi Öğretmenliği (EA)",
+    "Grafik Tasarım (EA)", "İç Mimarlık ve Çevre Tasarımı (EA)", "Lojistik Yönetimi (EA)",
+    "Özel Eğitim Öğretmenliği (SÖZ)", "Türk Dili ve Edebiyatı (SÖZ)", "Tarih (SÖZ)", "Coğrafya (SÖZ)",
+    "Gazetecilik (SÖZ)", "Radyo, Televizyon ve Sinema (SÖZ)", "Halkla İlişkiler ve Tanıtım (SÖZ)",
+    "Çizgi Film ve Animasyon (SÖZ)", "Gastronomi ve Mutfak Sanatları (SÖZ)", "Türkçe Öğretmenliği (SÖZ)",
+    "Sosyal Bilgiler Öğretmenliği (SÖZ)", "İlahiyat / İslami İlimler (SÖZ)", "İletişim Tasarımı (SÖZ)",
+    "İngilizce Öğretmenliği (DİL)", "İngiliz Dili ve Edebiyatı (DİL)", "Mütercim-Tercümanlık (İngilizce) (DİL)",
+    "Almanca Öğretmenliği (DİL)", "Fransızca Mütercim-Tercümanlık (DİL)", "Kore Dili ve Edebiyatı (DİL)",
+    "Japonca Öğretmenliği (DİL)", "Çin Dili ve Edebiyatı (DİL)", "Arapça Öğretmenliği (DİL)",
+    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "Ağ ve Siber Güvenlik (TYT)",
+    "Web Tasarımı ve Kodlama (TYT)", "Anestezi (TYT)", "İlk ve Acil Yardım (Paramedik) (TYT)",
+    "Tıbbi Görüntüleme Teknikleri (TYT)", "Ağız ve Diş Sağlığı (TYT)", "Adalet (TYT)",
+    "Sivil Havacılık Kabin Hizmetleri (TYT)", "Aşçılık (TYT)", "Grafik Tasarımı (TYT Önlisans)",
+    "Diğer Tüm Lisans ve Önlisans Bölümleri"
+])
 
 TYT_KONULAR = {
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
@@ -343,8 +459,8 @@ st.markdown("""
 if link_ogrenci:
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-bottom: 20px;">
-        <h3 style="margin:0; font-size:20px; font-weight:800;">👨‍🏫 Öğretmen Soru İnceleme Ekranı</h3>
-        <p style="margin:4px 0 0 0; opacity:0.9;"><strong>{link_ogrenci}</strong> öğrencisinin çözemediği ve destek beklediği tüm sorular listelenmektedir.</p>
+        <h3 style="margin:0; font-size:20px; font-weight:800; color:white !important;">👨‍🏫 Öğretmen Soru İnceleme Ekranı</h3>
+        <p style="margin:4px 0 0 0; opacity:0.9; color:white !important;"><strong>{link_ogrenci}</strong> öğrencisinin çözemediği ve destek beklediği tüm sorular listelenmektedir.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -395,7 +511,7 @@ else:
         
         tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
             "🔑 GİRİŞ / KAYIT",
-            "🎯 HEDEF TAKİBİ",
+            "🎯 HEDEF TAKİBİ (YÖK ATLAS)",
             "📅 DERS PROGRAMI (EXCEL / PDF)",
             "📝 GÜNLÜK ÇALIŞMA & SORU YÜKLEME",
             "📊 DENEMELER & KARNE YÜKLEME",
@@ -438,12 +554,14 @@ else:
         if not aktif_ogr:
             st.info("ℹ️ Lütfen ilk sekmeden 'Giriş / Kayıt' yapın.")
         else:
-            cursor.execute("SELECT sinav_turu, hedef_il, veli_pin FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+            cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
             r_info = cursor.fetchone()
             ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
-            m_vpin = r_info[2] if (r_info and r_info[2]) else "123456"
-            
-            st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Mod: **{ogr_sinav}** | 🔑 **Veli PIN:** `{m_vpin}`")
+            curr_uni = r_info[1] if (r_info and r_info[1]) else "Boğaziçi Üniversitesi (İstanbul)"
+            curr_bolum = r_info[2] if (r_info and r_info[2]) else "Computer Engineering / Bilgisayar Mühendisliği (SAY)"
+            curr_net = r_info[3] if (r_info and r_info[3]) else 95.0
+
+            st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Sınav Modu: **{ogr_sinav}**")
             
             if "TYT (Sadece" in ogr_sinav:
                 AKTIF_KONULAR = TYT_KONULAR
@@ -455,14 +573,35 @@ else:
             AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
             MAX_NET_LIMIT = 120.0 if "TYT" in ogr_sinav or "YKS" in ogr_sinav else 90.0
 
+            # 🎯 YÖK ATLAS DESTEKLİ HEDEF TAKİP ALANI
             with tab_hedef:
-                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Net Hedef Takip Alanı — {aktif_ogr}</h3>", unsafe_allow_html=True)
-                with st.form("hedef_kaydet_form"):
-                    ozel_hedef_net = st.number_input("Hedef Netiniz:", 10.0, float(MAX_NET_LIMIT), 95.0, 1.0)
-                    if st.form_submit_button("🎯 Hedefimi Kaydet", type="primary", use_container_width=True):
-                        cursor.execute("UPDATE ogrenciler SET hedef_net = ? WHERE ad_soyad = ?", (float(ozel_hedef_net), aktif_ogr))
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 YÖK Atlas Üniversite & Bölüm Hedef Takibi — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                st.caption("🏛️ Türkiye'deki tüm üniversite ve bölümleri kapsayan YÖK Atlas veritabanından hedeflerinizi seçip kaydedebilirsiniz.")
+
+                if curr_uni and curr_bolum:
+                    st.info(f"📍 **Mevcut Kayıtlı Hedefiniz:** **{curr_uni}** — **{curr_bolum}** (Hedef Net: `{curr_net}`)")
+
+                with st.form("yok_atlas_hedef_form"):
+                    col_u1, col_u2 = st.columns(2)
+                    with col_u1:
+                        uni_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
+                        secilen_hedef_uni = st.selectbox("🏛️ Hedeflenen Üniversite (YÖK Atlas):", YOK_ATLAS_UNIVERSTITELER, index=uni_idx)
+                    with col_u2:
+                        bolum_idx = YOK_ATLAS_BOLUMLER.index(curr_bolum) if curr_bolum in YOK_ATLAS_BOLUMLER else 0
+                        secilen_hedef_bolum = st.selectbox("🎓 Hedeflenen Bölüm / Program (YÖK Atlas):", YOK_ATLAS_BOLUMLER, index=bolum_idx)
+
+                    col_n1, col_n2 = st.columns(2)
+                    with col_n1:
+                        ozel_hedef_net = st.number_input("🎯 Hedeflenen Toplam Net:", 10.0, float(MAX_NET_LIMIT), float(curr_net), 1.0)
+                    with col_n2:
+                        ozel_hedef_sira = st.text_input("📊 Hedef Başarı Sıralaması (Örn: İlk 10.000):", value="İlk 15.000")
+
+                    if st.form_submit_button("🎯 YÖK Atlas Hedefimi Kaydet", type="primary", use_container_width=True):
+                        cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ? WHERE ad_soyad = ?", 
+                                       (secilen_hedef_uni, secilen_hedef_bolum, float(ozel_hedef_net), aktif_ogr))
                         conn.commit()
-                        st.success("🎉 Hedef kaydedildi!")
+                        st.success(f"🎉 Hedefiniz Başarıyla Kaydedildi!\n\n🏛️ **{secilen_hedef_uni}** — **{secilen_hedef_bolum}** (Net: {ozel_hedef_net})")
+                        st.rerun()
 
             # 📊 ÖĞRENCİ EXCEL VE HARİCİ DOSYA DERS PROGRAMI
             with tab_program:
@@ -568,7 +707,7 @@ else:
                             cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                         conn.commit()
 
-    # ==================== 👨‍🏫 KOÇ PANELİ (EXCEL / PDF YÜKLEME EKLENMİŞ) ====================
+    # ==================== 👨‍🏫 KOÇ PANELİ ====================
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli — YKS/LGS KOÇLUK</h2>", unsafe_allow_html=True)
         st.session_state["gemini_api_key"] = st.text_input("🤖 Gemini API Key (Canlı Yapay Zeka Taraması İçin):", value=st.session_state.get("gemini_api_key", ""), type="password")
@@ -603,7 +742,7 @@ else:
             aktif_koc_adi = st.session_state['aktif_koc']
             st.success(f"🔓 Oturum Açık: **{aktif_koc_adi}** (Sorumlu Koç: Deniz Yılmaz)")
 
-            cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler")
+            cursor.execute("SELECT ad_soyad, sinav_turu, hedef_uni, hedef_bolum FROM ogrenciler")
             ogrenci_rows = cursor.fetchall()
             
             if ogrenci_rows:
@@ -618,6 +757,12 @@ else:
                     st.write("")
                     if st.button(f"🗑️ {secilen_ogr} Öğrencisini Sil", type="secondary", use_container_width=True):
                         st.session_state["silme_onayi_ogrenci"] = secilen_ogr
+
+                # Öğrencinin Hedef Gösterimi
+                cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
+                ogr_detay = cursor.fetchone()
+                if ogr_detay and ogr_detay[1] and ogr_detay[2]:
+                    st.info(f"🎯 **Öğrencinin YÖK Atlas Hedefi:** **{ogr_detay[1]}** — **{ogr_detay[2]}** (Hedef Net: `{ogr_detay[3]}`)")
 
                 if st.session_state.get("silme_onayi_ogrenci") == secilen_ogr:
                     st.warning(f"⚠️ **DİKKAT:** `{secilen_ogr}` isimli öğrenciyi silmek üzeresiniz!")
@@ -639,9 +784,7 @@ else:
                             st.session_state["silme_onayi_ogrenci"] = None
                             st.rerun()
 
-                cursor.execute("SELECT sinav_turu FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
-                s_turu_row = cursor.fetchone()
-                s_turu = s_turu_row[0] if s_turu_row else "TYT (Sadece TYT Çalışması)"
+                s_turu = ogr_detay[0] if ogr_detay else "TYT (Sadece TYT Çalışması)"
 
                 if "TYT (Sadece" in s_turu:
                     KOC_MUFREDAT = TYT_KONULAR
