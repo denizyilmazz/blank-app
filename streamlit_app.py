@@ -964,7 +964,7 @@ else:
                 st.markdown(f"""
                 <div class="total-soru-banner">
                     📅 {secilen_tarih} Tarihli Toplam Çalışma Raporu<br>
-                    <span style="font-size:26px; font-weight:800;">🎯 Bütün Derslerin Toplam Çözülen Soru Miktarı: {gun_total_soru := gunluk_total_soru} Soru</span>
+                    <span style="font-size:26px; font-weight:800;">🎯 Bütün Derslerin Toplam Çözülen Soru Miktarı: {gunluk_total_soru} Soru</span>
                 </div>
                 """, unsafe_allow_html=True)
 
