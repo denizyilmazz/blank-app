@@ -29,7 +29,6 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
-    /* Global Metin ve Renk Taraması */
     html, body, [class*="css"], .stMarkdown, p, div, label, span {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         color: #0f172a !important;
@@ -37,7 +36,6 @@ st.markdown("""
 
     #MainMenu, footer, header, .stDeployButton {display: none !important;}
 
-    /* Arka Plan Garantisi */
     .stApp {
         background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%) !important;
         background-attachment: fixed !important;
@@ -49,7 +47,6 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
-    /* Sekme Başlıkları ve Mobil Uyum */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
         background: #ffffff !important;
@@ -80,7 +77,6 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* 📱 Gece Modunda Görünmeyen Giriş Kutuları ve Şifre Alanları Düzeltmesi */
     input, textarea, select, div[data-baseweb="select"] {
         background-color: #ffffff !important;
         color: #0f172a !important;
@@ -89,13 +85,11 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    /* Selectbox Açılır Menü Renkleri */
     div[data-baseweb="select"] * {
         color: #0f172a !important;
         background-color: #ffffff !important;
     }
 
-    /* Form ve İnput Etiketleri (Labels) */
     .stTextInput > label, .stSelectbox > label, .stNumberInput > label, .stTextArea > label {
         color: #1e293b !important;
         font-weight: 700 !important;
@@ -103,7 +97,6 @@ st.markdown("""
         margin-bottom: 4px !important;
     }
 
-    /* Hero Motivasyon Kartı */
     .hero-motivation-card {
         background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
         color: #ffffff !important;
@@ -139,6 +132,14 @@ st.markdown("""
 
     .share-link-card * {
         color: white !important;
+    }
+
+    .yok-net-box {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 2px solid #3b82f6;
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 15px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -211,6 +212,92 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
+# 🏛️ YÖK ATLAS BÖLÜM VE OTOMATİK TABAN-TAVAN NET VERİTABANI
+YOK_ATLAS_NET_VERITABANI = {
+    "Tıp Fakültesi (SAY)": {"taban_net": 105.5, "tavan_net": 118.0, "puan_turu": "SAY"},
+    "Diş Hekimliği (SAY)": {"taban_net": 94.0, "tavan_net": 108.5, "puan_turu": "SAY"},
+    "Eczacılık (SAY)": {"taban_net": 87.5, "tavan_net": 101.0, "puan_turu": "SAY"},
+    "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 82.0, "tavan_net": 116.5, "puan_turu": "SAY"},
+    "Yazılım Mühendisliği (SAY)": {"taban_net": 78.5, "tavan_net": 108.0, "puan_turu": "SAY"},
+    "Yapay Zeka Mühendisliği (SAY)": {"taban_net": 92.0, "tavan_net": 115.0, "puan_turu": "SAY"},
+    "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 75.0, "tavan_net": 114.0, "puan_turu": "SAY"},
+    "Endüstri Mühendisliği (SAY)": {"taban_net": 74.0, "tavan_net": 112.5, "puan_turu": "SAY"},
+    "Makine Mühendisliği (SAY)": {"taban_net": 68.0, "tavan_net": 109.0, "puan_turu": "SAY"},
+    "İnşaat Mühendisliği (SAY)": {"taban_net": 52.0, "tavan_net": 95.0, "puan_turu": "SAY"},
+    "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 90.0, "tavan_net": 114.5, "puan_turu": "SAY"},
+    "Uçak Mühendisliği (SAY)": {"taban_net": 88.0, "tavan_net": 112.0, "puan_turu": "SAY"},
+    "Mekatronik Mühendisliği (SAY)": {"taban_net": 65.0, "tavan_net": 104.0, "puan_turu": "SAY"},
+    "Biyomedikal Mühendisliği (SAY)": {"taban_net": 58.0, "tavan_net": 92.0, "puan_turu": "SAY"},
+    "Kimya Mühendisliği (SAY)": {"taban_net": 62.0, "tavan_net": 105.0, "puan_turu": "SAY"},
+    "Gıda Mühendisliği (SAY)": {"taban_net": 50.0, "tavan_net": 85.0, "puan_turu": "SAY"},
+    "Mimarlık (SAY)": {"taban_net": 60.0, "tavan_net": 98.0, "puan_turu": "SAY"},
+    "İç Mimarlık (SAY)": {"taban_net": 55.0, "tavan_net": 88.0, "puan_turu": "SAY"},
+    "Hemşirelik (SAY)": {"taban_net": 62.5, "tavan_net": 85.0, "puan_turu": "SAY"},
+    "Beslenme ve Diyetetik (SAY)": {"taban_net": 54.0, "tavan_net": 82.0, "puan_turu": "SAY"},
+    "Fizyoterapi ve Rehabilitasyon (SAY)": {"taban_net": 56.0, "tavan_net": 86.0, "puan_turu": "SAY"},
+    "Moleküler Biyoloji ve Genetik (SAY)": {"taban_net": 65.0, "tavan_net": 108.0, "puan_turu": "SAY"},
+    "Matematik (SAY)": {"taban_net": 58.0, "tavan_net": 110.0, "puan_turu": "SAY"},
+    "Fizik (SAY)": {"taban_net": 52.0, "tavan_net": 108.0, "puan_turu": "SAY"},
+    "Kimya (SAY)": {"taban_net": 50.0, "tavan_net": 95.0, "puan_turu": "SAY"},
+    "Biyoloji (SAY)": {"taban_net": 48.0, "tavan_net": 92.0, "puan_turu": "SAY"},
+    "İlköğretim Matematik Öğretmenliği (SAY)": {"taban_net": 72.0, "tavan_net": 95.0, "puan_turu": "SAY"},
+    "Fen Bilgisi Öğretmenliği (SAY)": {"taban_net": 52.0, "tavan_net": 75.0, "puan_turu": "SAY"},
+    "Dijital Oyun Tasarımı (SAY)": {"taban_net": 70.0, "tavan_net": 102.0, "puan_turu": "SAY"},
+    "Hukuk Fakültesi (EA)": {"taban_net": 78.0, "tavan_net": 105.0, "puan_turu": "EA"},
+    "Psikoloji (EA)": {"taban_net": 68.0, "tavan_net": 104.0, "puan_turu": "EA"},
+    "İşletme (EA)": {"taban_net": 52.0, "tavan_net": 110.0, "puan_turu": "EA"},
+    "İktisat / Ekonomi (EA)": {"taban_net": 50.0, "tavan_net": 108.0, "puan_turu": "EA"},
+    "Endüstriyel Tasarım (EA)": {"taban_net": 58.0, "tavan_net": 92.0, "puan_turu": "EA"},
+    "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 55.0, "tavan_net": 106.0, "puan_turu": "EA"},
+    "Yönetim Bilişim Sistemleri (YBS) (EA)": {"taban_net": 65.0, "tavan_net": 102.0, "puan_turu": "EA"},
+    "Finans ve Bankacılık (EA)": {"taban_net": 45.0, "tavan_net": 80.0, "puan_turu": "EA"},
+    "Pazarlama (EA)": {"taban_net": 42.0, "tavan_net": 75.0, "puan_turu": "EA"},
+    "Sosyoloji (EA)": {"taban_net": 45.0, "tavan_net": 90.0, "puan_turu": "EA"},
+    "Felsefe (EA)": {"taban_net": 42.0, "tavan_net": 88.0, "puan_turu": "EA"},
+    "Sınıf Öğretmenliği (EA)": {"taban_net": 66.0, "tavan_net": 85.0, "puan_turu": "EA"},
+    "PDR / Rehberlik ve Psikolojik Danışmanlık (EA)": {"taban_net": 64.0, "tavan_net": 88.0, "puan_turu": "EA"},
+    "Okul Öncesi Öğretmenliği (EA)": {"taban_net": 70.0, "tavan_net": 89.0, "puan_turu": "EA"},
+    "Grafik Tasarım (EA)": {"taban_net": 48.0, "tavan_net": 82.0, "puan_turu": "EA"},
+    "İç Mimarlık ve Çevre Tasarımı (EA)": {"taban_net": 50.0, "tavan_net": 85.0, "puan_turu": "EA"},
+    "Lojistik Yönetimi (EA)": {"taban_net": 44.0, "tavan_net": 78.0, "puan_turu": "EA"},
+    "Özel Eğitim Öğretmenliği (SÖZ)": {"taban_net": 75.0, "tavan_net": 92.0, "puan_turu": "SÖZ"},
+    "Türk Dili ve Edebiyatı (SÖZ)": {"taban_net": 50.0, "tavan_net": 85.0, "puan_turu": "SÖZ"},
+    "Tarih (SÖZ)": {"taban_net": 48.0, "tavan_net": 88.0, "puan_turu": "SÖZ"},
+    "Coğrafya (SÖZ)": {"taban_net": 46.0, "tavan_net": 82.0, "puan_turu": "SÖZ"},
+    "Gazetecilik (SÖZ)": {"taban_net": 45.0, "tavan_net": 80.0, "puan_turu": "SÖZ"},
+    "Radyo, Televizyon ve Sinema (SÖZ)": {"taban_net": 48.0, "tavan_net": 86.0, "puan_turu": "SÖZ"},
+    "Halkla İlişkiler ve Tanıtım (SÖZ)": {"taban_net": 44.0, "tavan_net": 80.0, "puan_turu": "SÖZ"},
+    "Çizgi Film ve Animasyon (SÖZ)": {"taban_net": 55.0, "tavan_net": 88.0, "puan_turu": "SÖZ"},
+    "Gastronomi ve Mutfak Sanatları (SÖZ)": {"taban_net": 58.0, "tavan_net": 89.0, "puan_turu": "SÖZ"},
+    "Türkçe Öğretmenliği (SÖZ)": {"taban_net": 72.0, "tavan_net": 88.0, "puan_turu": "SÖZ"},
+    "Sosyal Bilgiler Öğretmenliği (SÖZ)": {"taban_net": 62.0, "tavan_net": 78.0, "puan_turu": "SÖZ"},
+    "İlahiyat / İslami İlimler (SÖZ)": {"taban_net": 50.0, "tavan_net": 84.0, "puan_turu": "SÖZ"},
+    "İletişim Tasarımı (SÖZ)": {"taban_net": 46.0, "tavan_net": 80.0, "puan_turu": "SÖZ"},
+    "İngilizce Öğretmenliği (DİL)": {"taban_net": 68.0, "tavan_net": 78.0, "puan_turu": "DİL"},
+    "İngiliz Dili ve Edebiyatı (DİL)": {"taban_net": 55.0, "tavan_net": 76.0, "puan_turu": "DİL"},
+    "Mütercim-Tercümanlık (İngilizce) (DİL)": {"taban_net": 62.0, "tavan_net": 78.5, "puan_turu": "DİL"},
+    "Almanca Öğretmenliği (DİL)": {"taban_net": 48.0, "tavan_net": 68.0, "puan_turu": "DİL"},
+    "Fransızca Mütercim-Tercümanlık (DİL)": {"taban_net": 46.0, "tavan_net": 69.0, "puan_turu": "DİL"},
+    "Kore Dili ve Edebiyatı (DİL)": {"taban_net": 58.0, "tavan_net": 74.0, "puan_turu": "DİL"},
+    "Japonca Öğretmenliği (DİL)": {"taban_net": 52.0, "tavan_net": 70.0, "puan_turu": "DİL"},
+    "Çin Dili ve Edebiyatı (DİL)": {"taban_net": 42.0, "tavan_net": 65.0, "puan_turu": "DİL"},
+    "Arapça Öğretmenliği (DİL)": {"taban_net": 45.0, "tavan_net": 68.0, "puan_turu": "DİL"},
+    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)": {"taban_net": 42.0, "tavan_net": 78.0, "puan_turu": "TYT"},
+    "Ağ ve Siber Güvenlik (TYT)": {"taban_net": 45.0, "tavan_net": 80.0, "puan_turu": "TYT"},
+    "Web Tasarımı ve Kodlama (TYT)": {"taban_net": 38.0, "tavan_net": 72.0, "puan_turu": "TYT"},
+    "Anestezi (TYT)": {"taban_net": 52.0, "tavan_net": 75.0, "puan_turu": "TYT"},
+    "İlk ve Acil Yardım (Paramedik) (TYT)": {"taban_net": 55.0, "tavan_net": 78.0, "puan_turu": "TYT"},
+    "Tıbbi Görüntüleme Teknikleri (TYT)": {"taban_net": 48.0, "tavan_net": 70.0, "puan_turu": "TYT"},
+    "Ağız ve Diş Sağlığı (TYT)": {"taban_net": 46.0, "tavan_net": 68.0, "puan_turu": "TYT"},
+    "Adalet (TYT)": {"taban_net": 40.0, "tavan_net": 65.0, "puan_turu": "TYT"},
+    "Sivil Havacılık Kabin Hizmetleri (TYT)": {"taban_net": 42.0, "tavan_net": 68.0, "puan_turu": "TYT"},
+    "Aşçılık (TYT)": {"taban_net": 35.0, "tavan_net": 62.0, "puan_turu": "TYT"},
+    "Grafik Tasarımı (TYT Önlisans)": {"taban_net": 36.0, "tavan_net": 65.0, "puan_turu": "TYT"},
+    "Diğer Tüm Lisans ve Önlisans Bölümleri": {"taban_net": 35.0, "tavan_net": 80.0, "puan_turu": "GENEL"}
+}
+
+YOK_ATLAS_BOLUM_LISTESI = sorted(list(YOK_ATLAS_NET_VERITABANI.keys()))
+
 YOK_ATLAS_UNIVERSTITELER = sorted([
     "Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)",
     "Hacettepe Üniversitesi (Ankara)", "Bilkent Üniversitesi (Ankara)", "Koç Üniversitesi (İstanbul)",
@@ -255,36 +342,6 @@ YOK_ATLAS_UNIVERSTITELER = sorted([
     "Kuleli / Maltepe / Işık Üniversitesi", "İzmir Ekonomi Üniversitesi", "Yaşar Üniversitesi (İzmir)",
     "TED Üniversitesi (Ankara)", "TOBB ETÜ", "Turgut Özal Üniversitesi", "Üsküdar Üniversitesi (İstanbul)",
     "Yüksek İhtisas Üniversitesi (Ankara)", "Diğer Tüm Devlet ve Vakıf Üniversiteleri"
-])
-
-YOK_ATLAS_BOLUMLER = sorted([
-    "Tıp Fakültesi (SAY)", "Diş Hekimliği (SAY)", "Eczacılık (SAY)",
-    "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Yazılım Mühendisliği (SAY)",
-    "Yapay Zeka Mühendisliği (SAY)", "Elektrik-Elektronik Mühendisliği (SAY)",
-    "Endüstri Mühendisliği (SAY)", "Makine Mühendisliği (SAY)", "İnşaat Mühendisliği (SAY)",
-    "Havacılık ve Uzay Mühendisliği (SAY)", "Uçak Mühendisliği (SAY)", "Mekatronik Mühendisliği (SAY)",
-    "Biyomedikal Mühendisliği (SAY)", "Kimya Mühendisliği (SAY)", "Gıda Mühendisliği (SAY)",
-    "Mimarlık (SAY)", "İç Mimarlık (SAY)", "Hemşirelik (SAY)", "Beslenme ve Diyetetik (SAY)",
-    "Fizyoterapi ve Rehabilitasyon (SAY)", "Moleküler Biyoloji ve Genetik (SAY)", "Matematik (SAY)",
-    "Fizik (SAY)", "Kimya (SAY)", "Biyoloji (SAY)", "İlköğretim Matematik Öğretmenliği (SAY)",
-    "Fen Bilgisi Öğretmenliği (SAY)", "Dijital Oyun Tasarımı (SAY)",
-    "Hukuk Fakültesi (EA)", "Psikoloji (EA)", "İşletme (EA)", "İktisat / Ekonomi (EA)",
-    "Endüstriyel Tasarım (EA)", "Siyaset Bilimi ve Uluslararası İlişkiler (EA)", "Yönetim Bilişim Sistemleri (YBS) (EA)",
-    "Finans ve Bankacılık (EA)", "Pazarlama (EA)", "Sosyoloji (EA)", "Felsefe (EA)",
-    "Sınıf Öğretmenliği (EA)", "PDR / Rehberlik ve Psikolojik Danışmanlık (EA)", "Okul Öncesi Öğretmenliği (EA)",
-    "Grafik Tasarım (EA)", "İç Mimarlık ve Çevre Tasarımı (EA)", "Lojistik Yönetimi (EA)",
-    "Özel Eğitim Öğretmenliği (SÖZ)", "Türk Dili ve Edebiyatı (SÖZ)", "Tarih (SÖZ)", "Coğrafya (SÖZ)",
-    "Gazetecilik (SÖZ)", "Radyo, Televizyon ve Sinema (SÖZ)", "Halkla İlişkiler ve Tanıtım (SÖZ)",
-    "Çizgi Film ve Animasyon (SÖZ)", "Gastronomi ve Mutfak Sanatları (SÖZ)", "Türkçe Öğretmenliği (SÖZ)",
-    "Sosyal Bilgiler Öğretmenliği (SÖZ)", "İlahiyat / İslami İlimler (SÖZ)", "İletişim Tasarımı (SÖZ)",
-    "İngilizce Öğretmenliği (DİL)", "İngiliz Dili ve Edebiyatı (DİL)", "Mütercim-Tercümanlık (İngilizce) (DİL)",
-    "Almanca Öğretmenliği (DİL)", "Fransızca Mütercim-Tercümanlık (DİL)", "Kore Dili ve Edebiyatı (DİL)",
-    "Japonca Öğretmenliği (DİL)", "Çin Dili ve Edebiyatı (DİL)", "Arapça Öğretmenliği (DİL)",
-    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "Ağ ve Siber Güvenlik (TYT)",
-    "Web Tasarımı ve Kodlama (TYT)", "Anestezi (TYT)", "İlk ve Acil Yardım (Paramedik) (TYT)",
-    "Tıbbi Görüntüleme Teknikleri (TYT)", "Ağız ve Diş Sağlığı (TYT)", "Adalet (TYT)",
-    "Sivil Havacılık Kabin Hizmetleri (TYT)", "Aşçılık (TYT)", "Grafik Tasarımı (TYT Önlisans)",
-    "Diğer Tüm Lisans ve Önlisans Bölümleri"
 ])
 
 TYT_KONULAR = {
@@ -332,7 +389,7 @@ LGS_KONULAR = {
 
 GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
 
-conn = sqlite3.connect(DB_FILE, check_same_thread=False)
+conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=20)
 cursor = conn.cursor()
 cursor.execute("PRAGMA journal_mode=WAL;")
 
@@ -434,8 +491,24 @@ CREATE TABLE IF NOT EXISTS program_dosyalari (
     dosya_adi TEXT
 )
 """)
-
 conn.commit()
+
+# --- 🛠️ OTOMATİK VERİTABANI ONARICI (SCHEMA MIGRATION) ---
+def eksik_sutun_ekle(tablo_adi, sutun_adi, sutun_tanimi):
+    try:
+        cursor.execute(f"ALTER TABLE {tablo_adi} ADD COLUMN {sutun_adi} {sutun_tanimi}")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+
+eksik_sutun_ekle("ogrenciler", "hedef_uni", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "hedef_bolum", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "hedef_net", "FLOAT DEFAULT 80.0")
+eksik_sutun_ekle("ogrenciler", "koc_adi", "TEXT DEFAULT ''")
+eksik_sutun_ekle("ogrenciler", "sinav_turu", "TEXT DEFAULT 'TYT (Sadece TYT Çalışması)'")
+eksik_sutun_ekle("ogrenciler", "veli_pin", "TEXT DEFAULT '123456'")
+eksik_sutun_ekle("gunluk_calisma", "konu", "TEXT DEFAULT 'Genel Soru Çözümü / Karma'")
+eksik_sutun_ekle("denemeler", "koc_notu", "TEXT DEFAULT ''")
 
 cursor.execute("SELECT COUNT(*) FROM koclar")
 if cursor.fetchone()[0] == 0:
@@ -511,7 +584,7 @@ else:
         
         tab_giris, tab_hedef, tab_program, tab_gunluk, tab_deneme, tab_konular = st.tabs([
             "🔑 GİRİŞ / KAYIT",
-            "🎯 HEDEF TAKİBİ (YÖK ATLAS)",
+            "🎯 OTOMATİK YÖK ATLAS HEDEFİ",
             "📅 DERS PROGRAMI (EXCEL / PDF)",
             "📝 GÜNLÜK ÇALIŞMA & SORU YÜKLEME",
             "📊 DENEMELER & KARNE YÜKLEME",
@@ -559,7 +632,7 @@ else:
             ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
             curr_uni = r_info[1] if (r_info and r_info[1]) else "Boğaziçi Üniversitesi (İstanbul)"
             curr_bolum = r_info[2] if (r_info and r_info[2]) else "Computer Engineering / Bilgisayar Mühendisliği (SAY)"
-            curr_net = r_info[3] if (r_info and r_info[3]) else 95.0
+            curr_net = r_info[3] if (r_info and r_info[3]) else 82.0
 
             st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Sınav Modu: **{ogr_sinav}**")
             
@@ -573,34 +646,46 @@ else:
             AKTIF_DERSLER = list(AKTIF_KONULAR.keys())
             MAX_NET_LIMIT = 120.0 if "TYT" in ogr_sinav or "YKS" in ogr_sinav else 90.0
 
-            # 🎯 YÖK ATLAS DESTEKLİ HEDEF TAKİP ALANI
+            # 🎯 YÖK ATLAS OTOMATİK TABAN-TAVAN NETLİ HEDEF TAKİP ALANI
             with tab_hedef:
-                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 YÖK Atlas Üniversite & Bölüm Hedef Takibi — {aktif_ogr}</h3>", unsafe_allow_html=True)
-                st.caption("🏛️ Türkiye'deki tüm üniversite ve bölümleri kapsayan YÖK Atlas veritabanından hedeflerinizi seçip kaydedebilirsiniz.")
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 YÖK Atlas Otomatik Taban & Tavan Netli Hedef Belirleme — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                st.caption("⚡ Sadece gitmek istediğiniz bölümü seçin. YÖK Atlas veritabanından en son giren öğrencinin **Taban Neti** ve birinci giren öğrencinin **Tavan Neti** otomatik yüklenecektir.")
 
-                if curr_uni and curr_bolum:
-                    st.info(f"📍 **Mevcut Kayıtlı Hedefiniz:** **{curr_uni}** — **{curr_bolum}** (Hedef Net: `{curr_net}`)")
+                bolum_idx = YOK_ATLAS_BOLUM_LISTESI.index(curr_bolum) if curr_bolum in YOK_ATLAS_BOLUM_LISTESI else 0
+                secilen_hedef_bolum = st.selectbox("🎓 Hedeflediğiniz Bölüm / Programı Seçin (Otomatik Net Getirir):", YOK_ATLAS_BOLUM_LISTESI, index=bolum_idx)
 
-                with st.form("yok_atlas_hedef_form"):
-                    col_u1, col_u2 = st.columns(2)
-                    with col_u1:
-                        uni_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
-                        secilen_hedef_uni = st.selectbox("🏛️ Hedeflenen Üniversite (YÖK Atlas):", YOK_ATLAS_UNIVERSTITELER, index=uni_idx)
-                    with col_u2:
-                        bolum_idx = YOK_ATLAS_BOLUMLER.index(curr_bolum) if curr_bolum in YOK_ATLAS_BOLUMLER else 0
-                        secilen_hedef_bolum = st.selectbox("🎓 Hedeflenen Bölüm / Program (YÖK Atlas):", YOK_ATLAS_BOLUMLER, index=bolum_idx)
+                # YÖK Atlas Net Bilgilerini Otomatik Getirme
+                net_bilgisi = YOK_ATLAS_NET_VERITABANI.get(secilen_hedef_bolum, {"taban_net": 65.0, "tavan_net": 95.0, "puan_turu": "SAY/EA"})
+                otomatik_taban = net_bilgisi["taban_net"]
+                otomatik_tavan = net_bilgisi["tavan_net"]
+                puan_turu = net_bilgisi["puan_turu"]
 
+                # Görsel Net Bilgi Kartı
+                st.markdown(f"""
+                <div class="yok-net-box">
+                    <div style="font-size:16px; font-weight:800; color:#1e40af;">📊 YÖK Atlas Net İstatistikleri: {secilen_hedef_bolum}</div>
+                    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:14px; font-weight:700;">
+                        <span>🟢 Taban Net (En Son Giren Öğrenci Neti): <strong style="color:#059669; font-size:16px;">{otomatik_taban} Net</strong></span>
+                        <span>🚀 Tavan Net (En Yüksek Derece Neti): <strong style="color:#2563eb; font-size:16px;">{otomatik_tavan} Net</strong></span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                uni_idx = YOK_ATLAS_UNIVERSTITELER.index(curr_uni) if curr_uni in YOK_ATLAS_UNIVERSTITELER else 0
+                secilen_hedef_uni = st.selectbox("🏛️ Hedeflediğiniz Üniversiteyi Seçin:", YOK_ATLAS_UNIVERSTITELER, index=uni_idx)
+
+                with st.form("yok_atlas_otomatik_hedef_form"):
                     col_n1, col_n2 = st.columns(2)
                     with col_n1:
-                        ozel_hedef_net = st.number_input("🎯 Hedeflenen Toplam Net:", 10.0, float(MAX_NET_LIMIT), float(curr_net), 1.0)
+                        ozel_hedef_net = st.number_input("🎯 Hedeflediğiniz Kişisel Netiniz (Varsayılan YÖK Taban Neti):", 10.0, float(MAX_NET_LIMIT), float(otomatik_taban), 0.5)
                     with col_n2:
-                        ozel_hedef_sira = st.text_input("📊 Hedef Başarı Sıralaması (Örn: İlk 10.000):", value="İlk 15.000")
+                        ozel_hedef_sira = st.text_input("📊 Hedef Başarı Sıralaması Beklentiniz:", value="YÖK Atlas Taban Derecesi")
 
-                    if st.form_submit_button("🎯 YÖK Atlas Hedefimi Kaydet", type="primary", use_container_width=True):
+                    if st.form_submit_button("🎯 Otomatik Net Hedefimi Kaydet", type="primary", use_container_width=True):
                         cursor.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ? WHERE ad_soyad = ?", 
                                        (secilen_hedef_uni, secilen_hedef_bolum, float(ozel_hedef_net), aktif_ogr))
                         conn.commit()
-                        st.success(f"🎉 Hedefiniz Başarıyla Kaydedildi!\n\n🏛️ **{secilen_hedef_uni}** — **{secilen_hedef_bolum}** (Net: {ozel_hedef_net})")
+                        st.success(f"🎉 Hedefiniz YÖK Atlas Verileriyle Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}** ({secilen_hedef_uni})\n• **Otomatik YÖK Taban Net:** {otomatik_taban}\n• **Sizin Hedefiniz:** {ozel_hedef_net} Net")
                         st.rerun()
 
             # 📊 ÖĞRENCİ EXCEL VE HARİCİ DOSYA DERS PROGRAMI
@@ -758,11 +843,11 @@ else:
                     if st.button(f"🗑️ {secilen_ogr} Öğrencisini Sil", type="secondary", use_container_width=True):
                         st.session_state["silme_onayi_ogrenci"] = secilen_ogr
 
-                # Öğrencinin Hedef Gösterimi
+                # Öğrencinin Otomatik YÖK Atlas Hedef Gösterimi
                 cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (secilen_ogr,))
                 ogr_detay = cursor.fetchone()
-                if ogr_detay and ogr_detay[1] and ogr_detay[2]:
-                    st.info(f"🎯 **Öğrencinin YÖK Atlas Hedefi:** **{ogr_detay[1]}** — **{ogr_detay[2]}** (Hedef Net: `{ogr_detay[3]}`)")
+                if ogr_detay and ogr_detay[2]:
+                    st.info(f"🎯 **Öğrencinin YÖK Atlas Hedefi:** **{ogr_detay[2]}** ({ogr_detay[1]}) — (Hedef Net: `{ogr_detay[3]}`)")
 
                 if st.session_state.get("silme_onayi_ogrenci") == secilen_ogr:
                     st.warning(f"⚠️ **DİKKAT:** `{secilen_ogr}` isimli öğrenciyi silmek üzeresiniz!")
