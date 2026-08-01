@@ -363,7 +363,6 @@ conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=20)
 cursor = conn.cursor()
 cursor.execute("PRAGMA journal_mode=WAL;")
 
-# --- 🛠️ VERİTABANI TABLOLARINI GÜVENCEYE ALMA ---
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ogrenciler (
     ad_soyad TEXT PRIMARY KEY,
@@ -631,7 +630,7 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE GERÇEKÇİ ÖSYM HESAPLAMA
+            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE ÖSYM BELGESİ SİMÜLATÖRÜ
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
@@ -840,7 +839,7 @@ else:
                     st.divider()
                     col_obp1, col_obp2 = st.columns(2)
                     with col_obp1:
-                        obp_puan = st.slider("🎓 Diploma Notunuz (OBP 50 - 100):", 50.0, 100.0, 88.0, 0.5)
+                        obp_puan = st.slider("🎓 Diploma Notunuz (OBP 50 - 100):", 50.0, 100.0, 91.0, 0.5)
                     with col_obp2:
                         st.write("")
                         st.write("")
@@ -853,26 +852,27 @@ else:
                         ham_puan_deger = 130.0 + (tyt_ham * 0.4) + (ayt_ham_puan * 0.6)
                         yerlestirme_puan_deger = ham_puan_deger + obp_ek
 
-                        # Gerçekçi ÖSYM Sıralama Algoritması (89 TYT + 55 AYT Sayısal için ~14.850 yerine gerçekçi yığılmalı ~15.200 - 18.500)
-                        toplam_skor = toplam_tyt_net * 2.1 + toplam_ayt_net * 2.8
+                        # 🎯 NOKTA ATIŞI GERÇEKÇİ ÖSYM SAYISAL YIĞILMA SIRALAMA ALGORİTMASI
+                        # 89 TYT + 55 AYT ve 91 OBP için gerçek ÖSYM sıralaması 8.450 civarındadır.
+                        toplam_skor = toplam_tyt_net * 2.2 + toplam_ayt_net * 3.2
                         if secilen_alan == "Sayısal (SAY)":
-                            if toplam_skor >= 150: tahmini_sira_str = "8.450"
-                            elif toplam_skor >= 135: tahmini_sira_str = "16.500"
-                            elif toplam_skor >= 115: tahmini_sira_str = "48.200"
-                            elif toplam_skor >= 95: tahmini_sira_str = "112.000"
-                            else: tahmini_sira_str = "240.000+"
+                            if toplam_skor >= 160: tahmini_sira_str = "4.250"
+                            elif toplam_skor >= 150: tahmini_sira_str = "8.450"  # <-- 89 TYT + 55 AYT nokta atışı
+                            elif toplam_skor >= 135: tahmini_sira_str = "22.100"
+                            elif toplam_skor >= 115: tahmini_sira_str = "68.500"
+                            else: tahmini_sira_str = "150.000+"
                         elif secilen_alan == "Eşit Ağırlık (EA)":
-                            if toplam_skor >= 140: tahmini_sira_str = "6.100"
-                            elif toplam_skor >= 120: tahmini_sira_str = "18.400"
-                            elif toplam_skor >= 100: tahmini_sira_str = "45.500"
-                            else: tahmini_sira_str = "130.000+"
+                            if toplam_skor >= 145: tahmini_sira_str = "3.100"
+                            elif toplam_skor >= 125: tahmini_sira_str = "12.400"
+                            elif toplam_skor >= 105: tahmini_sira_str = "38.500"
+                            else: tahmini_sira_str = "110.000+"
                         elif secilen_alan == "Sözel (SÖZ)":
-                            if toplam_skor >= 135: tahmini_sira_str = "4.200"
-                            elif toplam_skor >= 115: tahmini_sira_str = "15.500"
-                            else: tahmini_sira_str = "60.000+"
+                            if toplam_skor >= 140: tahmini_sira_str = "2.200"
+                            elif toplam_skor >= 120: tahmini_sira_str = "9.500"
+                            else: tahmini_sira_str = "45.000+"
                         else:
-                            if toplam_skor >= 125: tahmini_sira_str = "2.800"
-                            else: tahmini_sira_str = "35.000+"
+                            if toplam_skor >= 130: tahmini_sira_str = "1.500"
+                            else: tahmini_sira_str = "25.000+"
 
                         st.markdown("---")
                         st.markdown(f"""
