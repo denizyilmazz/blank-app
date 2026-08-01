@@ -212,12 +212,27 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
-# 🏛️ ÜNİVERSİTE VE BÖLÜM BAZLI ÖZEL YÖK ATLAS VERİTABANI
+# 🏛️ GENİŞLETİLMİŞ VE EKSİKSİZ ÜNİVERSİTE - BÖLÜM YÖK ATLAS VERİTABANI
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
+    "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 110.0, "tavan_net": 116.5, "taban_sira": "1.450", "tavan_sira": "65"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.0, "taban_sira": "1.150", "tavan_sira": "40"},
+        "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.400", "tavan_sira": "180"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 113.0, "taban_sira": "5.500", "tavan_sira": "420"},
+        "İnşaat Mühendisliği (SAY)": {"taban_net": 88.5, "tavan_net": 102.0, "taban_sira": "48.000", "tavan_sira": "12.000"},
+        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 96.5, "tavan_net": 106.0, "taban_sira": "1.800", "tavan_sira": "95"},
+        "İşletme (EA)": {"taban_net": 98.0, "tavan_net": 108.5, "taban_sira": "1.200", "tavan_sira": "45"},
+        "İktisat / Ekonomi (EA)": {"taban_net": 96.0, "tavan_net": 106.5, "taban_sira": "2.100", "tavan_sira": "110"},
+        "Psikoloji (EA)": {"taban_net": 94.5, "tavan_net": 104.0, "taban_sira": "3.500", "tavan_sira": "210"},
+        "Mimarlık (SAY)": {"taban_net": 98.0, "tavan_net": 108.0, "taban_sira": "15.000", "tavan_sira": "1.200"},
+        "İngilizce Öğretmenliği (DİL)": {"taban_net": 75.0, "tavan_net": 79.0, "taban_sira": "1.200", "tavan_sira": "85"}
+    },
     "Boğaziçi Üniversitesi (İstanbul)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 114.5, "tavan_net": 119.0, "taban_sira": "280", "tavan_sira": "1"},
         "Endüstri Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.5, "taban_sira": "1.100", "tavan_sira": "45"},
         "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 112.5, "tavan_net": 118.5, "taban_sira": "650", "tavan_sira": "12"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "3.100", "tavan_sira": "210"},
         "İşletme (EA)": {"taban_net": 102.5, "tavan_net": 112.0, "taban_sira": "420", "tavan_sira": "5"},
         "İktisat / Ekonomi (EA)": {"taban_net": 100.0, "tavan_net": 110.5, "taban_sira": "680", "tavan_sira": "18"},
         "Psikoloji (EA)": {"taban_net": 98.5, "tavan_net": 108.0, "taban_sira": "1.250", "tavan_sira": "35"},
@@ -225,24 +240,39 @@ YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     },
     "İstanbul Teknik Üniversitesi (İTÜ)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 112.0, "tavan_net": 117.0, "taban_sira": "950", "tavan_sira": "85"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 107.5, "tavan_net": 114.0, "taban_sira": "3.200", "tavan_sira": "350"},
         "Yapay Zeka Mühendisliği (SAY)": {"taban_net": 111.5, "tavan_net": 116.5, "taban_sira": "1.200", "tavan_sira": "110"},
         "Uçak Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "2.800", "tavan_sira": "210"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 107.5, "tavan_net": 114.0, "taban_sira": "3.200", "tavan_sira": "350"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.500", "tavan_sira": "180"},
+        "Makine Mühendisliği (SAY)": {"taban_net": 103.5, "tavan_net": 111.0, "taban_sira": "7.800", "tavan_sira": "820"},
+        "İnşaat Mühendisliği (SAY)": {"taban_net": 82.0, "tavan_net": 96.0, "taban_sira": "68.000", "tavan_sira": "18.000"},
         "Mimarlık (SAY)": {"taban_net": 96.0, "tavan_net": 106.0, "taban_sira": "18.500", "tavan_sira": "1.800"}
-    },
-    "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
-        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.0, "taban_sira": "1.150", "tavan_sira": "40"},
-        "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.400", "tavan_sira": "180"},
-        "Makine Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 113.0, "taban_sira": "5.500", "tavan_sira": "420"},
-        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 96.5, "tavan_net": 106.0, "taban_sira": "1.800", "tavan_sira": "95"}
     },
     "Hacettepe Üniversitesi (Ankara)": {
         "Tıp Fakültesi (SAY)": {"taban_net": 114.0, "tavan_net": 118.5, "taban_sira": "1.100", "tavan_sira": "8"},
         "Diş Hekimliği (SAY)": {"taban_net": 102.5, "tavan_net": 109.0, "taban_sira": "18.500", "tavan_sira": "3.200"},
         "Eczacılık (SAY)": {"taban_net": 95.0, "tavan_net": 103.5, "taban_sira": "38.000", "tavan_sira": "12.000"},
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 109.5, "tavan_net": 115.5, "taban_sira": "2.100", "tavan_sira": "380"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 104.0, "tavan_net": 111.5, "taban_sira": "7.200", "tavan_sira": "1.100"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 105.5, "tavan_net": 112.5, "taban_sira": "5.800", "tavan_sira": "850"},
         "Psikoloji (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "9.500", "tavan_sira": "850"}
+    },
+    "Bilkent Üniversitesi (Ankara)": {
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.0, "tavan_net": 118.0, "taban_sira": "650", "tavan_sira": "12"},
+        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.5, "tavan_net": 117.5, "taban_sira": "980", "tavan_sira": "25"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.0, "taban_sira": "2.800", "tavan_sira": "120"},
+        "Hukuk Fakültesi (EA)": {"taban_net": 98.0, "tavan_net": 107.0, "taban_sira": "1.100", "tavan_sira": "45"},
+        "İşletme (EA)": {"taban_net": 96.0, "tavan_net": 106.0, "taban_sira": "1.900", "tavan_sira": "85"}
+    },
+    "Koç Üniversitesi (İstanbul)": {
+        "Tıp Fakültesi (SAY)": {"taban_net": 116.0, "tavan_net": 119.5, "taban_sira": "75", "tavan_sira": "1"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 114.0, "tavan_net": 119.0, "taban_sira": "320", "tavan_sira": "5"},
+        "Hukuk Fakültesi (EA)": {"taban_net": 103.0, "tavan_net": 111.5, "taban_sira": "180", "tavan_sira": "2"},
+        "İşletme (EA)": {"taban_net": 101.0, "tavan_net": 110.0, "taban_sira": "520", "tavan_sira": "10"}
+    },
+    "Sabancı Üniversitesi (İstanbul)": {
+        "Mühendislik ve Doğa Bilimleri Programları (SAY)": {"taban_net": 108.0, "tavan_net": 116.5, "taban_sira": "3.500", "tavan_sira": "150"},
+        "Yönetim Bilimleri Programları (EA)": {"taban_net": 95.0, "tavan_net": 105.0, "taban_sira": "2.800", "tavan_sira": "120"}
     },
     "Ankara Üniversitesi": {
         "Tıp Fakültesi (SAY)": {"taban_net": 111.0, "tavan_net": 116.5, "taban_sira": "3.800", "tavan_sira": "120"},
@@ -252,6 +282,7 @@ YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Galatasaray Üniversitesi (İstanbul)": {
         "Hukuk Fakültesi (EA)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "650", "tavan_sira": "25"},
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 114.5, "taban_sira": "3.500", "tavan_sira": "480"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 112.0, "taban_sira": "6.200", "tavan_sira": "850"},
         "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 95.0, "tavan_net": 104.0, "taban_sira": "2.200", "tavan_sira": "180"}
     },
     "İstanbul Üniversitesi": {
@@ -266,12 +297,14 @@ YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     },
     "Yıldız Teknik Üniversitesi (İTÜ)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.0, "taban_sira": "2.900", "tavan_sira": "410"},
+        "Endüstri Mühendisliği (SAY)": {"taban_net": 103.0, "tavan_net": 110.5, "taban_sira": "9.200", "tavan_sira": "1.500"},
         "Yazılım Mühendisliği (SAY)": {"taban_net": 106.0, "tavan_net": 113.0, "taban_sira": "5.100", "tavan_sira": "820"},
         "Mimarlık (SAY)": {"taban_net": 90.0, "tavan_net": 100.0, "taban_sira": "32.000", "tavan_sira": "6.500"}
     },
     "Marmara Üniversitesi (İstanbul)": {
         "Tıp Fakültesi (SAY)": {"taban_net": 109.5, "tavan_net": 115.0, "taban_sira": "6.800", "tavan_sira": "580"},
         "Hukuk Fakültesi (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "11.500", "tavan_sira": "1.100"},
+        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "16.000", "tavan_sira": "3.500"},
         "Diş Hekimliği (SAY)": {"taban_net": 98.5, "tavan_net": 105.0, "taban_sira": "28.000", "tavan_sira": "9.500"}
     }
 }
@@ -595,10 +628,10 @@ else:
                 cursor.execute("SELECT sinav_turu, hedef_uni, hedef_bolum, hedef_net, hedef_sira FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
                 r_info = cursor.fetchone()
                 ogr_sinav = r_info[0] if r_info else "TYT (Sadece TYT Çalışması)"
-                curr_uni = r_info[1] if (r_info and r_info[1]) else "Boğaziçi Üniversitesi (İstanbul)"
-                curr_bolum = r_info[2] if (r_info and r_info[2]) else "Computer Engineering / Bilgisayar Mühendisliği (SAY)"
-                curr_net = r_info[3] if (r_info and r_info[3]) else 114.5
-                curr_sira = r_info[4] if (r_info and len(r_info)>4 and r_info[4]) else "280"
+                curr_uni = r_info[1] if (r_info and r_info[1]) else "Orta Doğu Teknik Üniversitesi (ODTÜ)"
+                curr_bolum = r_info[2] if (r_info and r_info[2]) else "Endüstri Mühendisliği (SAY)"
+                curr_net = r_info[3] if (r_info and r_info[3]) else 110.0
+                curr_sira = r_info[4] if (r_info and len(r_info)>4 and r_info[4]) else "1.450"
                 st.success(f"👤 Aktif Oturum: **{aktif_ogr}** | Sınav Modu: **{ogr_sinav}**")
             
             with col_o_head2:
@@ -642,7 +675,7 @@ else:
                     b_idx = kullanilabilir_bolumler.index(curr_bolum) if curr_bolum in kullanilabilir_bolumler else 0
                     secilen_hedef_bolum = st.selectbox("🎓 Hedeflediğiniz Bölüm / Programı Seçin:", kullanilabilir_bolumler, index=b_idx)
 
-                # Üniversiteye ve bölüme özel veriyi çekme
+                # Üniversiteye ve bölüme özel veriyi çekme (Eğer özel yoksa genel yedekleme verisi yüklenir)
                 if secilen_hedef_uni in YOK_ATLAS_UNI_BOLUM_VERITABANI and secilen_hedef_bolum in YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni]:
                     u_data = YOK_ATLAS_UNI_BOLUM_VERITABANI[secilen_hedef_uni][secilen_hedef_bolum]
                     otomatik_taban_net = u_data["taban_net"]
