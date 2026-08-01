@@ -221,7 +221,6 @@ MOTIVASYON_SOZLERI = [
     "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
 ]
 
-# 🏛️ GENİŞLETİLMİŞ VE EKSİKSİZ ÜNİVERSİTE - BÖLÜM YÖK ATLAS VERİTABANI
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
@@ -266,55 +265,11 @@ YOK_ATLAS_UNI_BOLUM_VERITABANI = {
         "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 105.5, "tavan_net": 112.5, "taban_sira": "5.800", "tavan_sira": "850"},
         "Psikoloji (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "9.500", "tavan_sira": "850"}
     },
-    "Bilkent Üniversitesi (Ankara)": {
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.0, "tavan_net": 118.0, "taban_sira": "650", "tavan_sira": "12"},
-        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.5, "tavan_net": 117.5, "taban_sira": "980", "tavan_sira": "25"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.0, "taban_sira": "2.800", "tavan_sira": "120"},
-        "Hukuk Fakültesi (EA)": {"taban_net": 98.0, "tavan_net": 107.0, "taban_sira": "1.100", "tavan_sira": "45"},
-        "İşletme (EA)": {"taban_net": 96.0, "tavan_net": 106.0, "taban_sira": "1.900", "tavan_sira": "85"}
-    },
-    "Koç Üniversitesi (İstanbul)": {
-        "Tıp Fakültesi (SAY)": {"taban_net": 116.0, "tavan_net": 119.5, "taban_sira": "75", "tavan_sira": "1"},
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 114.0, "tavan_net": 119.0, "taban_sira": "320", "tavan_sira": "5"},
-        "Hukuk Fakültesi (EA)": {"taban_net": 103.0, "tavan_net": 111.5, "taban_sira": "180", "tavan_sira": "2"},
-        "İşletme (EA)": {"taban_net": 101.0, "tavan_net": 110.0, "taban_sira": "520", "tavan_sira": "10"}
-    },
-    "Sabancı Üniversitesi (İstanbul)": {
-        "Mühendislik ve Doğa Bilimleri Programları (SAY)": {"taban_net": 108.0, "tavan_net": 116.5, "taban_sira": "3.500", "tavan_sira": "150"},
-        "Yönetim Bilimleri Programları (EA)": {"taban_net": 95.0, "tavan_net": 105.0, "taban_sira": "2.800", "tavan_sira": "120"}
-    },
-    "Ankara Üniversitesi": {
-        "Tıp Fakültesi (SAY)": {"taban_net": 111.0, "tavan_net": 116.5, "taban_sira": "3.800", "tavan_sira": "120"},
-        "Hukuk Fakültesi (EA)": {"taban_net": 94.0, "tavan_net": 104.5, "taban_sira": "3.800", "tavan_sira": "220"},
-        "Diş Hekimliği (SAY)": {"taban_net": 101.0, "tavan_net": 107.5, "taban_sira": "22.000", "tavan_sira": "5.400"}
-    },
     "Galatasaray Üniversitesi (İstanbul)": {
         "Hukuk Fakültesi (EA)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "650", "tavan_sira": "25"},
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 114.5, "taban_sira": "3.500", "tavan_sira": "480"},
         "Endüstri Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 112.0, "taban_sira": "6.200", "tavan_sira": "850"},
         "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 95.0, "tavan_net": 104.0, "taban_sira": "2.200", "tavan_sira": "180"}
-    },
-    "İstanbul Üniversitesi": {
-        "Tıp Fakültesi (SAY)": {"taban_net": 112.5, "tavan_net": 117.5, "taban_sira": "2.200", "tavan_sira": "45"},
-        "Hukuk Fakültesi (EA)": {"taban_net": 91.5, "tavan_net": 102.0, "taban_sira": "6.200", "tavan_sira": "350"},
-        "Eczacılık (SAY)": {"taban_net": 93.0, "tavan_net": 101.5, "taban_sira": "42.000", "tavan_sira": "15.000"}
-    },
-    "Ege Üniversitesi (İzmir)": {
-        "Tıp Fakültesi (SAY)": {"taban_net": 110.0, "tavan_net": 115.5, "taban_sira": "5.400", "tavan_sira": "320"},
-        "Diş Hekimliği (SAY)": {"taban_net": 99.5, "tavan_net": 106.0, "taban_sira": "25.000", "tavan_sira": "8.200"},
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 102.0, "tavan_net": 110.0, "taban_sira": "14.000", "tavan_sira": "2.800"}
-    },
-    "Yıldız Teknik Üniversitesi (İTÜ)": {
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.0, "taban_sira": "2.900", "tavan_sira": "410"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 103.0, "tavan_net": 110.5, "taban_sira": "9.200", "tavan_sira": "1.500"},
-        "Yazılım Mühendisliği (SAY)": {"taban_net": 106.0, "tavan_net": 113.0, "taban_sira": "5.100", "tavan_sira": "820"},
-        "Mimarlık (SAY)": {"taban_net": 90.0, "tavan_net": 100.0, "taban_sira": "32.000", "tavan_sira": "6.500"}
-    },
-    "Marmara Üniversitesi (İstanbul)": {
-        "Tıp Fakültesi (SAY)": {"taban_net": 109.5, "tavan_net": 115.0, "taban_sira": "6.800", "tavan_sira": "580"},
-        "Hukuk Fakültesi (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "11.500", "tavan_sira": "1.100"},
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "16.000", "tavan_sira": "3.500"},
-        "Diş Hekimliği (SAY)": {"taban_net": 98.5, "tavan_net": 105.0, "taban_sira": "28.000", "tavan_sira": "9.500"}
     }
 }
 
@@ -335,57 +290,43 @@ GENEL_BOLUM_LISTESI = sorted([
     "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Yazılım Mühendisliği (SAY)",
     "Yapay Zeka Mühendisliği (SAY)", "Elektrik-Elektronik Mühendisliği (SAY)",
     "Endüstri Mühendisliği (SAY)", "Makine Mühendisliği (SAY)", "İnşaat Mühendisliği (SAY)",
-    "Havacılık ve Uzay Mühendisliği (SAY)", "Uçak Mühendisliği (SAY)", "Mekatronik Mühendisliği (SAY)",
-    "Mimarlık (SAY)", "Hemşirelik (SAY)", "Moleküler Biyoloji ve Genetik (SAY)", "Matematik (SAY)",
+    "Havacılık ve Uzay Mühendisliği (SAY)", "Mimarlık (SAY)", "Hemşirelik (SAY)",
     "Hukuk Fakültesi (EA)", "Psikoloji (EA)", "İşletme (EA)", "İktisat / Ekonomi (EA)",
     "Siyaset Bilimi ve Uluslararası İlişkiler (EA)", "Yönetim Bilişim Sistemleri (YBS) (EA)",
     "Özel Eğitim Öğretmenliği (SÖZ)", "Gastronomi ve Mutfak Sanatları (SÖZ)", "Türkçe Öğretmenliği (SÖZ)",
+    "Tarih (SÖZ)", "Türk Dili ve Edebiyatı (SÖZ)", "Coğrafya (SÖZ)", "İlahiyat (SÖZ)",
     "İngilizce Öğretmenliği (DİL)", "Mütercim-Tercümanlık (İngilizce) (DİL)",
-    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "İlk ve Acil Yardım (Paramedic) (TYT)",
-    "Diğer Tüm Lisans ve Önlisans Bölümleri"
+    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "Diğer Tüm Lisans ve Önlisans Bölümleri"
 ])
 
 TYT_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf (25s) + Problem (20s) Günlük Rutin",
-        "Paragraf (20s) + Problem (15s) Temel Düzey",
-        "Paragraf (30s) + Problem (25s) İleri Düzey",
-        "Paragraf Hız Kampı + Problem Karma",
-        "Sadece Paragraf Etüdü",
-        "Sadece Problem Etüdü"
-    ],
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Fiilde Çatı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Ses Bilgisi"],
-    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "EBOB-EKOK", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Çarpanlara Ayırma", "Oran-Orantı", "Problemler", "Mantık & Kümeler", "Fonksiyonlar", "Olasılık"],
-    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Çember ve Daire", "Katı Cisimler"],
-    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Kaldırma Kuvveti & Basınç", "Isı, Sıcaklık", "Doğrusal Hareket", "Newton Yasaları", "İş, Güç, Enerji", "Elektrostatik", "Optik", "Dalgalar"],
-    "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Kimyasal Hesaplamalar", "Karışımlar", "Asit, Baz ve Tuzlar"],
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin", "Paragraf Hız Kampı + Problem Karma"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Yazım Kuralları", "Noktalama İşaretleri"],
+    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Problemler", "Fonksiyonlar"],
+    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Katı Cisimler"],
+    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç", "Isı Sıcaklık", "Hareket", "Optik", "Dalgalar"],
+    "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Karışımlar"],
     "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji"],
-    "📜 TYT Tarih": ["Tarih Bilimi", "İslam Öncesi Türk Tarihi", "Osmanlı Devleti", "Milli Mücadele Dönemi"],
-    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Harita Bilgisi", "İklim Bilgisi", "Yerşekilleri", "Nüfus ve Afetler"],
-    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi"],
+    "📜 TYT Tarih": ["Tarih Bilimi", "Osmanlı Devleti", "Milli Mücadele Dönemi"],
+    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Harita Bilgisi", "İklim Bilgisi", "Nüfus ve Afetler"],
+    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Ahlak Felsefesi"],
     "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler"]
 }
 
 AYT_KONULAR = {
-    "📐 AYT Matematik": ["Karmaşık Sayılar", "2. Dereceden Denklemler & Eşitsizlikler", "Parabol", "Polinomlar", "Logaritma", "Diziler", "Trigonometri", "Limit ve Süreklilik", "Türev", "İntegral"],
+    "📐 AYT Matematik": ["Polinomlar", "2. Dereceden Denklemler", "Parabol", "Logaritma", "Diziler", "Trigonometri", "Limit ve Süreklilik", "Türev", "İntegral"],
     "📏 AYT Geometri": ["Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitiği"],
-    "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Basit Harmonik Hareket", "Elektromanyetizma", "Modern Fizik"],
-    "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Enerji & Hız", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
+    "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Elektromanyetizma", "Modern Fizik"],
+    "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
     "🧬 AYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
     "📖 AYT Edebiyat": ["Şiir Bilgisi", "Divan Edebiyatı", "Tanzimat & Servet-i Fünun", "Milli Edebiyat", "Cumhuriyet Dönemi Edebiyatı"]
 }
 
 LGS_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf (20s) + Problem (15s) Günlük Rutin",
-        "Sözel Mantık + Matematik Yeni Nesil Soru Etüdü"
-    ],
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Cümlenin Ögeleri", "Yazım Kuralları", "Noktalama İşaretleri", "Sözel Mantık"],
-    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Cebirsel İfadeler", "Linear Denklemler", "Eşitsizlikler", "Üçgenler", "Geometrik Cisimler"],
-    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri", "Elektrik Yükleri"],
-    "📜 LGS T.C. İnkılap Tarihi (10 Soru)": ["Bir Kahraman Doğuyor", "Milli Uyanış", "Milli Bir Destan", "Atatürkçülük ve İnkılaplar"],
-    "🕌 LGS Din Kültürü (10 Soru)": ["Kader İnancı", "Zekat ve Sadaka", "Din ve Hayat", "Hz. Muhammed'in Örnekliği"],
-    "🇬🇧 LGS İngilizce (10 Soru)": ["Friendship", "Teen Life", "In The Kitchen", "On The Phone", "The Internet", "Adventures"]
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (20s) + Problem (15s) Günlük Rutin"],
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözel Mantık"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Linear Denklemler"],
+    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler"]
 }
 
 GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
@@ -495,7 +436,7 @@ CREATE TABLE IF NOT EXISTS program_dosyalari (
 """)
 conn.commit()
 
-# --- 🛠️ OTOMATİK VERİTABANI ONARICI (SCHEMA MIGRATION) ---
+# --- 🛠️ OTOMATİK VERİTABANI ONARICI ---
 def eksik_sutun_ekle(tablo_adi, sutun_adi, sutun_tanimi):
     try:
         cursor.execute(f"ALTER TABLE {tablo_adi} ADD COLUMN {sutun_adi} {sutun_tanimi}")
@@ -510,8 +451,6 @@ eksik_sutun_ekle("ogrenciler", "hedef_sira", "TEXT DEFAULT ''")
 eksik_sutun_ekle("ogrenciler", "koc_adi", "TEXT DEFAULT ''")
 eksik_sutun_ekle("ogrenciler", "sinav_turu", "TEXT DEFAULT 'TYT (Sadece TYT Çalışması)'")
 eksik_sutun_ekle("ogrenciler", "veli_pin", "TEXT DEFAULT '123456'")
-eksik_sutun_ekle("gunluk_calisma", "konu", "TEXT DEFAULT 'Genel Soru Çözümü / Karma'")
-eksik_sutun_ekle("denemeler", "koc_notu", "TEXT DEFAULT ''")
 
 cursor.execute("SELECT COUNT(*) FROM koclar")
 if cursor.fetchone()[0] == 0:
@@ -666,7 +605,7 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE DERS BAZLI PUAN/SIRALAMA HESAPLAMA
+            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE DERS BAZLI ALAN PUAN HESAPLAMA
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
@@ -721,119 +660,213 @@ else:
                         st.success(f"🎉 Hedefiniz {secilen_hedef_uni} Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}**\n• **Üniversite Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **Üniversite Taban Sıralaması:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
                         st.rerun()
 
-                # 🧮 ---------------- HESAPLAMA VE SIRALAMA MODÜLÜ (ALT KISIM) ----------------
+                # 🧮 ---------------- ALAN BAZLI DETAYLI DERS HESAPLAMA VE SIRALAMA MODÜLÜ ----------------
                 st.divider()
-                st.markdown("### 🧮 Ayrı Ayrı Ders Neti Girerek Puan & Başarı Sıralaması Hesaplama")
-                st.caption("Aşağıdaki alanlara güncel denemelerinizdeki Doğru/Yanlış sayılarınızı girerek tahmini ÖSYM Puanınızı ve Başarı Sıralamanızı canlı görün.")
+                st.markdown("### 🧮 Alan Bazlı (Sayısal / Eşit Ağırlık / Sözel / Dil) Detaylı Ders Net Hesaplama")
+                st.caption("Aşağıdan öğrenim alanınızı seçerek ilgili YKS derslerinin Doğru / Yanlış sayılarını girin. Puan ve sıralamanız alana özel katsayılarla anında hesaplanacaktır.")
+
+                secilen_alan = st.radio("🎯 Ağırlıklı Öğrenim Alanınızı Seçin:", ["Sayısal (SAY)", "Eşit Ağırlık (EA)", "Sözel (SÖZ)", "Yabancı Dil (DİL)"], horizontal=True)
 
                 with st.container():
                     st.markdown('<div class="calc-card">', unsafe_allow_html=True)
-                    st.markdown("##### 📐 TYT (Temel Yeterlilik Testi) Ders Netleri Girişi")
+                    st.markdown("##### 📐 1. TYT (Temel Yeterlilik Testi) Detaylı Ders Girişi")
                     c_t1, c_t2, c_t3, c_t4 = st.columns(4)
                     with c_t1:
-                        t_turkce_d = st.number_input("Türkçe Doğru (Max 40):", 0, 40, 30, key="calc_tt_d")
+                        t_turkce_d = st.number_input("Türkçe Doğru (40):", 0, 40, 32, key="calc_tt_d")
                         t_turkce_y = st.number_input("Türkçe Yanlış:", 0, 40, 4, key="calc_tt_y")
                         net_turkce = max(0.0, t_turkce_d - (t_turkce_y * 0.25))
                         st.caption(f"Net: `{net_turkce:.2f}`")
 
                     with c_t2:
-                        t_sos_d = st.number_input("Sosyal Doğru (Max 20):", 0, 20, 15, key="calc_ts_d")
-                        t_sos_y = st.number_input("Sosyal Yanlış:", 0, 20, 3, key="calc_ts_y")
+                        t_sos_d = st.number_input("Sosyal Doğru (20):", 0, 20, 16, key="calc_ts_d")
+                        t_sos_y = st.number_input("Sosyal Yanlış:", 0, 20, 2, key="calc_ts_y")
                         net_sosyal = max(0.0, t_sos_d - (t_sos_y * 0.25))
                         st.caption(f"Net: `{net_sosyal:.2f}`")
 
                     with c_t3:
-                        t_mat_d = st.number_input("Matematik Doğru (Max 40):", 0, 40, 28, key="calc_tm_d")
-                        t_mat_y = st.number_input("Matematik Yanlış:", 0, 40, 3, key="calc_tm_y")
+                        t_mat_d = st.number_input("TYT Mat Doğru (40):", 0, 40, 30, key="calc_tm_d")
+                        t_mat_y = st.number_input("TYT Mat Yanlış:", 0, 40, 3, key="calc_tm_y")
                         net_mat = max(0.0, t_mat_d - (t_mat_y * 0.25))
                         st.caption(f"Net: `{net_mat:.2f}`")
 
                     with c_t4:
-                        t_fen_d = st.number_input("Fen Doğru (Max 20):", 0, 20, 12, key="calc_tf_d")
-                        t_fen_y = st.number_input("Fen Yanlış:", 0, 20, 4, key="calc_tf_y")
+                        t_fen_d = st.number_input("TYT Fen Doğru (20):", 0, 20, 14, key="calc_tf_d")
+                        t_fen_y = st.number_input("TYT Fen Yanlış:", 0, 20, 3, key="calc_tf_y")
                         net_fen = max(0.0, t_fen_d - (t_fen_y * 0.25))
                         st.caption(f"Net: `{net_fen:.2f}`")
 
                     toplam_tyt_net = net_turkce + net_sosyal + net_mat + net_fen
 
-                    # Eğer YKS modundaysa AYT Netlerini de aç
+                    # ALANA GÖRE AYT / YDT AÇILAN ALANLAR
                     toplam_ayt_net = 0.0
-                    net_ayt_mat = 0.0
-                    net_fizik = 0.0
-                    net_kimya = 0.0
-                    net_biyo = 0.0
+                    ayt_ham_puan = 0.0
 
-                    if "YKS" in ogr_sinav or "AYT" in ogr_sinav:
+                    if secilen_alan == "Sayısal (SAY)":
                         st.divider()
-                        st.markdown("##### 🔬 AYT (Alan Yeterlilik Testi) Ders Netleri Girişi (Sayısal / EA)")
+                        st.markdown("##### 🔬 2. AYT Sayısal Testi Ders Girişi")
                         c_a1, c_a2, c_a3, c_a4 = st.columns(4)
                         with c_a1:
-                            a_mat_d = st.number_input("AYT Mat Doğru (Max 40):", 0, 40, 25, key="calc_am_d")
-                            a_mat_y = st.number_input("AYT Mat Yanlış:", 0, 40, 4, key="calc_am_y")
-                            net_ayt_mat = max(0.0, a_mat_d - (a_mat_y * 0.25))
-                            st.caption(f"AYT Mat Net: `{net_ayt_mat:.2f}`")
-
+                            a_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 28, key="say_am_d")
+                            a_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 3, key="say_am_y")
+                            net_a_mat = max(0.0, a_m_d - (a_m_y * 0.25))
+                            st.caption(f"Net: `{net_a_mat:.2f}`")
                         with c_a2:
-                            a_fiz_d = st.number_input("Fizik Doğru (Max 14):", 0, 14, 9, key="calc_af_d")
-                            a_fiz_y = st.number_input("Fizik Yanlış:", 0, 14, 2, key="calc_af_y")
-                            net_fizik = max(0.0, a_fiz_d - (a_fiz_y * 0.25))
-                            st.caption(f"Fizik Net: `{net_fizik:.2f}`")
-
+                            a_f_d = st.number_input("Fizik Doğru (14):", 0, 14, 10, key="say_af_d")
+                            a_f_y = st.number_input("Fizik Yanlış:", 0, 14, 2, key="say_af_y")
+                            net_fiz = max(0.0, a_f_d - (a_f_y * 0.25))
+                            st.caption(f"Net: `{net_fiz:.2f}`")
                         with c_a3:
-                            a_kim_d = st.number_input("Kimya Doğru (Max 13):", 0, 13, 8, key="calc_ak_d")
-                            a_kim_y = st.number_input("Kimya Yanlış:", 0, 13, 2, key="calc_ak_y")
-                            net_kimya = max(0.0, a_kim_d - (a_kim_y * 0.25))
-                            st.caption(f"Kimya Net: `{net_kimya:.2f}`")
-
+                            a_k_d = st.number_input("Kimya Doğru (13):", 0, 13, 9, key="say_ak_d")
+                            a_k_y = st.number_input("Kimya Yanlış:", 0, 13, 2, key="say_ak_y")
+                            net_kim = max(0.0, a_k_d - (a_k_y * 0.25))
+                            st.caption(f"Net: `{net_kim:.2f}`")
                         with c_a4:
-                            a_bio_d = st.number_input("Biyoloji Doğru (Max 13):", 0, 13, 9, key="calc_ab_d")
-                            a_bio_y = st.number_input("Biyoloji Yanlış:", 0, 13, 2, key="calc_ab_y")
-                            net_biyo = max(0.0, a_bio_d - (a_bio_y * 0.25))
-                            st.caption(f"Biyoloji Net: `{net_biyo:.2f}`")
+                            a_b_d = st.number_input("Biyoloji Doğru (13):", 0, 13, 10, key="say_ab_d")
+                            a_b_y = st.number_input("Biyoloji Yanlış:", 0, 13, 1, key="say_ab_y")
+                            net_bio = max(0.0, a_b_d - (a_b_y * 0.25))
+                            st.caption(f"Net: `{net_bio:.2f}`")
 
-                        toplam_ayt_net = net_ayt_mat + net_fizik + net_kimya + net_biyo
+                        toplam_ayt_net = net_a_mat + net_fiz + net_kim + net_bio
+                        ayt_ham_puan = (net_a_mat * 3.0) + (net_fiz * 2.85) + (net_kim * 3.07) + (net_bio * 3.07)
+
+                    elif secilen_alan == "Eşit Ağırlık (EA)":
+                        st.divider()
+                        st.markdown("##### ⚖️ 2. AYT Eşit Ağırlık Testi Ders Girişi")
+                        c_ea1, c_ea2, c_ea3, c_ea4 = st.columns(4)
+                        with c_ea1:
+                            ea_m_d = st.number_input("AYT Mat Doğru (40):", 0, 40, 26, key="ea_am_d")
+                            ea_m_y = st.number_input("AYT Mat Yanlış:", 0, 40, 4, key="ea_am_y")
+                            net_ea_mat = max(0.0, ea_m_d - (ea_m_y * 0.25))
+                            st.caption(f"Net: `{net_ea_mat:.2f}`")
+                        with c_ea2:
+                            ea_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 20, key="ea_ed_d")
+                            ea_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 2, key="ea_ed_y")
+                            net_edeb = max(0.0, ea_ed_d - (ea_ed_y * 0.25))
+                            st.caption(f"Net: `{net_edeb:.2f}`")
+                        with c_ea3:
+                            ea_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 8, key="ea_t1_d")
+                            ea_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 1, key="ea_t1_y")
+                            net_tar1 = max(0.0, ea_t1_d - (ea_t1_y * 0.25))
+                            st.caption(f"Net: `{net_tar1:.2f}`")
+                        with c_ea4:
+                            ea_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 5, key="ea_c1_d")
+                            ea_c1_y = st.number_input("Coğrafya-1 Yanlış:", 0, 6, 1, key="ea_c1_y")
+                            net_cog1 = max(0.0, ea_c1_d - (ea_c1_y * 0.25))
+                            st.caption(f"Net: `{net_cog1:.2f}`")
+
+                        toplam_ayt_net = net_ea_mat + net_edeb + net_tar1 + net_cog1
+                        ayt_ham_puan = (net_ea_mat * 3.0) + (net_edeb * 3.0) + (net_tar1 * 2.8) + (net_cog1 * 3.3)
+
+                    elif secilen_alan == "Sözel (SÖZ)":
+                        st.divider()
+                        st.markdown("##### 📖 2. AYT Sözel Testi Ders Girişi (Edebiyat, Sosyal-1, Sosyal-2)")
+                        c_sz1, c_sz2, c_sz3 = st.columns(3)
+                        with c_sz1:
+                            sz_ed_d = st.number_input("Edebiyat Doğru (24):", 0, 24, 21, key="sz_ed_d")
+                            sz_ed_y = st.number_input("Edebiyat Yanlış:", 0, 24, 2, key="sz_ed_y")
+                            net_sz_edeb = max(0.0, sz_ed_d - (sz_ed_y * 0.25))
+                            st.caption(f"Edebiyat Net: `{net_sz_edeb:.2f}`")
+                        with c_sz2:
+                            sz_t1_d = st.number_input("Tarih-1 Doğru (10):", 0, 10, 8, key="sz_t1_d")
+                            sz_t1_y = st.number_input("Tarih-1 Yanlış:", 0, 10, 1, key="sz_t1_y")
+                            net_sz_t1 = max(0.0, sz_t1_d - (sz_t1_y * 0.25))
+                            st.caption(f"Tarih-1 Net: `{net_sz_t1:.2f}`")
+                        with c_sz3:
+                            sz_c1_d = st.number_input("Coğrafya-1 Doğru (6):", 0, 6, 5, key="sz_c1_d")
+                            sz_c1_y = st.number_input("Coğrafya-1 Yanlış:", 0, 6, 1, key="sz_c1_y")
+                            net_sz_c1 = max(0.0, sz_c1_d - (sz_c1_y * 0.25))
+                            st.caption(f"Coğrafya-1 Net: `{net_sz_c1:.2f}`")
+
+                        c_sz4, c_sz5, c_sz6, c_sz7 = st.columns(4)
+                        with c_sz4:
+                            sz_t2_d = st.number_input("Tarih-2 Doğru (11):", 0, 11, 9, key="sz_t2_d")
+                            sz_t2_y = st.number_input("Tarih-2 Yanlış:", 0, 11, 1, key="sz_t2_y")
+                            net_sz_t2 = max(0.0, sz_t2_d - (sz_t2_y * 0.25))
+                            st.caption(f"Tarih-2 Net: `{net_sz_t2:.2f}`")
+                        with c_sz5:
+                            sz_c2_d = st.number_input("Coğrafya-2 Doğru (11):", 0, 11, 9, key="sz_c2_d")
+                            sz_c2_y = st.number_input("Coğrafya-2 Yanlış:", 0, 11, 1, key="sz_c2_y")
+                            net_sz_c2 = max(0.0, sz_c2_d - (sz_c2_y * 0.25))
+                            st.caption(f"Coğrafya-2 Net: `{net_sz_c2:.2f}`")
+                        with c_sz6:
+                            sz_f_d = st.number_input("Felsefe Grb. Doğru (12):", 0, 12, 10, key="sz_f_d")
+                            sz_f_y = st.number_input("Felsefe Grb. Yanlış:", 0, 12, 1, key="sz_f_y")
+                            net_sz_fel = max(0.0, sz_f_d - (sz_f_y * 0.25))
+                            st.caption(f"Felsefe Net: `{net_sz_fel:.2f}`")
+                        with c_sz7:
+                            sz_d_d = st.number_input("Din Kültürü Doğru (6):", 0, 6, 5, key="sz_d_d")
+                            sz_d_y = st.number_input("Din Kültürü Yanlış:", 0, 6, 1, key="sz_d_y")
+                            net_sz_din = max(0.0, sz_d_d - (sz_d_y * 0.25))
+                            st.caption(f"Din Net: `{net_sz_din:.2f}`")
+
+                        toplam_ayt_net = net_sz_edeb + net_sz_t1 + net_sz_c1 + net_sz_t2 + net_sz_c2 + net_sz_fel + net_sz_din
+                        ayt_ham_puan = (net_sz_edeb * 3.0) + (net_sz_t1 * 2.8) + (net_sz_c1 * 3.3) + (net_sz_t2 * 2.9) + (net_sz_c2 * 2.9) + (net_sz_fel * 3.0) + (net_sz_din * 3.3)
+
+                    elif secilen_alan == "Yabancı Dil (DİL)":
+                        st.divider()
+                        st.markdown("##### 🇬🇧 2. YDT (Yabancı Dil Testi) Girişi")
+                        c_d1, c_d2 = st.columns(2)
+                        with c_d1:
+                            ydt_d = st.number_input("YDT Yabancı Dil Doğru (Max 80):", 0, 80, 70, key="ydt_d")
+                        with c_d2:
+                            ydt_y = st.number_input("YDT Yabancı Dil Yanlış:", 0, 80, 5, key="ydt_y")
+
+                        net_ydt = max(0.0, ydt_d - (ydt_y * 0.25))
+                        st.caption(f"YDT Yabancı Dil Netiniz: `{net_ydt:.2f}`")
+                        toplam_ayt_net = net_ydt
+                        ayt_ham_puan = net_ydt * 3.0
 
                     st.divider()
                     col_obp1, col_obp2 = st.columns(2)
                     with col_obp1:
-                        obp_puan = st.slider("🎓 Diploma Notunuz (OBP 50 - 100):", 50.0, 100.0, 85.0, 0.5)
+                        obp_puan = st.slider("🎓 Diploma Notunuz (OBP 50 - 100):", 50.0, 100.0, 88.0, 0.5)
                     with col_obp2:
                         st.write("")
                         st.write("")
                         hesapla_btn = st.button("🚀 Puan ve Sıralamamı Hesapla", type="primary", use_container_width=True)
 
                     if hesapla_btn:
-                        # ÖSYM Tahmini Katsayı Algoritması
                         tyt_ham_puan = 100 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
                         obp_katki = obp_puan * 0.6
+                        yerlestirme_puan = (tyt_ham_puan * 0.4) + (ayt_ham_puan * 0.6) + obp_katki
 
-                        if "YKS" in ogr_sinav or "AYT" in ogr_sinav:
-                            ayt_ham_puan = (net_ayt_mat * 3.0) + (net_fizik * 2.8) + (net_kimya * 3.0) + (net_biyo * 3.0)
-                            yerlestirme_puan = (tyt_ham_puan * 0.4) + (ayt_ham_puan * 0.6) + obp_katki
-                        else:
-                            yerlestirme_puan = tyt_ham_puan + obp_katki
+                        # Alana özel tahmini ÖSYM kümülatif başarı sırası hesabı
+                        genel_skor = toplam_tyt_net + (toplam_ayt_net * 1.6)
 
-                        # Tahmini Sıralama Hesabı (Kümülatif Eğri Yaklaşımı)
-                        genel_toplam_net = toplam_tyt_net + (toplam_ayt_net * 1.5 if "YKS" in ogr_sinav else 0)
-                        
-                        if genel_toplam_net >= 160: tahmini_sira = "İlk 1.000 Derece 🏆"
-                        elif genel_toplam_net >= 145: tahmini_sira = "1.000 - 5.000"
-                        elif genel_toplam_net >= 130: tahmini_sira = "5.000 - 15.000"
-                        elif genel_toplam_net >= 115: tahmini_sira = "15.000 - 35.000"
-                        elif genel_toplam_net >= 95: tahmini_sira = "35.000 - 75.000"
-                        elif genel_toplam_net >= 75: tahmini_sira = "75.000 - 140.000"
-                        else: tahmini_sira = "140.000+"
+                        if secilen_alan == "Sayısal (SAY)":
+                            if genel_skor >= 165: tahmini_sira = "İlk 1.000 Derece 🏆"
+                            elif genel_skor >= 150: tahmini_sira = "1.000 - 5.000"
+                            elif genel_skor >= 135: tahmini_sira = "5.000 - 15.000"
+                            elif genel_skor >= 120: tahmini_sira = "15.000 - 35.000"
+                            elif genel_skor >= 100: tahmini_sira = "35.000 - 75.000"
+                            else: tahmini_sira = "75.000+"
+                        elif secilen_alan == "Eşit Ağırlık (EA)":
+                            if genel_skor >= 145: tahmini_sira = "İlk 1.000 Derece 🏆"
+                            elif genel_skor >= 130: tahmini_sira = "1.000 - 5.000"
+                            elif genel_skor >= 115: tahmini_sira = "5.000 - 15.000"
+                            elif genel_skor >= 95: tahmini_sira = "15.000 - 45.000"
+                            else: tahmini_sira = "45.000+"
+                        elif secilen_alan == "Sözel (SÖZ)":
+                            if genel_skor >= 140: tahmini_sira = "İlk 1.000 Derece 🏆"
+                            elif genel_skor >= 125: tahmini_sira = "1.000 - 5.000"
+                            elif genel_skor >= 110: tahmini_sira = "5.000 - 15.000"
+                            else: tahmini_sira = "15.000+"
+                        else:  # DİL
+                            if genel_skor >= 150: tahmini_sira = "İlk 500 Derece 🏆"
+                            elif genel_skor >= 135: tahmini_sira = "500 - 2.500"
+                            elif genel_skor >= 120: tahmini_sira = "2.500 - 7.500"
+                            else: tahmini_sira = "7.500+"
 
                         st.markdown(f"""
                         <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-top: 15px;">
-                            <h4 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🎉 Tahmini Sonuç Analiziniz</h4>
+                            <h4 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🎉 {secilen_alan} Sonuç Analiziniz</h4>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px; font-weight:700;">
                                 <div>📊 <strong>Toplam TYT Net:</strong> {toplam_tyt_net:.2f}</div>
-                                <div>🔬 <strong>Toplam AYT Net:</strong> {toplam_ayt_net:.2f}</div>
+                                <div>🔬 <strong>Toplam AYT/YDT Net:</strong> {toplam_ayt_net:.2f}</div>
                                 <div>🎓 <strong>Yerleştirme Puanı:</strong> {yerlestirme_puan:.2f}</div>
                             </div>
                             <div style="margin-top:12px; font-size:16px; font-weight:800;">
-                                🏆 Tahmini ÖSYM Başarı Sıralamanız: <span style="background:white; color:#059669; padding:4px 10px; border-radius:8px;">{tahmini_sira}</span>
+                                🏆 Tahmini ÖSYM {secilen_alan} Başarı Sıralamanız: <span style="background:white; color:#059669; padding:4px 10px; border-radius:8px;">{tahmini_sira}</span>
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
