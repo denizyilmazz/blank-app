@@ -367,7 +367,7 @@ AYT_KONULAR = {
     "📐 AYT Matematik": ["Polinomlar", "2. Dereceden Denklemler", "Parabol", "Logaritma", "Diziler", "Trigonometri", "Limit ve Süreklilik", "Türev", "İntegral"],
     "📏 AYT Geometri": ["Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitiği"],
     "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Elektromanyetizma", "Modern Fizik"],
-    "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
+    "🧪 TYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
     "🧬 TYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
     "📖 AYT Edebiyat": ["Şiir Bilgisi", "Divan Edebiyatı", "Tanzimat & Servet-i Fünun", "Milli Edebiyat", "Cumhuriyet Dönemi Edebiyatı"]
 }
@@ -1043,7 +1043,7 @@ else:
                             <div style="font-weight:800; font-size:16px; color:#1e293b;">📌 {d_row['yayin']} ({d_row['tur']}) — Net: {d_row['toplam_net']} <span style="font-size:12px; color:#64748b; font-weight:500;">({d_row['tarih']})</span></div>
                             <div class="ai-analysis-box" style="margin-top: 8px;">
                                 <strong>🤖 Yapay Zeka & Koç Deneme Analiz Raporu:</strong><br>
-                                {d_row['koc_notu'].replace(chr(10), '<br>')}
+                                {d_row['koc_notu']}
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
@@ -1161,7 +1161,7 @@ else:
                 else:
                     KOC_MUFREDAT = LGS_KONULAR
 
-                # 📊 KOÇ EKRANI İÇİN YENİ EKLENEN ÖĞRENCİ DENEME ANALİZİ SEKME / PANEL ALANI
+                # 📊 KOÇ EKRANI İÇİN ÖĞRENCİ DENEME ANALİZİ & KARNE ÖNİZLEME PANELİ
                 st.divider()
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Analizleri & Karneleri")
                 st.caption("🔍 Öğrencinin geçmiş tüm deneme sınavları, netleri ve yapay zeka koçluk tavsiye raporları aşağıda listelenmektedir.")
@@ -1177,13 +1177,21 @@ else:
                         """, unsafe_allow_html=True)
                         
                         if kd_row['dosya_adi'] != "Dosya Yok" and os.path.exists(kd_row['dosya_adi']):
-                            with open(kd_row['dosya_adi'], "rb") as f_kd:
-                                st.download_button(f"📥 {kd_row['yayin']} Karnesini İndir", data=f_kd, file_name=kd_row['dosya_adi'], key=f"dl_koc_karne_{kd_row['id']}")
+                            # İndir ve Doğrudan Tarayıcılarda Tıklanınca Açılıp Görünmesi İçin İki Ayrı Buton / Önizleme
+                            col_f1, col_f2 = st.columns(2)
+                            with col_f1:
+                                with open(kd_row['dosya_adi'], "rb") as f_kd:
+                                    st.download_button(f"📥 {kd_row['yayin']} Karnesini İndir", data=f_kd, file_name=kd_row['dosya_adi'], key=f"dl_koc_karne_{kd_row['id']}")
+                            with col_f2:
+                                if kd_row['dosya_adi'].lower().endswith(('.png', '.jpg', '.jpeg')):
+                                    st.image(kd_row['dosya_adi'], width=300, caption="Yüklenen Karne Önizlemesi")
+                                elif kd_row['dosya_adi'].lower().endswith('.pdf'):
+                                    st.markdown(pdf_goster_html(kd_row['dosya_adi']), unsafe_allow_html=True)
                         
                         st.markdown(f"""
                             <div class="ai-analysis-box" style="margin-top: 10px;">
                                 <strong>🤖 Yapay Zeka Detaylı Deneme Koçluk Raporu:</strong><br>
-                                {kd_row['koc_notu'].replace(chr(10), '<br>')}
+                                {kd_row['koc_notu']}
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
