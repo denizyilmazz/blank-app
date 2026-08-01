@@ -1418,7 +1418,7 @@ else:
                 """, conn, params=(v_ogr,))
 
                 if not df_v_deneme.empty:
-                    st.dataframe(df_v_deneme, user_container_width=True, height=350)
+                    st.dataframe(df_v_deneme, use_container_width=True, height=350)
                 else:
                     st.info("Öğrenci henüz deneme sonucu kaydetmemiştir.")
 
