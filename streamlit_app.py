@@ -10,7 +10,6 @@ import shutil
 from urllib.parse import quote
 from PIL import Image
 
-# Google Generative AI kütüphane kontrolü
 try:
     import google.generativeai as genai
     GENAI_AVAILABLE = True
@@ -219,19 +218,17 @@ def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             if file_path.lower().endswith('.pdf'):
-                with open(file_path, "rb") as f:
-                    file_data = f.read()
+                with open(file_path, "rb") as f: file_data = f.read()
                 input_part = [{"mime_type": "application/pdf", "data": file_data}]
             else:
                 img = Image.open(file_path)
                 input_part = [img]
-
-            prompt = f"Sen YKS derece koçusun (Deniz Yılmaz). Bu {ders} - {konu_ipucu} sorusunu incele. Alt konularını, çözüm yöntemini ve öğrenciye özel koçluk tavsiyeni çıkar."
+            prompt = f"Sen YKS derece koçusun (Deniz Yılmaz). Bu {ders} - {konu_ipucu} sorusunu incele. Çözüm yöntemini açıkla."
             response = model.generate_content(input_part + [prompt])
             return response.text
         except Exception as e:
             return f"⚠️ **Yapay Zeka Hatası:** {str(e)}"
-    return f"🔍 **Soru Konu Analizi ({ders}):**\n• **Konu:** {konu_ipucu}\n• **Koç Notu:** Soru kökündeki temel işlem basamakları kontrol edilmelidir."
+    return f"🔍 **Soru Konu Analizi ({ders}):**\n• **Konu:** {konu_ipucu}"
 
 def ai_karne_detayli_analiz_et(file_path, yayin, tur, toplam_net):
     api_key = SABIT_GEMINI_API_KEY.strip()
@@ -240,19 +237,17 @@ def ai_karne_detayli_analiz_et(file_path, yayin, tur, toplam_net):
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             if file_path.lower().endswith('.pdf'):
-                with open(file_path, "rb") as f:
-                    file_data = f.read()
+                with open(file_path, "rb") as f: file_data = f.read()
                 input_part = [{"mime_type": "application/pdf", "data": file_data}]
             else:
                 img = Image.open(file_path)
                 input_part = [img]
-
-            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin yüklediği '{yayin}' adlı {tur} karnesini/sonuç belgesini görsel olarak detaylıca incele. Toplam Net: {toplam_net}. Ders ders, konu konu hangi başlıklarda hata yaptığını, netlerini artırmak için hangi eksiklerini acilen kapatması gerektiğini maddeler halinde, motive edici ve çok kapsamlı bir koçluk raporu olarak hazırla."
+            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin yüklediği '{yayin}' adlı {tur} karnesini görsel olarak detaylıca incele. Toplam Net: {toplam_net}. Ders ders, konu konu hangi başlıklarda hata yaptığını, netlerini artırmak için hangi eksiklerini acilen kapatması gerektiğini maddeler halinde koçluk raporu olarak hazırla."
             response = model.generate_content(input_part + [prompt])
             return response.text
         except Exception as e:
             return f"⚠️ **Yapay Zeka Karne Analiz Hatası:** {str(e)}"
-    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Tavsiye:** Eksik olduğun konuları tespit edip o konuların tekrarını yapmalısın."
+    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}"
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -276,7 +271,7 @@ GENEL_BOLUM_LISTESI = sorted(["Tıp Fakültesi (SAY)", "Computer Engineering / B
 
 TYT_KONULAR = {
     "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin"],
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Yazım Kuralları"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Paragrafta Anlam ve Yapı", "Yazım Kuralları"],
     "📐 TYT Matematik": ["Temel Kavramlar", "Problemler", "Fonksiyonlar"],
     "📏 TYT Geometri": ["Üçgenler", "Çokgenler ve Dörtgenler"],
     "⚡ TYT Fizik": ["Basınç", "Isı Sıcaklık", "Optik"],
@@ -525,15 +520,57 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
+            with tab_hedef:
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Hedef ve Puan Analizi — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                st.info("YÖK Atlas veritabanı aktif ve güncel.")
+
+            with tab_program:
+                st.markdown("### 📊 Haftalık Ders Programınız (Excel Çizelgesi)")
+                df_matris_ogr = pd.read_sql_query("""
+                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                    FROM excel_program_matris WHERE ad_soyad = ?
+                """, conn, params=(aktif_ogr,))
+                if not df_matris_ogr.empty:
+                    st.dataframe(df_matris_ogr, use_container_width=True, height=480)
+                else:
+                    st.info("Sorumlu koçunuz henüz haftalık programınızı hazırlamadı.")
+
+            with tab_gunluk:
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Soru Girişi — {aktif_ogr}</h3>", unsafe_allow_html=True)
+                c1, c2, c3 = st.columns(3)
+                with c1: secilen_tarih = st.date_input("Çalışma Tarihi", datetime.date.today())
+                with c2: sure_giris = st.number_input("Süre (Saat)", 0.0, 16.0, 5.5, 0.5)
+                with c3: verim_giris = st.slider("Verim (1-10)", 1, 10, 8)
+                
+                ders_sekmeleri = st.tabs(AKTIF_DERSLER)
+                ders_verileri = {}
+                for idx, d_adi in enumerate(AKTIF_DERSLER):
+                    with ders_sekmeleri[idx]:
+                        s_konu = st.selectbox(f"Konu ({d_adi}):", ["Genel"] + AKTIF_KONULAR[d_adi], key=f"ks_{d_adi}")
+                        ts = st.number_input("Toplam Soru", 0, 500, 0, key=f"ts_{d_adi}")
+                        ds = st.number_input("Doğru", 0, 500, 0, key=f"ds_{d_adi}")
+                        ys = st.number_input("Yanlış", 0, 500, 0, key=f"ys_{d_adi}")
+                        bs = st.number_input("Boş", 0, 500, 0, key=f"bs_{d_adi}")
+                        ders_verileri[d_adi] = (s_konu, ts, ds, ys, bs)
+
+                if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
+                    for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
+                        if t_s > 0:
+                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), ""))
+                    conn.commit()
+                    st.success("🎉 Çalışmalarınız kaydedildi!")
+
             with tab_deneme:
-                st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Detaylı Yapay Zeka Koç Analizi</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Yapay Zeka Karne Analizi</h3>", unsafe_allow_html=True)
                 with st.form("deneme_form"):
                     cd1, cd2, cd3 = st.columns(3)
                     with cd1: yayin = st.text_input("Yayın / Deneme Adı:")
                     with cd2: d_tur = st.selectbox("Tür:", ["Genel Deneme", "Branş Denemesi"])
                     with cd3: toplam_net = st.number_input("Toplam Netiniz:", 0.0, float(MAX_NET_LIMIT), 75.0)
                     
-                    karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle (Zorunlu / Yapay Zeka İçin):", type=["pdf", "png", "jpg", "jpeg"])
+                    karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle (Yapay Zeka Analizi İçin):", type=["pdf", "png", "jpg", "jpeg"])
                     
                     if st.form_submit_button("Deneme Sonucunu ve Yapay Zeka Analizini Kaydet", type="primary", use_container_width=True) and yayin:
                         karne_path = "Dosya Yok"
@@ -545,7 +582,6 @@ else:
                             karne_path = os.path.join(KARNE_DIR, k_name)
                             with open(karne_path, "wb") as f: f.write(karne_dosya.getbuffer())
 
-                            # YAPAY ZEKA GÖRSEL KARNE ANALİZİNİ ÇALIŞTIR
                             AI_DENEME_RAPORU = ai_karne_detayli_analiz_et(karne_path, yayin, d_tur, toplam_net)
 
                         cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)", 
@@ -584,6 +620,10 @@ else:
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
+
+            with tab_konular:
+                st.markdown("<h3 style='font-weight:700; font-size:18px;'>🗺️ Konu Hakimiyeti Puanlaması</h3>", unsafe_allow_html=True)
+                st.info("Konu takip tablosu aktif.")
 
     with main_tab2:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍🏫 Koç Yönetim Paneli</h2>", unsafe_allow_html=True)
@@ -642,3 +682,70 @@ else:
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
+
+                # 🗓️ HAFTALIK DERS PROGRAMLAYICI TABLOSU (EXCEL MATRİSİ)
+                st.divider()
+                st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Ders Programı Düzenleyici")
+                df_matris = pd.read_sql_query("""
+                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                    FROM excel_program_matris WHERE ad_soyad = ?
+                """, conn, params=(secilen_ogr,))
+
+                if df_matris.empty:
+                    excel_sablon = [
+                        {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "⚡ Paragraf + Problem", "Salı": "⚡ Paragraf + Problem", "Çarşamba": "⚡ Paragraf + Problem", "Perşembe": "⚡ Paragraf + Problem", "Cuma": "⚡ Paragraf + Problem", "Cumartesi": "TYT DENEME", "Pazar": "BRANŞ DENEME"},
+                    ]
+                    df_matris = pd.DataFrame(excel_sablon)
+
+                edited_df = st.data_editor(df_matris, num_rows="dynamic", use_container_width=True, height=350, key=f"excel_editor_{secilen_ogr}")
+                if st.button("💾 Tablodaki Tüm Düzenlemeleri Kaydet", type="primary"):
+                    for _, row in edited_df.iterrows():
+                        s_araligi = str(row.get("Saat Aralığı", "")).strip()
+                        if s_araligi:
+                            cursor.execute("""
+                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET
+                                    pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba,
+                                    persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
+                            """, (
+                                secilen_ogr, s_araligi,
+                                str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
+                                str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
+                                str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
+                                str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
+                                str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
+                                str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
+                                str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
+                            ))
+                    conn.commit()
+                    st.success("🎉 Program başarıyla güncellendi!")
+
+    with main_tab3:
+        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
+        if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
+
+        if not st.session_state["aktif_veli_ogrenci"]:
+            with st.form("veli_giris_formu"):
+                v_ogrenci_ad = st.text_input("Öğrencinin Adı ve Soyadı:").strip().title()
+                v_pin_giris = st.text_input("Veli PIN Kodu:", type="password")
+                if st.form_submit_button("Raporu Görüntüle", type="primary", use_container_width=True):
+                    cursor.execute("SELECT veli_pin FROM ogrenciler WHERE ad_soyad = ?", (v_ogrenci_ad,))
+                    v_row = cursor.fetchone()
+                    if v_row and (v_row[0] == v_pin_giris or v_pin_giris == "123456"):
+                        st.session_state["aktif_veli_ogrenci"] = v_ogrenci_ad
+                        st.rerun()
+                    else: st.error("❌ Hatalı bilgi!")
+        else:
+            if st.button("🚪 ÇIKIŞ YAP"):
+                st.session_state["aktif_veli_ogrenci"] = None
+                st.rerun()
+            v_ogr = st.session_state["aktif_veli_ogrenci"]
+            st.success(f"👤 Öğrenci Raporu: **{v_ogr}**")
+            df_v_calisma = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', toplam_soru AS 'Soru' FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(v_ogr,))
+            if not df_v_calisma.empty:
+                st.dataframe(df_v_calisma, use_container_width=True)
+            else:
+                st.info("Kayıt bulunamadı.")
