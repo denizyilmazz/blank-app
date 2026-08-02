@@ -536,7 +536,7 @@ else:
                     st.info("Sorumlu koçunuz henüz haftalık programınızı hazırlamadı.")
 
                 st.divider()
-                st.markdown("#### 📁 Koçunuz Tarafından Yüklenen Harici Program Dosyaları (JPEG, PNG, Excel, Word, PDF)")
+                st.markdown("#### 📁 Koçunuz Tarafından Yüklenen Harici Program Dosyaları")
                 df_p_files = pd.read_sql_query("SELECT id, yukleyen, tarih, dosya_yolu, dosya_adi FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
                 
                 if df_p_files.empty:
@@ -700,7 +700,7 @@ else:
                 elif "YKS" in s_turu_val: KOC_K_DERSLER = list({**TYT_KONULAR, **AYT_KONULAR}.keys())
                 else: KOC_K_DERSLER = list(LGS_KONULAR.keys())
 
-                # 📊 GÜNLÜK ÇALIŞMA VE SORU TAKİBİ
+                # 📊 GÜNLÜK ÇALIŞMA VE SORU TAKİBİ (Tekilleştirilmiş)
                 st.divider()
                 st.markdown(f"### 📈 {secilen_ogr} — Günlük Soru Çözüm ve Çalışma Takibi")
                 df_koc_gunluk = pd.read_sql_query("""
@@ -722,6 +722,7 @@ else:
                     total_saat = t_sure_koc if t_sure_koc else 0.0
                     st.success(f"🏆 Öğrencinin Toplam Çözdüğü Soru: **{total_s} Soru** | Toplam Çalışma Süresi: **{total_saat:.1f} Saat**")
 
+                # 📊 DENEME ANALİZLERİ & KARNELER (KOÇ EKRANI)
                 st.divider()
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Analizleri & Karneleri")
                 df_koc_denemeler = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
@@ -769,9 +770,9 @@ else:
                         st.code(brans_link, language="text")
                         st.link_button(f"💬 {d_adi} Öğretmenine WhatsApp İle Gönder", wa_link, use_container_width=True)
 
-                # 📄 KOÇ EKRANINDAN HARİCİ DERS PROGRAMI DOSYASI YÜKLEME (JPEG, PNG, EXCEL, WORD, PDF)
+                # 📄 HARİCİ DERS PROGRAMI DOSYASI YÜKLEME (JPEG, PNG, EXCEL, WORD, PDF)
                 st.divider()
-                st.markdown(f"### 📄 {secilen_ogr} İçin Harici Ders Programı Dosyası Yükle (JPEG, PNG, Excel, Word, PDF)")
+                st.markdown(f"### 📄 {secilen_ogr} İçin Dışarıdan Ders Programı Yükle (JPEG, PNG, Excel, Word, PDF)")
                 prog_file = st.file_uploader("Dosya Seçin:", type=["png", "jpg", "jpeg", "xlsx", "xls", "pdf", "docx"], key=f"file_up_{secilen_ogr}")
                 
                 if prog_file and st.button(f"📤 {prog_file.name} Dosyasını Öğrenciye Gönder", type="primary", use_container_width=True):
@@ -826,14 +827,16 @@ else:
                     conn.commit()
                     st.success("🎉 Program başarıyla güncellendi!")
 
+    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
     with main_tab3:
-        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 VELİ TAKİP EKRANI</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
         if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
 
         if not st.session_state["aktif_veli_ogrenci"]:
             with st.form("veli_giris_formu"):
-                v_ogrenci_ad = st.text_input("Öğrencinin Adı ve Soyadı:").strip().title()
-                v_pin_giris = st.text_input("Veli PIN Kodu:", type="password")
+                col_v1, col_v2 = st.columns(2)
+                with col_v1: v_ogrenci_ad = st.text_input("Öğrencinin Adı ve Soyadı:").strip().title()
+                with col_v2: v_pin_giris = st.text_input("Veli PIN Kodu:", type="password")
                 if st.form_submit_button("Raporu Görüntüle", type="primary", use_container_width=True):
                     cursor.execute("SELECT veli_pin FROM ogrenciler WHERE ad_soyad = ?", (v_ogrenci_ad,))
                     v_row = cursor.fetchone()
@@ -842,13 +845,104 @@ else:
                         st.rerun()
                     else: st.error("❌ Hatalı bilgi!")
         else:
-            if st.button("🚪 ÇIKIŞ YAP"):
-                st.session_state["aktif_veli_ogrenci"] = None
-                st.rerun()
-            v_ogr = st.session_state["aktif_veli_ogrenci"]
-            st.success(f"👤 Öğrenci Raporu: **{v_ogr}**")
-            df_v_calisma = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', toplam_soru AS 'Soru' FROM gunluk_calisma WHERE ad_soyad = ?", conn, params=(v_ogr,))
-            if not df_v_calisma.empty:
-                st.dataframe(df_v_calisma, use_container_width=True)
-            else:
-                st.info("Kayıt bulunamadı.")
+            col_v_head1, col_v_head2 = st.columns([0.8, 0.2])
+            with col_v_head1:
+                v_ogr = st.session_state["aktif_veli_ogrenci"]
+                cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net, hedef_sira FROM ogrenciler WHERE ad_soyad = ?", (v_ogr,))
+                v_h_info = cursor.fetchone()
+                h_uni = v_h_info[0] if (v_h_info and v_h_info[0]) else "Belirtilmedi"
+                h_bolum = v_h_info[1] if (v_h_info and v_h_info[1]) else "Belirtilmedi"
+                h_net = v_h_info[2] if (v_h_info and v_h_info[2]) else 0.0
+                h_sira = v_h_info[3] if (v_h_info and len(v_h_info)>3 and v_h_info[3]) else "Belirtilmedi"
+
+                st.success(f"👤 Öğrenci Raporu: **{v_ogr}** | 🎯 Hedef: **{h_uni} - {h_bolum}** (Net: {h_net})")
+            with col_v_head2:
+                if st.button("🚪 ÇIKIŞ YAP", key="veli_logout_btn", use_container_width=True):
+                    st.session_state["aktif_veli_ogrenci"] = None
+                    st.rerun()
+
+            v_tab1, v_tab2, v_tab3 = st.tabs([
+                "📝 Günlük Çalışma & Soru Raporu",
+                "📊 Deneme Sonuçları & Karneler",
+                "📅 Haftalık Ders Programı"
+            ])
+
+            with v_tab1:
+                st.markdown(f"#### 📈 {v_ogr} — Günlük Soru Çözüm ve Çalışma Geçmişi")
+                df_v_calisma = pd.read_sql_query("""
+                    SELECT tarih AS 'Tarih', ders AS 'Ders', MAX(konu) AS 'Konu', 
+                           SUM(toplam_soru) AS 'Toplam Soru', SUM(dogru) AS 'Doğru', SUM(yanlis) AS 'Yanlış', 
+                           MAX(sure) AS 'Süre (Saat)', MAX(verim) AS 'Verim' 
+                    FROM gunluk_calisma WHERE ad_soyad = ? 
+                    GROUP BY tarih, ders 
+                    ORDER BY tarih DESC
+                """, conn, params=(v_ogr,))
+                
+                if not df_v_calisma.empty:
+                    st.dataframe(df_v_calisma, use_container_width=True, height=350)
+                    cursor.execute("SELECT SUM(toplam_soru), SUM(sure) FROM gunluk_calisma WHERE ad_soyad = ?", (v_ogr,))
+                    t_soru_v, t_sure_v = cursor.fetchone()
+                    t_s_val = t_soru_v if t_soru_v else 0
+                    t_saat_val = t_sure_v if t_sure_v else 0.0
+                    st.info(f"🏆 Öğrencinin Toplam Çözdüğü Soru: **{t_s_val} Soru** | Toplam Çalışma Süresi: **{t_saat_val:.1f} Saat**")
+                else:
+                    st.info("Öğrenci henüz günlük çalışma kaydı girmemiştir.")
+
+            with v_tab2:
+                st.markdown(f"#### 📊 {v_ogr} — Deneme Sınavı Karneleri ve Yapay Zeka Koç Raporları")
+                df_v_deneme = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
+
+                if not df_v_deneme.empty:
+                    for _, vd_row in df_v_deneme.iterrows():
+                        st.markdown(f"""
+                        <div class="calc-card" style="margin-bottom: 15px;">
+                            <div style="font-weight:800; font-size:16px; color:#1e293b;">📌 {vd_row['yayin']} ({vd_row['tur']}) — Toplam Net: {vd_row['toplam_net']} <span style="font-size:12px; color:#64748b;">({vd_row['tarih']})</span></div>
+                        """, unsafe_allow_html=True)
+
+                        if vd_row['dosya_adi'] != "Dosya Yok" and os.path.exists(vd_row['dosya_adi']):
+                            col_vf1, col_vf2 = st.columns(2)
+                            with col_vf1:
+                                with open(vd_row['dosya_adi'], "rb") as f_vkarne:
+                                    st.download_button(f"📥 {vd_row['yayin']} Karnesini İndir", data=f_vkarne, file_name=vd_row['dosya_adi'], key=f"dl_veli_karne_{vd_row['id']}")
+                            with col_vf2:
+                                if vd_row['dosya_adi'].lower().endswith(('.png', '.jpg', '.jpeg')):
+                                    st.image(vd_row['dosya_adi'], width=300, caption="Yüklenen Karne Önizlemesi")
+                                elif vd_row['dosya_adi'].lower().endswith('.pdf'):
+                                    st.markdown(pdf_goster_html(vd_row['dosya_adi']), unsafe_allow_html=True)
+
+                        st.markdown("<strong>🤖 Yapay Zeka Detaylı Deneme Koçluk Raporu:</strong>", unsafe_allow_html=True)
+                        st.markdown(vd_row['koc_notu'])
+                        st.markdown("</div>", unsafe_allow_html=True)
+                else:
+                    st.info("Öğrenci henüz deneme sonucu kaydetmemiştir.")
+
+            with v_tab3:
+                st.markdown(f"#### 📅 {v_ogr} — Güncel Haftalık Ders Programı ve Harici Dosyalar")
+                df_v_prog = pd.read_sql_query("""
+                    SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                           carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                           cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                    FROM excel_program_matris WHERE ad_soyad = ?
+                """, conn, params=(v_ogr,))
+
+                if not df_v_prog.empty:
+                    st.dataframe(df_v_prog, use_container_width=True, height=350)
+                else:
+                    st.info("Koç henüz bu öğrenci için haftalık ders programı çizelgesi oluşturmamıştır.")
+
+                st.divider()
+                st.markdown("#### 📁 Koç Tarafından Yüklenen Harici Program Dosyaları")
+                df_vp_files = pd.read_sql_query("SELECT id, yukleyen, tarih, dosya_yolu, dosya_adi FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ogr,))
+                
+                if df_vp_files.empty:
+                    st.caption("Henüz harici formatta bir program dosyası yüklenmedi.")
+                else:
+                    for _, vpf_row in df_vp_files.iterrows():
+                        st.write(f"📄 **{vpf_row['dosya_adi']}** (Yükleyen Koç: {vpf_row['yukleyen']} - Tarih: {vpf_row['tarih']})")
+                        if os.path.exists(vpf_row['dosya_yolu']):
+                            with open(vpf_row['dosya_yolu'], "rb") as f_vb:
+                                st.download_button(f"📥 {vpf_row['dosya_adi']} İndir", data=f_vb, file_name=vpf_row['dosya_adi'], key=f"dl_vpf_{vpf_row['id']}")
+                            if vpf_row['dosya_yolu'].lower().endswith(('.png', '.jpg', '.jpeg')):
+                                st.image(vpf_row['dosya_yolu'], width=450, caption=vpf_row['dosya_adi'])
+                            elif vpf_row['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(vpf_row['dosya_yolu']), unsafe_allow_html=True)
