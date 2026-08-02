@@ -1,4 +1,5 @@
-streamlitstreamlit
+streamlit
 pandas
+openpyxl
 pillow
 google-generativeai
