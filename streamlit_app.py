@@ -1371,61 +1371,63 @@ else:
 
         # 📄 HARİCİ EXCEL / PDF / WORD DOSYASI YÜKLEME ALANI
         st.divider()
-        st.markdown(f"### 📄 {secilen_ogr} İçin Harici Ders Programı Dosyası Yükleyin (Excel, PDF, Word)")
-        prog_file = st.file_uploader(f"Hazır Program Dosyası Seçin (.xlsx, .pdf, .docx):", type=["xlsx", "xls", "pdf", "docx"], key=f"file_up_{secilen_ogr}")
+        sec_ogr_label = locals().get('secilen_ogr', 'Öğrenci')
+        st.markdown(f"### 📄 {sec_ogr_label} İçin Harici Ders Programı Dosyası Yükleyin (Excel, PDF, Word)")
+        prog_file = st.file_uploader(f"Hazır Program Dosyası Seçin (.xlsx, .pdf, .docx):", type=["xlsx", "xls", "pdf", "docx"], key=f"file_up_{sec_ogr_label}")
         
         if prog_file and st.button(f"📤 {prog_file.name} Dosyasını Öğrenciye Gönder", type="primary", use_container_width=True):
             file_ext = os.path.splitext(prog_file.name)[1]
-            p_unique_name = f"Program_{secilen_ogr}_{datetime.date.today()}_{hashlib.md5(prog_file.name.encode()).hexdigest()[:6]}{file_ext}"
+            p_unique_name = f"Program_{sec_ogr_label}_{datetime.date.today()}_{hashlib.md5(prog_file.name.encode()).hexdigest()[:6]}{file_ext}"
             save_p_path = os.path.join(PROGRAM_DIR, p_unique_name)
             with open(save_p_path, "wb") as f:
                 f.write(prog_file.getbuffer())
 
             cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
-                           (secilen_ogr, aktif_koc_adi, str(datetime.date.today()), save_p_path, prog_file.name))
+                           (sec_ogr_label, aktif_koc_adi, str(datetime.date.today()), save_p_path, prog_file.name))
             conn.commit()
-            st.success(f"🎉 '{prog_file.name}' dosyası {secilen_ogr} öğrencisinin paneline başarıyla yüklendi!")
+            st.success(f"🎉 '{prog_file.name}' dosyası {sec_ogr_label} öğrencisinin paneline başarıyla yüklendi!")
 
         # 📸 ÇÖZÜLEMEYEN SORULAR & TAM URL WHATSAPP PAYLAŞIM ALANI
-        st.divider()
-        st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
-        
-        raw_url = st.query_params.get("host_url", "")
-        if not raw_url:
-            host_domain = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
-        else:
-            host_domain = raw_url
+        if 'secilen_ogr' in locals():
+            st.divider()
+            st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
+            
+            raw_url = st.query_params.get("host_url", "")
+            if not raw_url:
+                host_domain = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
+            else:
+                host_domain = raw_url
 
-        encoded_student = quote(secilen_ogr)
-        full_share_url = f"{host_domain}/?ogrenci={encoded_student}"
-        
-        wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin çözemediği ve destek beklediği soruları incelemeniz için şifresiz bağlantı adresi: {full_share_url}"
-        wa_link = f"https://api.whatsapp.com/send?text={quote(wa_msg)}"
+            encoded_student = quote(secilen_ogr)
+            full_share_url = f"{host_domain}/?ogrenci={encoded_student}"
+            
+            wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin çözemediği ve destek beklediği soruları incelemeniz için şifresiz bağlantı adresi: {full_share_url}"
+            wa_link = f"https://api.whatsapp.com/send?text={quote(wa_msg)}"
 
-        st.markdown(f"""
-        <div class="share-link-card">
-            <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">💬 Öğretmene WhatsApp ile Bağlantı Gönder</div>
-            <div style="font-size: 13px; opacity: 0.95;">Aşağıdaki kutudan tam adresi kopyalayabilir veya direkt yeşil butona basarak WhatsApp sohbetine aktarabilirsiniz.</div>
-        </div>
-        """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="share-link-card">
+                <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">💬 Öğretmene WhatsApp ile Bağlantı Gönder</div>
+                <div style="font-size: 13px; opacity: 0.95;">Aşağıdaki kutudan tam adresi kopyalayabilir veya direkt yeşil butona basarak WhatsApp sohbetine aktarabilirsiniz.</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        st.markdown("##### 📋 Kopyalanabilir Tam Adres Linki:")
-        st.code(full_share_url, language="text")
+            st.markdown("##### 📋 Kopyalanabilir Tam Adres Linki:")
+            st.code(full_share_url, language="text")
 
-        col_wa1, col_wa2 = st.columns([0.6, 0.4])
-        with col_wa1:
-            st.caption("💡 Bağlantıya tıklayan öğretmen herhangi bir şifre girmeden öğrencinin tüm sorularına erişir.")
-        with col_wa2:
-            st.link_button("💬 WhatsApp İle Öğretmene Gönder", wa_link, use_container_width=True)
+            col_wa1, col_wa2 = st.columns([0.6, 0.4])
+            with col_wa1:
+                st.caption("💡 Bağlantıya tıklayan öğretmen herhangi bir şifre girmeden öğrencinin tüm sorularına erişir.")
+            with col_wa2:
+                st.link_button("💬 WhatsApp İle Öğretmene Gönder", wa_link, use_container_width=True)
 
-        df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
-        if not df_koc_sorular.empty:
-            for _, s_data in df_koc_sorular.iterrows():
-                st.write(f"📌 **{s_data['ders']}** - {s_data['konu']} ({s_data['tarih']})")
-                if os.path.exists(s_data['dosya_yolu']):
-                    if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')): st.image(s_data['dosya_yolu'], width=350)
-                    elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
-                st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
+            df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+            if not df_koc_sorular.empty:
+                for _, s_data in df_koc_sorular.iterrows():
+                    st.write(f"📌 **{s_data['ders']}** - {s_data['konu']} ({s_data['tarih']})")
+                    if os.path.exists(s_data['dosya_yolu']):
+                        if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')): st.image(s_data['dosya_yolu'], width=350)
+                        elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
+                    st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
 
     # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
     with main_tab3:
