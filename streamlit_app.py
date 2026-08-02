@@ -65,10 +65,6 @@ st.markdown("""
         border: 1px solid #cbd5e1 !important;
     }
 
-    .stTabs [data-baseweb="tab"] div {
-        color: #0f172a !important;
-    }
-
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         border: none !important;
@@ -84,18 +80,6 @@ st.markdown("""
         border: 1.5px solid #94a3b8 !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
-    }
-
-    div[data-baseweb="select"] * {
-        color: #0f172a !important;
-        background-color: #ffffff !important;
-    }
-
-    .stTextInput > label, .stSelectbox > label, .stNumberInput > label, .stTextArea > label {
-        color: #1e293b !important;
-        font-weight: 700 !important;
-        font-size: 14px !important;
-        margin-bottom: 4px !important;
     }
 
     .hero-motivation-card {
@@ -120,10 +104,6 @@ st.markdown("""
         color: #4c1d95 !important;
         margin-top: 12px;
         margin-bottom: 15px;
-    }
-
-    .ai-analysis-box * {
-        color: #4c1d95 !important;
     }
 
     .share-link-card {
@@ -164,10 +144,6 @@ st.markdown("""
         color: #0f172a !important;
         margin-top: 20px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-
-    .osym-belge-box * {
-        color: #0f172a !important;
     }
 
     .total-soru-banner {
@@ -244,7 +220,7 @@ def ai_karne_detayli_analiz_et(file_path, yayin, tur, toplam_net):
                 img = Image.open(file_path)
                 input_part = [img]
 
-            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin yüklediği '{yayin}' adlı {tur} karnesini görsel olarak detaylıca incele. Toplam Net: {toplam_net}. Ders ders, konu konu hangi başlıklarda hata yaptığını, netlerini artırmak için hangi eksiklerini acilen kapatması gerektiğini maddeler halinde koçluk raporu olarak hazırla."
+            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin yüklediği '{yayin}' adlı {tur} karnesini görsel olarak detaylıca incele. Toplam Net: {toplam_net}. Ders ders, konu konu eksiklerini, netlerini artırmak için yapması gerekenleri koçluk raporu olarak hazırla."
             response = model.generate_content(input_part + [prompt])
             return response.text
         except Exception as e:
@@ -319,6 +295,7 @@ CREATE TABLE IF NOT EXISTS koclar (
 )
 """)
 
+# MÜKERRER KAYITLARI ÖNLEMEK İÇİN UNIQUE (ad_soyad, tarih, ders) KISITI EKLENDİ
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS gunluk_calisma (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -332,7 +309,8 @@ CREATE TABLE IF NOT EXISTS gunluk_calisma (
     bos INTEGER,
     sure FLOAT,
     verim INTEGER,
-    notlar TEXT
+    notlar TEXT,
+    UNIQUE(ad_soyad, tarih, ders)
 )
 """)
 
@@ -414,7 +392,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 📌 BRANŞ BAZLI ÖĞRETMEN INCELEME EKRANI
+# 📌 BRANŞ BAZLI ÖĞRETMEN İNCELEME EKRANI
 if link_ogrenci:
     ders_baslik_str = f"({link_ders} Branşı)" if link_ders else "(Tüm Dersler)"
     st.markdown(f"""
@@ -547,6 +525,7 @@ else:
                 with c1: secilen_tarih = st.date_input("Çalışma Tarihi", datetime.date.today(), key="gunluk_tarih_secici")
                 with c2: sure_giris = st.number_input("Süre (Saat)", 0.0, 16.0, 5.5, 0.5)
                 with c3: verim_giris = st.slider("Verim (1-10)", 1, 10, 8)
+                not_giris = st.text_area("Çalışma Notları / Koçunuza Not:", height=70)
                 
                 ders_sekmeleri = st.tabs(AKTIF_DERSLER)
                 ders_verileri = {}
@@ -570,14 +549,20 @@ else:
                             conn.commit()
                             st.success(f"🎉 {len(yuklenen_sorular)} soru yüklendi!")
 
+                # MÜKERRER KAYITLARI ÖNLEYEN UPSERT (REPLACE) MANTIĞI
                 if st.button("🚀 Tüm Çalışmaları Kaydet", type="primary", use_container_width=True):
                     for d_adi, (k_adi, t_s, d_s, y_s, b_s) in ders_verileri.items():
                         if t_s > 0:
-                            cursor.execute("INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (aktif_ogr, str(secilen_tarih), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), ""))
+                            cursor.execute("""
+                                INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, toplam_soru, dogru, yanlis, bos, sure, verim, notlar) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                ON CONFLICT(ad_soyad, tarih, ders) DO UPDATE SET 
+                                    konu=excluded.konu, toplam_soru=excluded.toplam_soru, dogru=excluded.dogru, 
+                                    yanlis=excluded.yanlis, bos=excluded.bos, sure=excluded.sure, verim=excluded.verim, notlar=excluded.notlar
+                            """, (aktif_ogr, str(secilen_tarih), d_adi, k_adi, t_s, d_s, y_s, b_s, float(sure_giris), int(verim_giris), not_giris))
                     conn.commit()
-                    st.success("🎉 Çalışmalarınız kaydedildi!")
+                    st.success("🎉 Çalışmalarınız kaydedildi (Mükerrer kayıtlar engellendi)!")
 
-                # 📊 SEÇİLEN GÜNKÜ TOTAL ÇÖZÜLEN SORU MİKTARI GÖSTERGESİ
                 st.divider()
                 cursor.execute("SELECT SUM(toplam_soru) FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", (aktif_ogr, str(secilen_tarih)))
                 toplam_soru_sonuc = cursor.fetchone()[0]
@@ -598,7 +583,7 @@ else:
                     with cd2: d_tur = st.selectbox("Tür:", ["Genel Deneme", "Branş Denemesi"])
                     with cd3: toplam_net = st.number_input("Toplam Netiniz:", 0.0, float(MAX_NET_LIMIT), 75.0)
                     
-                    karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle (Zorunlu / Yapay Zeka İçin):", type=["pdf", "png", "jpg", "jpeg"])
+                    karne_dosya = st.file_uploader("📄 Deneme Karnesi Görseli/PDF Yükle (Yapay Zeka Analizi İçin):", type=["pdf", "png", "jpg", "jpeg"])
                     
                     if st.form_submit_button("Deneme Sonucunu ve Yapay Zeka Analizini Kaydet", type="primary", use_container_width=True) and yayin:
                         karne_path = "Dosya Yok"
@@ -610,7 +595,6 @@ else:
                             karne_path = os.path.join(KARNE_DIR, k_name)
                             with open(karne_path, "wb") as f: f.write(karne_dosya.getbuffer())
 
-                            # YAPAY ZEKA GÖRSEL KARNE ANALİZİNİ ÇALIŞTIR
                             AI_DENEME_RAPORU = ai_karne_detayli_analiz_et(karne_path, yayin, d_tur, toplam_net)
 
                         cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)", 
@@ -642,16 +626,13 @@ else:
                                 elif d_row['dosya_adi'].lower().endswith('.pdf'):
                                     st.markdown(pdf_goster_html(d_row['dosya_adi']), unsafe_allow_html=True)
 
-                        st.markdown(f"""
-                            <div class="ai-analysis-box" style="margin-top: 10px;">
-                                <strong>🤖 Yapay Zeka Detaylı Deneme Koçluk Raporu:</strong><br>
-                                {d_row['koc_notu']}
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        # HTML HATASI VERMEMESİ İÇİN st.markdown İÇERİĞİ GÜVENLİ HALE GETİRİLDİ
+                        st.markdown("<strong>🤖 Yapay Zeka Detaylı Deneme Koçluk Raporu:</strong>", unsafe_allow_html=True)
+                        st.markdown(d_row['koc_notu'])
+                        st.markdown("</div>", unsafe_allow_html=True)
 
             with tab_konular:
-                st.markdown("<h3 style='font-weight:700; font-size:18px;'>🗺️ Konu Hakimiyeti Puanlaması</h3>", unsafe_allow_html=True)
+                st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🗺️ Konu Hakimiyeti Puanlaması</h3>", unsafe_allow_html=True)
                 st.info("Konu takip tablosu aktif.")
 
     with main_tab2:
@@ -674,7 +655,7 @@ else:
                 st.session_state["aktif_koc"] = None
                 st.rerun()
 
-            cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler")
+            cursor.execute("SELECT ad_soyad FROM ogrenciler")
             ogrenci_rows = cursor.fetchall()
             if ogrenci_rows:
                 ogr_dict = {r[0]: r[0] for r in ogrenci_rows}
@@ -683,7 +664,7 @@ else:
                 # 📊 ÖĞRENCİNİN GÜNLÜK ÇÖZÜLEN SORU SAYISI ÖZETİ (KOÇ EKRANI)
                 st.divider()
                 st.markdown(f"### 📈 {secilen_ogr} — Günlük Soru Çözüm ve Çalışma Takibi")
-                df_koc_gunluk = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', toplam_soru AS 'Toplam Soru', dogru AS 'Doğru', yanlis AS 'Yanlış', sure AS 'Süre (Saat)', verim AS 'Verim' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+                df_koc_gunluk = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', toplam_soru AS 'Toplam Soru', dogru AS 'Doğru', yanlis AS 'Yanlış', sure AS 'Süre (Saat)', verim AS 'Verim' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if df_koc_gunluk.empty:
                     st.info("Öğrenci henüz günlük çalışma kaydı girmemiştir.")
                 else:
@@ -716,15 +697,11 @@ else:
                                 elif kd_row['dosya_adi'].lower().endswith('.pdf'):
                                     st.markdown(pdf_goster_html(kd_row['dosya_adi']), unsafe_allow_html=True)
                         
-                        st.markdown(f"""
-                            <div class="ai-analysis-box" style="margin-top: 10px;">
-                                <strong>🤖 Yapay Zeka Detaylı Deneme Koçluk Raporu:</strong><br>
-                                {kd_row['koc_notu']}
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<strong>🤖 Yapay Zeka Detaylı Deneme Koçluk Raporu:</strong>", unsafe_allow_html=True)
+                        st.markdown(kd_row['koc_notu'])
+                        st.markdown("</div>", unsafe_allow_html=True)
 
-                # 📌 BRANŞ BAZLI WHATSAPP LİNKLERİ (Öğretmenlerin sadece kendi dersini görmesi için)
+                # 📌 BRANŞ BAZLI WHATSAPP LİNKLERİ
                 st.divider()
                 st.markdown(f"### 💬 {secilen_ogr} İçin Branş Bazlı Öğretmen WhatsApp Paylaşım Linkleri")
                 st.caption("Her öğretmene kendi branşına özel bağlantı göndererek sadece o dersin sorularını görmelerini sağlayabilirsiniz.")
@@ -750,7 +727,7 @@ else:
                         st.code(brans_link, language="text")
                         st.link_button(f"💬 {d_adi} Öğretmenine WhatsApp İle Gönder", wa_link, use_container_width=True)
 
-                # 🗓️ HAFTALIK DERS PROGRAMLAYICI TABLOSU (EXCEL MATRİSİ)
+                # 🗓️ HAFTALIK DERS PROGRAMLAYICI
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Ders Programı Düzenleyici")
                 df_matris = pd.read_sql_query("""
