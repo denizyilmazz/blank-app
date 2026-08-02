@@ -7,6 +7,7 @@ import base64
 import hashlib
 import os
 import shutil
+import io
 from urllib.parse import quote
 from PIL import Image
 
@@ -178,6 +179,12 @@ def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
     if password == hashed_password: return True
     return make_hash(password) == hashed_password
+
+def dataframe_to_excel_bytes(df):
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Haftalık Ders Programı')
+    return output.getvalue()
 
 def veritabani_gunluk_yedekle():
     try:
@@ -530,10 +537,21 @@ else:
                            cumartesi AS 'Cumartesi', pazar AS 'Pazar'
                     FROM excel_program_matris WHERE ad_soyad = ?
                 """, conn, params=(aktif_ogr,))
+                
                 if not df_matris_ogr.empty:
-                    st.dataframe(df_matris_ogr, use_container_width=True, height=480)
+                    st.dataframe(df_matris_ogr, use_container_width=True, height=420)
+                    
+                    # 📥 Öğrencinin Excel Olarak İndirebilmesi İçin Buton
+                    excel_veri = dataframe_to_excel_bytes(df_matris_ogr)
+                    st.download_button(
+                        label="📥 Haftalık Programı Excel Olarak İndir (.xlsx)",
+                        data=excel_veri,
+                        file_name=f"{aktif_ogr}_YKS_Ders_Programi.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
                 else:
-                    st.info("Sorumlu koçunuz henüz haftalık programınızı hazırlamadı.")
+                    st.info("Sorumlu koçunuz henüz haftalık ders programınızı hazırlamadı.")
 
                 st.divider()
                 st.markdown("#### 📁 Koçunuz Tarafından Yüklenen Harici Program Dosyaları")
@@ -700,7 +718,7 @@ else:
                 elif "YKS" in s_turu_val: KOC_K_DERSLER = list({**TYT_KONULAR, **AYT_KONULAR}.keys())
                 else: KOC_K_DERSLER = list(LGS_KONULAR.keys())
 
-                # 📊 GÜNLÜK ÇALIŞMA VE SORU TAKİBİ (Tekilleştirilmiş)
+                # 📊 GÜNLÜK ÇALIŞMA VE SORU TAKİBİ
                 st.divider()
                 st.markdown(f"### 📈 {secilen_ogr} — Günlük Soru Çözüm ve Çalışma Takibi")
                 df_koc_gunluk = pd.read_sql_query("""
@@ -722,7 +740,7 @@ else:
                     total_saat = t_sure_koc if t_sure_koc else 0.0
                     st.success(f"🏆 Öğrencinin Toplam Çözdüğü Soru: **{total_s} Soru** | Toplam Çalışma Süresi: **{total_saat:.1f} Saat**")
 
-                # 📊 DENEME ANALİZLERİ & KARNELER (KOÇ EKRANI)
+                # 📊 DENEME ANALİZLERİ & KARNELER
                 st.divider()
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Analizleri & Karneleri")
                 df_koc_denemeler = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
@@ -770,7 +788,7 @@ else:
                         st.code(brans_link, language="text")
                         st.link_button(f"💬 {d_adi} Öğretmenine WhatsApp İle Gönder", wa_link, use_container_width=True)
 
-                # 📄 HARİCİ DERS PROGRAMI DOSYASI YÜKLEME (JPEG, PNG, EXCEL, WORD, PDF)
+                # 📄 HARİCİ DERS PROGRAMI DOSYASI YÜKLEME
                 st.divider()
                 st.markdown(f"### 📄 {secilen_ogr} İçin Dışarıdan Ders Programı Yükle (JPEG, PNG, Excel, Word, PDF)")
                 prog_file = st.file_uploader("Dosya Seçin:", type=["png", "jpg", "jpeg", "xlsx", "xls", "pdf", "docx"], key=f"file_up_{secilen_ogr}")
@@ -787,9 +805,33 @@ else:
                     conn.commit()
                     st.success(f"🎉 '{prog_file.name}' dosyası {secilen_ogr} öğrencisinin paneline başarıyla yüklendi!")
 
-                # 🗓️ 7 GÜNLÜK EXCEL MATRİS PROGRAMLAYICI
+                # ⚡ HIZLI DERS PROGRAMI EKLEME & DÜZENLEME FORMU
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Ders Programı Düzenleyici")
+                st.markdown(f"### ⚡ {secilen_ogr} İçin Hızlı Ders Programı Bloğu Ekle")
+                with st.form(f"hizli_prog_form_{secilen_ogr}"):
+                    c_hp1, c_hp2, c_hp3 = st.columns(3)
+                    with c_hp1: h_gun = st.selectbox("📅 Gün Seçin:", GUNLER, key=f"h_gun_{secilen_ogr}")
+                    with c_hp2: h_saat = st.text_input("⏰ Saat Aralığı:", value="09:00 - 10:00", key=f"h_saat_{secilen_ogr}")
+                    with c_hp3: h_ders = st.text_input("📚 Ders / İçerik:", placeholder="Örn: TYT Matematik - Problemler", key=f"h_ders_{secilen_ogr}")
+
+                    if st.form_submit_button("➕ Bu Ders Bloğunu Programa Ekle / Güncelle", type="primary", use_container_width=True):
+                        gun_sutun_map = {
+                            "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                            "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                        }
+                        t_col = gun_sutun_map[h_gun]
+                        cursor.execute(f"""
+                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_col})
+                            VALUES (?, ?, ?)
+                            ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_col} = ?
+                        """, (secilen_ogr, h_saat, h_ders, h_ders))
+                        conn.commit()
+                        st.success(f"🎉 {h_gun} ({h_saat}) için ders başarıyla eklendi!")
+                        st.rerun()
+
+                # 🗓️ 7 GÜNLÜK EXCEL MATRİS PROGRAMLAYICI (Tablo Düzenleyici)
+                st.divider()
+                st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Tablo Ders Programı Düzenleyici")
                 df_matris = pd.read_sql_query("""
                     SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
                            carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
@@ -827,7 +869,6 @@ else:
                     conn.commit()
                     st.success("🎉 Program başarıyla güncellendi!")
 
-    # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
     with main_tab3:
         st.markdown("<h2 style='font-weight:800; font-size:24px; color:#0f172a;'>👨‍👩‍👧‍👦 Veli Takip Ekranı</h2>", unsafe_allow_html=True)
         if "aktif_veli_ogrenci" not in st.session_state: st.session_state["aktif_veli_ogrenci"] = None
