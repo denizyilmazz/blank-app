@@ -10,7 +10,6 @@ import shutil
 from urllib.parse import quote
 from PIL import Image
 
-# Google Generative AI kütüphane kontrolü
 try:
     import google.generativeai as genai
     GENAI_AVAILABLE = True
@@ -24,7 +23,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 🎨 Gece Modu (Dark Mode) Uyumlu, Mobil ve Okunabilirlik Odaklı Kusursuz CSS
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -47,7 +45,6 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
-    /* 🌙 Gece Modunda Sekme Yazılarının ve Arka Planının Net Görünmesi İçin Kesin Çözüm */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
         background: #ffffff !important;
@@ -68,10 +65,6 @@ st.markdown("""
         border: 1px solid #cbd5e1 !important;
     }
 
-    .stTabs [data-baseweb="tab"] div {
-        color: #0f172a !important;
-    }
-
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         border: none !important;
@@ -87,18 +80,6 @@ st.markdown("""
         border: 1.5px solid #94a3b8 !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
-    }
-
-    div[data-baseweb="select"] * {
-        color: #0f172a !important;
-        background-color: #ffffff !important;
-    }
-
-    .stTextInput > label, .stSelectbox > label, .stNumberInput > label, .stTextArea > label {
-        color: #1e293b !important;
-        font-weight: 700 !important;
-        font-size: 14px !important;
-        margin-bottom: 4px !important;
     }
 
     .hero-motivation-card {
@@ -123,10 +104,6 @@ st.markdown("""
         color: #4c1d95 !important;
         margin-top: 12px;
         margin-bottom: 15px;
-    }
-
-    .ai-analysis-box * {
-        color: #4c1d95 !important;
     }
 
     .share-link-card {
@@ -169,10 +146,6 @@ st.markdown("""
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
 
-    .osym-belge-box * {
-        color: #0f172a !important;
-    }
-
     .total-soru-banner {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white !important;
@@ -187,9 +160,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 🔑 KALICI OLARAK ENTEGRE EDİLMİŞ GEMİNI API KEY
 SABIT_GEMINI_API_KEY = "AQ.Ab8RN6Iu0rNJR14IpQDnEyaXDJPMFnkgaOBn4lZ8j2qZrysa6A"
-
 SISTEM_YONETICI_KATILIM_KODU = "YKS2026KOC"
 DB_FILE = "yks_kocluk.db"
 UPLOAD_DIR = "soru_yuklemeleri"
@@ -236,8 +207,7 @@ def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             if file_path.lower().endswith('.pdf'):
-                with open(file_path, "rb") as f:
-                    file_data = f.read()
+                with open(file_path, "rb") as f: file_data = f.read()
                 input_part = [{"mime_type": "application/pdf", "data": file_data}]
             else:
                 img = Image.open(file_path)
@@ -250,133 +220,63 @@ def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
             return f"⚠️ **Yapay Zeka Hatası:** {str(e)}"
     return f"🔍 **Soru Konu Analizi ({ders}):**\n• **Konu:** {konu_ipucu}\n• **Koç Notu:** Soru kökündeki temel işlem basamakları kontrol edilmelidir."
 
-def ai_deneme_detayli_analiz_et(yayin, tur, toplam_net, ders_netleri_ozeti):
+def ai_karne_detayli_analiz_et(file_path, yayin, tur, toplam_net):
     api_key = SABIT_GEMINI_API_KEY.strip()
-    if GENAI_AVAILABLE and api_key and api_key != "AIzaSy...":
+    if GENAI_AVAILABLE and api_key and api_key != "AIzaSy..." and os.path.exists(file_path):
         try:
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
-            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin '{yayin}' adlı {tur} sonucunu analiz et. Toplam Net: {toplam_net}. Ders bazlı net dağılımı ve durum özeti: {ders_netleri_ozeti}. Bu öğrencinin hangi derslerde ve özellikle hangi alt konularda eksik olduğunu, netlerini artırmak için haftalık bazda hangi konulara ağırlık vermesi gerektiğini detaylı, motive edici ve ders ders koçluk tavsiyeleriyle açıkla."
-            response = model.generate_content(prompt)
+            if file_path.lower().endswith('.pdf'):
+                with open(file_path, "rb") as f: file_data = f.read()
+                input_part = [{"mime_type": "application/pdf", "data": file_data}]
+            else:
+                img = Image.open(file_path)
+                input_part = [img]
+
+            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin yüklediği '{yayin}' adlı {tur} karnesini görsel olarak detaylıca incele. Toplam Net: {toplam_net}. Ders ders, konu konu eksiklerini, netlerini artırmak için yapması gerekenleri koçluk raporu olarak hazırla."
+            response = model.generate_content(input_part + [prompt])
             return response.text
         except Exception as e:
-            return f"⚠️ **Yapay Zeka Analiz Hatası:** {str(e)}"
-    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Tavsiye:** Eksik olduğun konuları tespit edip o konuların soru bankası tekrarlarını artırmalısın."
+            return f"⚠️ **Yapay Zeka Karne Analiz Hatası:** {str(e)}"
+    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Tavsiye:** Eksik olduğun konuları tespit edip tekrar yapmalısın."
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
     "🚀 Başarı, her gün ertelemeden tekrarlanan küçük çabaların birikimidir!",
-    "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!",
-    "💪 Zorluklar, potansiyelini keşfetmen için var olan basamaklardır. Pes etmek yok!",
-    "✨ Şimdi odaklan ve çalış, gelecekteki kendin seninle gurur duysun!"
+    "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
         "Endüstri Mühendisliği (SAY)": {"taban_net": 110.0, "tavan_net": 116.5, "taban_sira": "1.450", "tavan_sira": "65"},
-        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.0, "taban_sira": "1.150", "tavan_sira": "40"},
-        "Havacılık ve Uzay Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.400", "tavan_sira": "180"},
-        "Makine Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 113.0, "taban_sira": "5.500", "tavan_sira": "420"},
-        "İnşaat Mühendisliği (SAY)": {"taban_net": 88.5, "tavan_net": 102.0, "taban_sira": "48.000", "tavan_sira": "12.000"},
-        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 96.5, "tavan_net": 106.0, "taban_sira": "1.800", "tavan_sira": "95"},
-        "İşletme (EA)": {"taban_net": 98.0, "tavan_net": 108.5, "taban_sira": "1.200", "tavan_sira": "45"},
-        "İktisat / Ekonomi (EA)": {"taban_net": 96.0, "tavan_net": 106.5, "taban_sira": "2.100", "tavan_sira": "110"},
-        "Psikoloji (EA)": {"taban_net": 94.5, "tavan_net": 104.0, "taban_sira": "3.500", "tavan_sira": "210"},
-        "Mimarlık (SAY)": {"taban_net": 98.0, "tavan_net": 108.0, "taban_sira": "15.000", "tavan_sira": "1.200"},
-        "İngilizce Öğretmenliği (DİL)": {"taban_net": 75.0, "tavan_net": 79.0, "taban_sira": "1.200", "tavan_sira": "85"}
-    },
-    "Boğaziçi Üniversitesi (İstanbul)": {
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 114.5, "tavan_net": 119.0, "taban_sira": "280", "tavan_sira": "1"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 111.0, "tavan_net": 117.5, "taban_sira": "1.100", "tavan_sira": "45"},
-        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 112.5, "tavan_net": 118.5, "taban_sira": "650", "tavan_sira": "12"},
-        "Makine Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "3.100", "tavan_sira": "210"},
-        "İşletme (EA)": {"taban_net": 102.5, "tavan_net": 112.0, "taban_sira": "420", "tavan_sira": "5"},
-        "İktisat / Ekonomi (EA)": {"taban_net": 100.0, "tavan_net": 110.5, "taban_sira": "680", "tavan_sira": "18"},
-        "Psikoloji (EA)": {"taban_net": 98.5, "tavan_net": 108.0, "taban_sira": "1.250", "tavan_sira": "35"},
-        "İngilizce Öğretmenliği (DİL)": {"taban_net": 76.5, "tavan_net": 79.5, "taban_sira": "850", "tavan_sira": "12"}
-    },
-    "İstanbul Teknik Üniversitesi (İTÜ)": {
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 112.0, "tavan_net": 117.0, "taban_sira": "950", "tavan_sira": "85"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 107.5, "tavan_net": 114.0, "taban_sira": "3.200", "tavan_sira": "350"},
-        "Yapay Zeka Mühendisliği (SAY)": {"taban_net": 111.5, "tavan_net": 116.5, "taban_sira": "1.200", "tavan_sira": "110"},
-        "Uçak Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 115.0, "taban_sira": "2.800", "tavan_sira": "210"},
-        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 108.5, "tavan_net": 115.5, "taban_sira": "2.500", "tavan_sira": "180"},
-        "Makine Mühendisliği (SAY)": {"taban_net": 103.5, "tavan_net": 111.0, "taban_sira": "7.800", "tavan_sira": "820"},
-        "İnşaat Mühendisliği (SAY)": {"taban_net": 82.0, "tavan_net": 96.0, "taban_sira": "68.000", "tavan_sira": "18.000"},
-        "Mimarlık (SAY)": {"taban_net": 96.0, "tavan_net": 106.0, "taban_sira": "18.500", "tavan_sira": "1.800"}
-    },
-    "Hacettepe Üniversitesi (Ankara)": {
-        "Tıp Fakültesi (SAY)": {"taban_net": 114.0, "tavan_net": 118.5, "taban_sira": "1.100", "tavan_sira": "8"},
-        "Diş Hekimliği (SAY)": {"taban_net": 102.5, "tavan_net": 109.0, "taban_sira": "18.500", "tavan_sira": "3.200"},
-        "Eczacılık (SAY)": {"taban_net": 95.0, "tavan_net": 103.5, "taban_sira": "38.000", "tavan_sira": "12.000"},
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 109.5, "tavan_net": 115.5, "taban_sira": "2.100", "tavan_sira": "380"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 104.0, "tavan_net": 111.5, "taban_sira": "7.200", "tavan_sira": "1.100"},
-        "Elektrik-Elektronik Mühendisliği (SAY)": {"taban_net": 105.5, "tavan_net": 112.5, "taban_sira": "5.800", "tavan_sira": "850"},
-        "Psikoloji (EA)": {"taban_net": 88.0, "tavan_net": 98.0, "taban_sira": "9.500", "tavan_sira": "850"}
-    },
-    "Galatasaray Üniversitesi (İstanbul)": {
-        "Hukuk Fakültesi (EA)": {"taban_net": 101.5, "tavan_net": 109.0, "taban_sira": "650", "tavan_sira": "25"},
-        "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 108.0, "tavan_net": 114.5, "taban_sira": "3.500", "tavan_sira": "480"},
-        "Endüstri Mühendisliği (SAY)": {"taban_net": 105.0, "tavan_net": 112.0, "taban_sira": "6.200", "tavan_sira": "850"},
-        "Siyaset Bilimi ve Uluslararası İlişkiler (EA)": {"taban_net": 95.0, "tavan_net": 104.0, "taban_sira": "2.200", "tavan_sira": "180"}
     }
 }
 
-YOK_ATLAS_UNIVERSTITELER = sorted(list(set(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + [
-    "Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)",
-    "Hacettepe Üniversitesi (Ankara)", "Bilkent Üniversitesi (Ankara)", "Koç Üniversitesi (İstanbul)",
-    "Sabancı Üniversitesi (İstanbul)", "İstanbul Üniversitesi", "Marmara Üniversitesi (İstanbul)",
-    "Yıldız Teknik Üniversitesi (İTÜ)", "Ege Üniversitesi (İzmir)", "Dokuz Eylül Üniversitesi (İzmir)",
-    "Ankara Üniversitesi", "Gazi Üniversitesi (Ankara)", "Galatasaray Üniversitesi (İstanbul)",
-    "Bursa Uludağ Üniversitesi", "Eskişehir Osmangazi Üniversitesi", "Anadolu Üniversitesi (Eskişehir)",
-    "Çukurova Üniversitesi (Adana)", "Akdeniz Üniversitesi (Antalya)", "Karadeniz Teknik Üniversitesi (Trabzon)",
-    "Kocaeli Üniversitesi", "Sakarya Üniversitesi", "Gebze Teknik Üniversitesi", "İzmir Yüksek Teknoloji Enstitüsü (İYTE)",
-    "Gaziantep Üniversitesi", "Atatürk Üniversitesi (Erzurum)", "Diğer Tüm Devlet ve Vakıf Üniversiteleri"
-])))
-
-GENEL_BOLUM_LISTESI = sorted([
-    "Tıp Fakültesi (SAY)", "Diş Hekimliği (SAY)", "Eczacılık (SAY)",
-    "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Yazılım Mühendisliği (SAY)",
-    "Yapay Zeka Mühendisliği (SAY)", "Elektrik-Elektronik Mühendisliği (SAY)",
-    "Endüstri Mühendisliği (SAY)", "Makine Mühendisliği (SAY)", "İnşaat Mühendisliği (SAY)",
-    "Havacılık ve Uzay Mühendisliği (SAY)", "Mimarlık (SAY)", "Hemşirelik (SAY)",
-    "Hukuk Fakültesi (EA)", "Psikoloji (EA)", "İşletme (EA)", "İktisat / Ekonomi (EA)",
-    "Siyaset Bilimi ve Uluslararası İlişkiler (EA)", "Yönetim Bilişim Sistemleri (YBS) (EA)",
-    "Özel Eğitim Öğretmenliği (SÖZ)", "Gastronomi ve Mutfak Sanatları (SÖZ)", "Türkçe Öğretmenliği (SÖZ)",
-    "Tarih (SÖZ)", "Türk Dili ve Edebiyatı (SÖZ)", "Coğrafya (SÖZ)", "İlahiyat (SÖZ)",
-    "İngilizce Öğretmenliği (DİL)", "Mütercim-Tercümanlık (İngilizce) (DİL)",
-    "Computer Programming / Bilgisayar Programcılığı (TYT Önlisans)", "Diğer Tüm Lisans ve Önlisans Bölümleri"
-])
+YOK_ATLAS_UNIVERSTITELER = sorted(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + ["Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)", "Orta Doğu Teknik Üniversitesi (ODTÜ)"])
+GENEL_BOLUM_LISTESI = sorted(["Tıp Fakültesi (SAY)", "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Hukuk Fakültesi (EA)"])
 
 TYT_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin", "Paragraf Hız Kampı + Problem Karma"],
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözcük Türleri", "Fiiller & Fiilimsi", "Yazım Kuralları", "Noktalama İşaretleri"],
-    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Bölme-Bölünebilme", "Rasyonel Sayılar", "Eşitsizlikler", "Mutlak Değer", "Üslü & Köklü İfadeler", "Problemler", "Fonksiyonlar"],
-    "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler", "Üçgende Alan ve Benzerlik", "Çokgenler ve Dörtgenler", "Katı Cisimler"],
-    "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç", "Isı Sıcaklık", "Hareket", "Optik", "Dalgalar"],
-    "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Karışımlar"],
-    "🧬 TYT Biyoloji": ["Yaşam Bilimi Biyoloji", "Hücre ve Organeller", "Hücre Bölünmeleri", "Kalıtım", "Ekoloji"],
-    "📜 TYT Tarih": ["Tarih Bilimi", "Osmanlı Devleti", "Milli Mücadele Dönemi"],
-    "🌍 TYT Coğrafya": ["Doğa ve İnsan", "Harita Bilgisi", "İklim Bilgisi", "Nüfus ve Afetler"],
-    "🧠 TYT Felsefe": ["Felsefeyi Tanıma", "Bilgi Felsefesi", "Ahlak Felsefesi"],
-    "🕌 TYT Din Kültürü": ["İnanç & Allah İnancı", "İbadet Esasları", "Ahlak ve Değerler"]
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam", "Paragrafta Anlam ve Yapı", "Yazım Kuralları"],
+    "📐 TYT Matematik": ["Temel Kavramlar", "Problemler", "Fonksiyonlar"],
+    "📏 TYT Geometri": ["Üçgenler", "Çokgenler ve Dörtgenler"],
+    "⚡ TYT Fizik": ["Basınç", "Isı Sıcaklık", "Optik"],
+    "🧪 TYT Kimya": ["Kimya Bilimi", "Karışımlar"],
+    "🧬 TYT Biyoloji": ["Hücre ve Organeller", "Kalıtım"]
 }
 
 AYT_KONULAR = {
-    "📐 AYT Matematik": ["Polinomlar", "2. Dereceden Denklemler", "Parabol", "Logaritma", "Diziler", "Trigonometri", "Limit ve Süreklilik", "Türev", "İntegral"],
-    "📏 AYT Geometri": ["Noktanın ve Doğrunun Analitiği", "Dönüşüm Geometrisi", "Çemberin Analitiği"],
-    "⚡ AYT Fizik": ["Vektörler & Bağıl Hareket", "Tork & Denge", "Atışlar & İtme-Momentum", "Çembersel Hareket", "Elektromanyetizma", "Modern Fizik"],
-    "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", "Kimyasal Denge", "Elektrokimya", "Organik Kimya"],
-    "🧬 TYT Biyoloji": ["İnsan Fizyolojisi (Sistemler)", "Gensoru & Protein Sentezi", "Fotosentez & Solunum", "Bitki Biyolojisi"],
-    "📖 AYT Edebiyat": ["Şiir Bilgisi", "Divan Edebiyatı", "Tanzimat & Servet-i Fünun", "Milli Edebiyat", "Cumhuriyet Dönemi Edebiyatı"]
+    "📐 AYT Matematik": ["Polinomlar", "Logaritma", "Trigonometri", "Türev", "İntegral"],
+    "📏 AYT Geometri": ["Analitik Geometri", "Çember"],
+    "⚡ AYT Fizik": ["Atışlar & İtme-Momentum", "Elektromanyetizma"],
+    "🧪 TYT Kimya": ["Gazlar", "Organik Kimya"],
+    "🧬 TYT Biyoloji": ["İnsan Fizyolojisi", "Fotosentez"]
 }
 
 LGS_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (20s) + Problem (15s) Günlük Rutin"],
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Sözel Mantık"],
-    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler", "Kareköklü İfadeler", "Veri Analizi", "Olasılık", "Linear Denklemler"],
-    "🧪 LGS Fen Bilimleri (20 Soru)": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç", "Madde ve Endüstri", "Basit Makineler"]
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözel Mantık"],
+    "📐 LGS Matematik (20 Soru)": ["Üslü İfadeler", "Kareköklü İfadeler"]
 }
 
 GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
@@ -421,7 +321,8 @@ CREATE TABLE IF NOT EXISTS gunluk_calisma (
     bos INTEGER,
     sure FLOAT,
     verim INTEGER,
-    notlar TEXT
+    notlar TEXT,
+    UNIQUE(ad_soyad, tarih, ders)
 )
 """)
 
@@ -508,8 +409,8 @@ if cursor.fetchone()[0] == 0:
 
 query_params = st.query_params
 link_ogrenci = query_params.get("ogrenci", None)
+link_ders = query_params.get("ders", None)
 
-# BANNER / BAŞLIK
 st.markdown("""
 <div style="text-align: center; padding: 10px 0 15px 0;">
     <span style="font-size: 42px;">🎓</span>
@@ -519,17 +420,21 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if link_ogrenci:
+    ders_baslik_str = f"({link_ders} Branşı)" if link_ders else "(Tüm Dersler)"
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-bottom: 20px;">
-        <h3 style="margin:0; font-size:20px; font-weight:800; color:white !important;">👨‍🏫 Öğretmen Soru İnceleme Ekranı</h3>
-        <p style="margin:4px 0 0 0; opacity:0.9; color:white !important;"><strong>{link_ogrenci}</strong> öğrencisinin çözemediği ve destek beklediği tüm sorular listelenmektedir.</p>
+        <h3 style="margin:0; font-size:20px; font-weight:800; color:white !important;">👨‍🏫 Öğretmen Branş Soru İnceleme Ekranı {ders_baslik_str}</h3>
+        <p style="margin:4px 0 0 0; opacity:0.9; color:white !important;"><strong>{link_ogrenci}</strong> öğrencisinin bu branşta çözemediği ve destek beklediği sorular listelenmektedir.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(link_ogrenci,))
+    if link_ders:
+        df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? AND ders = ? ORDER BY id DESC", conn, params=(link_ogrenci, link_ders))
+    else:
+        df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(link_ogrenci,))
     
     if df_link_sorular.empty:
-        st.info(f"ℹ️ {link_ogrenci} isimli öğrenci henüz çözemediği soru yüklememiştir.")
+        st.info(f"ℹ️ {link_ogrenci} isimli öğrencinin bu branşta henüz çözemediği soru bulunmuyor.")
     else:
         for _, s_data in df_link_sorular.iterrows():
             st.markdown(f"#### 📌 {s_data['ders']} — {s_data['konu']} <span style='font-size:12px; color:#64748b;'>({s_data['tarih']})</span>", unsafe_allow_html=True)
@@ -552,7 +457,6 @@ else:
         "👨‍👩‍👧‍👦 VELİ TAKİP EKRANI"
     ])
 
-    # ==================== 👨‍🎓 ÖĞRENCİ PANELİ ====================
     with main_tab1:
         if "motivasyon_goster" not in st.session_state: st.session_state["motivasyon_goster"] = True
         if "motivasyon_sozu" not in st.session_state: st.session_state["motivasyon_sozu"] = random.choice(MOTIVASYON_SOZLERI)
@@ -1161,6 +1065,20 @@ else:
                 else:
                     KOC_MUFREDAT = LGS_KONULAR
 
+                # 📊 KOÇ EKRANI İÇİN ÖĞRENCİNİN GÜNLÜK ÇÖZÜLEN SORU SAYISI & ÇALIŞMA SÜRESİ (EKLENEN ÖZELLİK)
+                st.divider()
+                st.markdown(f"### 📈 {secilen_ogr} — Öğrencinin Günlük Çözdüğü Soru ve Çalışma Süresi Takibi")
+                df_koc_gunluk = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', toplam_soru AS 'Toplam Soru', dogru AS 'Doğru', yanlis AS 'Yanlış', sure AS 'Süre (Saat)', verim AS 'Verim' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+                if df_koc_gunluk.empty:
+                    st.info(f"ℹ️ {secilen_ogr} henüz günlük soru ve çalışma süresi girmemiştir.")
+                else:
+                    st.dataframe(df_koc_gunluk, use_container_width=True, height=250)
+                    cursor.execute("SELECT SUM(toplam_soru), SUM(sure) FROM gunluk_calisma WHERE ad_soyad = ?", (secilen_ogr,))
+                    t_soru_koc, t_sure_koc = cursor.fetchone()
+                    total_s = t_soru_koc if t_soru_koc else 0
+                    total_saat = t_sure_koc if t_sure_koc else 0.0
+                    st.success(f"🏆 Öğrencinin Toplam Çözdüğü Soru: **{total_s} Soru** | Toplam Çalışma Süresi: **{total_saat:.1f} Saat**")
+
                 # 📊 KOÇ EKRANI İÇİN ÖĞRENCİ DENEME ANALİZİ & KARNE ÖNİZLEME PANELİ
                 st.divider()
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Analizleri & Karneleri")
@@ -1177,7 +1095,6 @@ else:
                         """, unsafe_allow_html=True)
                         
                         if kd_row['dosya_adi'] != "Dosya Yok" and os.path.exists(kd_row['dosya_adi']):
-                            # İndir ve Doğrudan Tarayıcılarda Tıklanınca Açılıp Görünmesi İçin İki Ayrı Buton / Önizleme
                             col_f1, col_f2 = st.columns(2)
                             with col_f1:
                                 with open(kd_row['dosya_adi'], "rb") as f_kd:
@@ -1195,6 +1112,25 @@ else:
                         </div>
                         </div>
                         """, unsafe_allow_html=True)
+
+                # 📌 BRANŞ BAZLI WHATSAPP LİNKLERİ (Öğrencinin sınav türüne göre her ders için ayrı link)
+                st.divider()
+                st.markdown(f"### 💬 {secilen_ogr} İçin Her Dersin Ayrı Ayrı Öğretmen WhatsApp Paylaşım Linkleri")
+                st.caption("Her dersin yapılamayan sorularını ilgili branş öğretmenine gönderebilmeniz için özel WhatsApp bağlantıları.")
+
+                raw_url = st.query_params.get("host_url", "")
+                host_domain = raw_url if raw_url else "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
+
+                for d_adi in AKTIF_DERSLER:
+                    encoded_student = quote(secilen_ogr)
+                    encoded_ders = quote(d_adi)
+                    brans_link = f"{host_domain}/?ogrenci={encoded_student}&ders={encoded_ders}"
+                    wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin {d_adi} dersinde çözemediği soruları incelemeniz için branşa özel bağlantı: {brans_link}"
+                    wa_link = f"https://api.whatsapp.com/send?text={quote(wa_msg)}"
+
+                    with st.expander(f"📌 {d_adi} Öğretmeni İçin Ayrı WhatsApp Linki"):
+                        st.code(brans_link, language="text")
+                        st.link_button(f"💬 {d_adi} Öğretmenine WhatsApp İle Gönder", wa_link, use_container_width=True)
 
                 # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
                 st.divider()
@@ -1318,47 +1254,6 @@ else:
                            (secilen_ogr, aktif_koc_adi, str(datetime.date.today()), save_p_path, prog_file.name))
             conn.commit()
             st.success(f"🎉 '{prog_file.name}' dosyası {secilen_ogr} öğrencisinin paneline başarıyla yüklendi!")
-
-                # 📸 ÇÖZÜLEMEYEN SORULAR & TAM URL WHATSAPP PAYLAŞIM ALANI
-        st.divider()
-        st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
-        
-        raw_url = st.query_params.get("host_url", "")
-        if not raw_url:
-            host_domain = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
-        else:
-            host_domain = raw_url
-
-        encoded_student = quote(secilen_ogr)
-        full_share_url = f"{host_domain}/?ogrenci={encoded_student}"
-        
-        wa_msg = f"Merhaba Hocam, {secilen_ogr} öğrencimizin çözemediği ve destek beklediği soruları incelemeniz için şifresiz bağlantı adresi: {full_share_url}"
-        wa_link = f"https://api.whatsapp.com/send?text={quote(wa_msg)}"
-
-        st.markdown(f"""
-        <div class="share-link-card">
-            <div style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">💬 Öğretmene WhatsApp ile Bağlantı Gönder</div>
-            <div style="font-size: 13px; opacity: 0.95;">Aşağıdaki kutudan tam adresi kopyalayabilir veya direkt yeşil butona basarak WhatsApp sohbetine aktarabilirsiniz.</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("##### 📋 Kopyalanabilir Tam Adres Linki:")
-        st.code(full_share_url, language="text")
-
-        col_wa1, col_wa2 = st.columns([0.6, 0.4])
-        with col_wa1:
-            st.caption("💡 Bağlantıya tıklayan öğretmen herhangi bir şifre girmeden öğrencinin tüm sorularına erişir.")
-        with col_wa2:
-            st.link_button("💬 WhatsApp İle Öğretmene Gönder", wa_link, use_container_width=True)
-
-        df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
-        if not df_koc_sorular.empty:
-            for _, s_data in df_koc_sorular.iterrows():
-                st.write(f"📌 **{s_data['ders']}** - {s_data['konu']} ({s_data['tarih']})")
-                if os.path.exists(s_data['dosya_yolu']):
-                    if s_data['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')): st.image(s_data['dosya_yolu'], width=350)
-                    elif s_data['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
-                st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
 
     # ==================== 👨‍👩‍👧‍👦 VELİ TAKİP PANELİ ====================
     with main_tab3:
