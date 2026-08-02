@@ -9,6 +9,7 @@ import os
 import shutil
 from urllib.parse import quote
 from PIL import Image
+import io
 
 # Google Generative AI kütüphane kontrolü
 try:
@@ -47,7 +48,6 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
-    /* 🌙 Gece Modunda Sekme Yazılarının ve Arka Planının Net Görünmesi İçin Kesin Çözüm */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
         background: #ffffff !important;
@@ -509,7 +509,6 @@ if cursor.fetchone()[0] == 0:
 query_params = st.query_params
 link_ogrenci = query_params.get("ogrenci", None)
 
-# BANNER / BAŞLIK
 st.markdown("""
 <div style="text-align: center; padding: 10px 0 15px 0;">
     <span style="font-size: 42px;">🎓</span>
@@ -652,7 +651,6 @@ else:
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
-            # 🎯 ÜNİVERSİTE BAZLI OTOMATİK YÖK ATLAS HEDEF TAKİP VE ÖSYM BELGESİ SİMÜLATÖRÜ
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 Üniversite Bazlı YÖK Atlas Net & Başarı Sıralaması — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Seçtiğiniz üniversiteye ve bölüme ait YÖK Atlas taban/tavan netleri ve başarı sıralamaları otomatik yüklenir.")
@@ -707,7 +705,6 @@ else:
                         st.success(f"🎉 Hedefiniz {secilen_hedef_uni} Verileriyle Başarıyla Kaydedildi!\n\n🎓 **{secilen_hedef_bolum}**\n• **Üniversite Taban Net:** {otomatik_taban_net} | **Sizin Hedefiniz:** {ozel_hedef_net} Net\n• **Üniversite Taban Sıralaması:** İlk {otomatik_taban_sira} | **Sizin Hedefiniz:** {ozel_hedef_sira}")
                         st.rerun()
 
-                # 🧮 ---------------- YENİLENEN DİNAMİK HESAPLAMA MOTORU ----------------
                 st.divider()
                 st.markdown("### 🧮 ÖSYM Sonuç Belgesi Formatında Puan ve Sıralama Analizi")
                 st.caption("Her yeni veri girişinde anlık olarak güncellenen dinamik ÖSYM simülatör motoru.")
@@ -860,17 +857,15 @@ else:
                     st.divider()
                     obp_puan = st.number_input("🎓 Diploma Notunuzu (OBP) El ile Girin (50.00 - 100.00):", 50.00, 100.00, 91.00, 0.01)
 
-                    # ⚡ DİNAMİK HESAPLAMA MOTORU (Butona basılmasa bile anlık net değişimine göre güncellenir)
                     tyt_ham = 100.0 + (net_turkce * 3.3) + (net_sosyal * 3.4) + (net_mat * 3.3) + (net_fen * 3.4)
                     obp_ek = (obp_puan * 5) * 0.12
                     ham_puan_deger = 130.0 + (tyt_ham * 0.4) + (ayt_ham_puan * 0.6)
                     yerlestirme_puan_deger = ham_puan_deger + obp_ek
 
-                    # 🧠 GELİŞMİŞ YIĞILMA TABANLI DİNAMİK HESAPLAMA HESAPLAYICI
                     toplam_net = toplam_tyt_net + toplam_ayt_net
                     if toplam_net >= 130: tahmini_sira_str = "18.500"
                     elif toplam_net >= 110: tahmini_sira_str = "54.200"
-                    elif toplam_net >= 95: tahmini_sira_str = "124.500"  # <-- 63 TYT + 38.75 AYT için dinamik ve doğru aralık
+                    elif toplam_net >= 95: tahmini_sira_str = "124.500"
                     elif toplam_net >= 75: tahmini_sira_str = "198.000"
                     elif toplam_net >= 50: tahmini_sira_str = "310.000"
                     else: tahmini_sira_str = "450.000+"
@@ -917,7 +912,6 @@ else:
                     """, unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
 
-            # 📊 ÖĞRENCİ EXCEL VE HARİCİ DOSYA DERS PROGRAMI
             with tab_program:
                 st.markdown("### 📊 Haftalık Ders Programınız (Excel Çizelgesi)")
                 df_matris_ogr = pd.read_sql_query("""
@@ -947,7 +941,6 @@ else:
                             if pf_row['dosya_yolu'].lower().endswith('.pdf'):
                                 st.markdown(pdf_goster_html(pf_row['dosya_yolu']), unsafe_allow_html=True)
 
-            # 📝 GÜNLÜK ÇALIŞMA & GEÇMİŞE DÖNÜK TARİH SEÇİMİ VE TOTAL SORU ÖZETİ
             with tab_gunluk:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Soru Girişi — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("📅 İstediğiniz geçmiş bir tarihi seçerek o güne ait soru girişi yapabilirsiniz.")
@@ -990,7 +983,6 @@ else:
                     conn.commit()
                     st.success("🎉 Çalışmalarınız kaydedildi!")
 
-                # 📊 SEÇİLEN GÜNKÜ TOTAL ÇÖZÜLEN SORU MİKTARI GÖSTERGESİ
                 st.divider()
                 cursor.execute("SELECT SUM(toplam_soru) FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", (aktif_ogr, str(secilen_tarih)))
                 toplam_soru_sonuc = cursor.fetchone()[0]
@@ -1003,7 +995,6 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-            # 📊 DENEMELER & KARNE YÜKLEME VE DETAYLI KOÇ ANALİZİ
             with tab_deneme:
                 st.markdown("<h3 style='font-weight:700; font-size:18px;'>📊 Deneme Sonuçları & Detaylı Yapay Zeka Koç Analizi</h3>", unsafe_allow_html=True)
                 with st.form("deneme_form"):
@@ -1023,7 +1014,6 @@ else:
                             karne_path = os.path.join(KARNE_DIR, k_name)
                             with open(karne_path, "wb") as f: f.write(karne_dosya.getbuffer())
 
-                        # Yapay Zeka ile detaylı deneme analizi oluştur
                         AI_DENEME_RAPORU = ai_deneme_detayli_analiz_et(yayin, d_tur, toplam_net, ders_detay_ozeti)
 
                         cursor.execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu) VALUES (?, ?, ?, ?, ?, ?, ?)", 
@@ -1177,7 +1167,6 @@ else:
                         """, unsafe_allow_html=True)
                         
                         if kd_row['dosya_adi'] != "Dosya Yok" and os.path.exists(kd_row['dosya_adi']):
-                            # İndir ve Doğrudan Tarayıcılarda Tıklanınca Açılıp Görünmesi İçin İki Ayrı Buton / Önizleme
                             col_f1, col_f2 = st.columns(2)
                             with col_f1:
                                 with open(kd_row['dosya_adi'], "rb") as f_kd:
@@ -1196,16 +1185,94 @@ else:
                         </div>
                         """, unsafe_allow_html=True)
 
-                # 🗓️ GÜN GÜN SEKMELİ MÜFREDAT DERS/KONU SEÇİM ALANI
+                # 🗓️ GELİŞTİRİLMİŞ PRATİK KOÇ PROGRAMLAYICI VE EXCEL İNDİRME/YÜKLEME
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Şablonlu Ders Programlayıcı")
-                st.caption("⚡ Değiştirmek istediğiniz güne tıklayıp saati ve dersi seçin.")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Pratik Haftalık Program Yöneticisi & Excel Araçları")
+                st.caption("⚡ Koçlar için özel tasarlanmış pratik hücre düzenleme, hazır şablon yükleme ve Excel indirme/yükleme paneli.")
 
+                # 🚀 1. HIZLI ŞABLON VE EXCEL İŞLEMLERİ ÇUBUĞU
+                col_ex1, col_ex2, col_ex3 = st.columns(3)
+                
+                with col_ex1:
+                    if st.button("⚡ Standart TYT/YKS Kamp Şablonunu Uygula", use_container_width=True):
+                        varsayilan_sablon = [
+                            {"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "⚡ Paragraf + Problem", "Salı": "⚡ Paragraf + Problem", "Çarşamba": "⚡ Paragraf + Problem", "Perşembe": "⚡ Paragraf + Problem", "Cuma": "⚡ Paragraf + Problem", "Cumartesi": "TYT GENEL DENEME", "Pazar": "BRANŞ DENEMESİ"},
+                            {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "📐 TYT Matematik", "Salı": "📏 TYT Geometri", "Çarşamba": "📐 TYT Matematik", "Perşembe": "📏 TYT Geometri", "Cuma": "📐 TYT Matematik", "Cumartesi": "Deneme Analizi", "Pazar": "Haftalık Tekrar"},
+                            {"Saat Aralığı": "14:00 - 16:00", "Pazartesi": "📖 TYT Türkçe", "Salı": "🧪 TYT Kimya", "Çarşamba": "⚡ TYT Fizik", "Perşembe": "🧬 TYT Biyoloji", "Cuma": "📜 TYT Sosyal", "Cumartesi": "Soru Çözüm Kampı", "Pazar": "Dinlenme & Planlama"}
+                        ]
+                        for s_row in varsayilan_sablon:
+                            cursor.execute("""
+                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET
+                                    pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba,
+                                    persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
+                            """, (secilen_ogr, s_row["Saat Aralığı"], s_row["Pazartesi"], s_row["Salı"], s_row["Çarşamba"], s_row["Perşembe"], s_row["Cuma"], s_row["Cumartesi"], s_row["Pazar"]))
+                        conn.commit()
+                        st.success("🎉 Standart kamp şablonu başarıyla yüklendi!")
+                        st.rerun()
+
+                with col_ex2:
+                    # Excel İndirme Butonu
+                    df_indir_matris = pd.read_sql_query("""
+                        SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
+                               carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma',
+                               cumartesi AS 'Cumartesi', pazar AS 'Pazar'
+                        FROM excel_program_matris WHERE ad_soyad = ?
+                    """, conn, params=(secilen_ogr,))
+                    
+                    if not df_indir_matris.empty:
+                        output = io.BytesIO()
+                        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                            df_indir_matris.to_excel(writer, index=False, sheet_name='Ders Programi')
+                        excel_data = output.getvalue()
+                        st.download_button(
+                            label="📥 Programı Excel Olarak İndir (.xlsx)",
+                            data=excel_data,
+                            file_name=f"{secilen_ogr}_Ders_Programi.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+                    else:
+                        st.button("📥 Excel İndir (Boş)", disabled=True, use_container_width=True)
+
+                with col_ex3:
+                    # Dışarıdan Hazır Excel Yükleme
+                    yuklenen_excel_prog = st.file_uploader("📤 Excel Dosyası İçe Aktar (.xlsx)", type=["xlsx", "xls"], key=f"exc_up_{secilen_ogr}")
+                    if yuklenen_excel_prog is not None:
+                        try:
+                            df_yuklenen = pd.read_excel(yuklenen_excel_prog)
+                            for _, y_row in df_yuklenen.iterrows():
+                                cursor.execute("""
+                                    INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET
+                                        pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba,
+                                        persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
+                                """, (
+                                    secilen_ogr, 
+                                    str(y_row.get('Saat Aralığı', '09:00')), 
+                                    str(y_row.get('Pazartesi', '')), 
+                                    str(y_row.get('Salı', '')), 
+                                    str(y_row.get('Çarşamba', '')), 
+                                    str(y_row.get('Perşembe', '')), 
+                                    str(y_row.get('Cuma', '')), 
+                                    str(y_row.get('Cumartesi', '')), 
+                                    str(y_row.get('Pazar', ''))
+                                ))
+                            conn.commit()
+                            st.success("🎉 Excel programı sisteme başarıyla aktarıldı!")
+                            st.rerun()
+                        except Exception as ex:
+                            st.error(f"⚠️ Excel okuma hatası: {str(ex)}")
+
+                # 🗓️ GÜN GÜN SEKMELİ HIZLI EKLEME ALANI
+                st.divider()
                 gun_sekmeleri = st.tabs(["📅 Pazartesi", "📅 Salı", "📅 Çarşamba", "📅 Perşembe", "📅 Cuma", "📅 Cumartesi", "📅 Pazar"])
 
                 for idx, g_adi in enumerate(GUNLER):
                     with gun_sekmeleri[idx]:
-                        st.markdown(f"#### 📌 {g_adi} Günü İçin Hücre Güncelle")
+                        st.markdown(f"#### 📌 {g_adi} Günü İçin Hızlı Ders / Blok Ekle")
                         col_s1, col_s2 = st.columns(2)
                         with col_s1:
                             s_ders = st.selectbox(f"1. Ders Seçin ({g_adi}):", list(KOC_MUFREDAT.keys()) + ["--- Mola / Serbest ---", "--- Deneme Sınavı ---"], key=f"d_sec_{g_adi}")
@@ -1218,11 +1285,11 @@ else:
 
                         col_t1, col_t2 = st.columns(2)
                         with col_t1:
-                            s_saat = st.text_input(f"3. Değiştirilecek Saat Aralığı:", value="09:00 - 10:00", key=f"saat_input_{g_adi}")
+                            s_saat = st.text_input(f"3. Saat Aralığı:", value="09:00 - 11:00", key=f"saat_input_{g_adi}")
                         with col_t2:
                             s_not = st.text_input(f"4. Özel Koç Notu / Soru Hedefi:", placeholder="Örn: 25 Paragraf + 20 Problem", key=f"not_input_{g_adi}")
 
-                        if st.button(f"✏️ {g_adi} Günündeki Sadece Bu Saat Dilimini Güncelle", key=f"btn_add_{g_adi}", type="primary"):
+                        if st.button(f"✏️ {g_adi} Programına Bu Bloğu Ekle / Güncelle", key=f"btn_add_{g_adi}", type="primary"):
                             icerik = f"{s_ders}: {s_konu}"
                             if s_not: icerik += f" ({s_not})"
 
@@ -1241,9 +1308,9 @@ else:
                             st.success(f"🎉 {g_adi} günü ({s_saat}) dilimi güncellendi!")
                             st.rerun()
 
-                # 📊 TÜM HAFTALIK EXCEL MATRİSİ ÖNİZLEME VE CANLI DÜZENLEME
+                # 📊 TÜM HAFTALIK EXCEL MATRİSİ CANLI DÜZENLEME TABLOSU
                 st.divider()
-                st.markdown("### 📊 7 Günlük Kayıtlı Excel Ders Programınız")
+                st.markdown("### 📊 Canlı Haftalık Tablo Düzenleyicisi")
 
                 df_matris = pd.read_sql_query("""
                     SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı',
@@ -1258,7 +1325,7 @@ else:
                         {"Saat Aralığı": "10:00 - 10:15", "Pazartesi": "Mola", "Salı": "Mola", "Çarşamba": "Mola", "Perşembe": "Mola", "Cuma": "Mola", "Cumartesi": "Deneme Devam", "Pazar": "Deneme Devam"},
                         {"Saat Aralığı": "10:15 - 12:30", "Pazartesi": "📐 TYT Matematik: Temel Kavramlar", "Salı": "📏 TYT Geometri: Üçgenler", "Çarşamba": "📐 TYT Matematik: Üslü & Köklü", "Perşembe": "📏 TYT Geometri: Çokgenler", "Cuma": "📐 TYT Matematik: Kümeler", "Cumartesi": "Deneme Analizi", "Pazar": "Branş Deneme Analizi"},
                         {"Saat Aralığı": "12:30 - 13:30", "Pazartesi": "Öğle Yemeği & Dinlenme", "Salı": "Öğle Yemeği & Dinlenme", "Çarşamba": "Öğle Yemeği & Dinlenme", "Perşembe": "Öğle Yemeği & Dinlenme", "Cuma": "Öğle Yemeği & Dinlenme", "Cumartesi": "Öğle Yemeği & Dinlenme", "Pazar": "Öğle Yemeği & Dinlenme"},
-                        {"Saat Aralığı": "14:00 - 15:00", "Pazartesi": "📐 MATEMATİK ÖZEL DERSİ", "Salı": "🧪 TYT Kimya: Atom ve Periyodik Sistem", "Çarşamba": "📐 MATEMATİK ÖZEL DERSİ", "Perşembe": "🧪 TYT Kimya: Karışımlar", "Cuma": "📐 MATEMATİK ÖZEL DERSİ", "Cumartesi": "📐 TYT Matematik: Problemler", "Pazar": "HAFTALIK KOÇLUK DEĞERLENDİRMESİ"}
+                        {"Saat Aralığı": "14:00 - 15:00", "Pazartesi": "📐 MATEMATİK ÖZEL DERSİ", "Salı": "🧪 TYT Kimya: Atom ve Periyodik Sistem", "Çarşamba": "📐 MATEMATİK ÖZEL DERSİ", "Perşembe": "🧪 TYT Kimya: Karışımlar", "Cuma": "📐 MATEMATİK ÖZEL DERSİ", "Cumartesi": "📐 TYT Matematik: Problemler", "Pazar": "HAFTALIK KOÇLUK DEĞERLendirmesi"}
                     ]
                     df_matris = pd.DataFrame(excel_sablon)
 
@@ -1302,7 +1369,7 @@ else:
                         st.success("Tablo sıfırlandı.")
                         st.rerun()
 
-                # 📄 HARİCİ EXCEL / PDF / WORD DOSYASI YÜKLEME ALANI
+        # 📄 HARİCİ EXCEL / PDF / WORD DOSYASI YÜKLEME ALANI
         st.divider()
         st.markdown(f"### 📄 {secilen_ogr} İçin Harici Ders Programı Dosyası Yükleyin (Excel, PDF, Word)")
         prog_file = st.file_uploader(f"Hazır Program Dosyası Seçin (.xlsx, .pdf, .docx):", type=["xlsx", "xls", "pdf", "docx"], key=f"file_up_{secilen_ogr}")
@@ -1319,7 +1386,7 @@ else:
             conn.commit()
             st.success(f"🎉 '{prog_file.name}' dosyası {secilen_ogr} öğrencisinin paneline başarıyla yüklendi!")
 
-                # 📸 ÇÖZÜLEMEYEN SORULAR & TAM URL WHATSAPP PAYLAŞIM ALANI
+        # 📸 ÇÖZÜLEMEYEN SORULAR & TAM URL WHATSAPP PAYLAŞIM ALANI
         st.divider()
         st.markdown(f"### 📸 {secilen_ogr} Yapılamayan Sorular & Öğretmen Paylaşımı")
         
