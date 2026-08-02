@@ -535,6 +535,23 @@ else:
                 else:
                     st.info("Sorumlu koçunuz henüz haftalık programınızı hazırlamadı.")
 
+                st.divider()
+                st.markdown("#### 📁 Koçunuz Tarafından Yüklenen Harici Program Dosyaları (JPEG, PNG, Excel, Word, PDF)")
+                df_p_files = pd.read_sql_query("SELECT id, yukleyen, tarih, dosya_yolu, dosya_adi FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
+                
+                if df_p_files.empty:
+                    st.caption("Henüz harici formatta bir program dosyası yüklenmedi.")
+                else:
+                    for _, pf_row in df_p_files.iterrows():
+                        st.write(f"📄 **{pf_row['dosya_adi']}** (Yükleyen Koç: {pf_row['yukleyen']} - Tarih: {pf_row['tarih']})")
+                        if os.path.exists(pf_row['dosya_yolu']):
+                            with open(pf_row['dosya_yolu'], "rb") as f_b:
+                                st.download_button(f"📥 {pf_row['dosya_adi']} İndir", data=f_b, file_name=pf_row['dosya_adi'], key=f"dl_pf_{pf_row['id']}")
+                            if pf_row['dosya_yolu'].lower().endswith(('.png', '.jpg', '.jpeg')):
+                                st.image(pf_row['dosya_yolu'], width=450, caption=pf_row['dosya_adi'])
+                            elif pf_row['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(pf_row['dosya_yolu']), unsafe_allow_html=True)
+
             with tab_gunluk:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>📝 Günlük Çalışma & Soru Girişi — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 c1, c2, c3 = st.columns(3)
@@ -620,7 +637,7 @@ else:
 
                 st.divider()
                 st.markdown("#### 📜 Geçmiş Denemeleriniz ve Yapay Zeka Koç Tavsiyeleri")
-                df_ogr_denemeler = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
+                df_ogr_denemeler = pd.read_sql_query("SELECT id, tarih, yayin, tur, toplam_net, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
                 if df_ogr_denemeler.empty:
                     st.info("Henüz kaydedilmiş bir denemeniz bulunmuyor.")
                 else:
@@ -683,7 +700,7 @@ else:
                 elif "YKS" in s_turu_val: KOC_K_DERSLER = list({**TYT_KONULAR, **AYT_KONULAR}.keys())
                 else: KOC_K_DERSLER = list(LGS_KONULAR.keys())
 
-                # 📊 MÜKERRER KAYITLARI ENGELLEYEN VE TEKİLLEŞTİREREK GÖSTEREN GÜNLÜK ÇALIŞMA TABLOSU
+                # 📊 GÜNLÜK ÇALIŞMA VE SORU TAKİBİ
                 st.divider()
                 st.markdown(f"### 📈 {secilen_ogr} — Günlük Soru Çözüm ve Çalışma Takibi")
                 df_koc_gunluk = pd.read_sql_query("""
@@ -733,7 +750,7 @@ else:
                         st.markdown(kd_row['koc_notu'])
                         st.markdown("</div>", unsafe_allow_html=True)
 
-                # 📌 BRANŞ BAZLI WHATSAPP LİNKLERİ (Her ders için tamamen ayrı)
+                # 📌 BRANŞ BAZLI WHATSAPP LİNKLERİ
                 st.divider()
                 st.markdown(f"### 💬 {secilen_ogr} İçin Her Dersin Ayrı Ayrı Öğretmen WhatsApp Paylaşım Linkleri")
                 st.caption("Her dersin yapılamayan sorularını ilgili branş öğretmenine gönderebilmeniz için özel WhatsApp bağlantıları.")
@@ -752,7 +769,24 @@ else:
                         st.code(brans_link, language="text")
                         st.link_button(f"💬 {d_adi} Öğretmenine WhatsApp İle Gönder", wa_link, use_container_width=True)
 
-                # 🗓️ HAFTALIK DERS PROGRAMLAYICI
+                # 📄 KOÇ EKRANINDAN HARİCİ DERS PROGRAMI DOSYASI YÜKLEME (JPEG, PNG, EXCEL, WORD, PDF)
+                st.divider()
+                st.markdown(f"### 📄 {secilen_ogr} İçin Harici Ders Programı Dosyası Yükle (JPEG, PNG, Excel, Word, PDF)")
+                prog_file = st.file_uploader("Dosya Seçin:", type=["png", "jpg", "jpeg", "xlsx", "xls", "pdf", "docx"], key=f"file_up_{secilen_ogr}")
+                
+                if prog_file and st.button(f"📤 {prog_file.name} Dosyasını Öğrenciye Gönder", type="primary", use_container_width=True):
+                    file_ext = os.path.splitext(prog_file.name)[1]
+                    p_unique_name = f"Program_{secilen_ogr}_{datetime.date.today()}_{hashlib.md5(prog_file.name.encode()).hexdigest()[:6]}{file_ext}"
+                    save_p_path = os.path.join(PROGRAM_DIR, p_unique_name)
+                    with open(save_p_path, "wb") as f:
+                        f.write(prog_file.getbuffer())
+
+                    cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
+                                   (secilen_ogr, aktif_koc_adi, str(datetime.date.today()), save_p_path, prog_file.name))
+                    conn.commit()
+                    st.success(f"🎉 '{prog_file.name}' dosyası {secilen_ogr} öğrencisinin paneline başarıyla yüklendi!")
+
+                # 🗓️ 7 GÜNLÜK EXCEL MATRİS PROGRAMLAYICI
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Ders Programı Düzenleyici")
                 df_matris = pd.read_sql_query("""
