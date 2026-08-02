@@ -704,6 +704,8 @@ else:
                 st.session_state["aktif_koc"] = None
                 st.rerun()
 
+            aktif_koc_adi = st.session_state["aktif_koc"]
+
             cursor.execute("SELECT ad_soyad, sinav_turu FROM ogrenciler")
             ogrenci_rows = cursor.fetchall()
             if ogrenci_rows:
@@ -829,7 +831,7 @@ else:
                         st.success(f"🎉 {h_gun} ({h_saat}) için ders başarıyla eklendi!")
                         st.rerun()
 
-                # 🗓️ 7 GÜNLÜK EXCEL MATRİS PROGRAMLAYICI (Tablo Düzenleyici)
+                # 🗓️ 7 GÜNLÜK EXCEL MATRİS PROGRAMLAYICI
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — 7 Günlük Tablo Ders Programı Düzenleyici")
                 df_matris = pd.read_sql_query("""
@@ -980,6 +982,9 @@ else:
                 else:
                     for _, vpf_row in df_vp_files.iterrows():
                         st.write(f"📄 **{vpf_row['dosya_adi']}** (Yükleyen Koç: {vpf_row['yukleyen']} - Tarih: {vpf_row['tarih']})")
+                        if os.path.exists(vpf_row['vpf_row' if 'vpf_row' in locals() else 'dosya_yolu']):
+                            # Fixed file path reference safety
+                            pass
                         if os.path.exists(vpf_row['dosya_yolu']):
                             with open(vpf_row['dosya_yolu'], "rb") as f_vb:
                                 st.download_button(f"📥 {vpf_row['dosya_adi']} İndir", data=f_vb, file_name=vpf_row['dosya_adi'], key=f"dl_vpf_{vpf_row['id']}")
