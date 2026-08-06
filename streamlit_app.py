@@ -1030,7 +1030,7 @@ else:
                      }
                      t_sutun = gun_sutun_map[hedef_gun_sec]
                      
-                     # Aynı saat aralığının mükerrer oluşmasını önlemek için mevcut satırı güncelliyoruz
+                     # Mükerrerliği önlemek için mevcut kaydı güncelliyoruz
                      cursor.execute(f"""
                          INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
                          VALUES (?, ?, ?)
@@ -1041,12 +1041,8 @@ else:
                      st.rerun()
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Excel Program Tablosu")
-                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
                 
-                if df_matris.empty:
-                    df_matris = pd.DataFrame([{"Saat Aralığı": "08:00 - 09:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
-
-                # Mükerrer satırları veritabanında otomatik temizleyelim
+                # Veritabanındaki mükerrer satırları anında temizleyelim
                 cursor.execute("""
                     DELETE FROM excel_program_matris 
                     WHERE rowid NOT IN (
@@ -1054,6 +1050,11 @@ else:
                     ) AND ad_soyad = ?
                 """, (secilen_ogr, secilen_ogr))
                 conn.commit()
+
+                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
+                
+                if df_matris.empty:
+                    df_matris = pd.DataFrame([{"Saat Aralığı": "08:00 - 09:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
 
                 edited_matris = st.data_editor(
                     df_matris,
@@ -1064,7 +1065,7 @@ else:
                 )
 
                 if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
-                    # Önce tabloyu tamamen temizleyip editördekileri güncel ve tekil olarak kaydedelim
+                    # Tabloyu tamamen güncelleyelim
                     cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
                     for _, row in edited_matris.iterrows():
                         s_ar = str(row.get("Saat Aralığı", "")).strip()
@@ -1086,7 +1087,7 @@ else:
                     st.success(f"🎉 {secilen_ogr} adlı öğrencinin haftalık programı güncellendi ve kaydedildi!")
                     st.rerun()
 
-                # Belirli bir saat dilimini tamamen silmek için pratik buton alanı
+                # Saat Dilimi (Satır) Silme Paneli
                 st.markdown("---")
                 st.markdown("##### 🗑️ Saat Dilimi (Satır) Silme Paneli")
                 cursor.execute("SELECT saat_araligi FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", (secilen_ogr,))
