@@ -317,7 +317,6 @@ for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
 
 YKS_KAPSAMLI_DERS_KONULAR = EVRENSEL_DERS_KONULARI
 
-# 15'er dakikalık saat dilimleri listesi oluşturma
 STANDART_SAAT_DILIMLERI = []
 for saat in range(7, 24):
     for dakika in [0, 15, 30, 45]:
@@ -949,7 +948,6 @@ else:
 
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Koç Notları")
                 
-                # Koç deneme silme yönetimi
                 silinecek_deneme_id = st.query_params.get("sil_deneme", None)
                 if silinecek_deneme_id:
                     try:
@@ -977,7 +975,6 @@ else:
                             elif d_row['dosya_yolu'].lower().endswith('.pdf'):
                                 st.markdown(pdf_goster_html(d_row['dosya_yolu']), unsafe_allow_html=True)
                         
-                        # Koç Notu Ekleme/Düzenleme Formu
                         with st.form(f"koc_not_form_{d_row['id']}"):
                             mevcut_not = d_row['koc_notu'] if d_row['koc_notu'] else ""
                             yeni_koc_notu = st.text_area("✍️ Bu Deneme İçin Koç Değerlendirme Notu / Raporu:", value=mevcut_not, height=100)
@@ -999,9 +996,8 @@ else:
 
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 
-                # Saat ve Dakika Seçimi için Ayrı Alanlar
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
-                dakika_secenekleri = [f"{d:02d}" for d in range(0, 60, 5)] # 5'er dakikalık hassas seçim
+                dakika_secenekleri = [f"{d:02d}" for d in range(0, 60, 5)]
                 
                 c_saat1, c_dak1, c_saat2, c_dak2, c_gun = st.columns([1.1, 1.1, 1.1, 1.1, 1.6])
                 with c_saat1:
@@ -1034,14 +1030,14 @@ else:
                      }
                      t_sutun = gun_sutun_map[hedef_gun_sec]
                      
-                     # Veritabanında mükerrer satır oluşmaması için aynı saat aralığını güncelliyoruz
+                     # Aynı saat aralığının mükerrer oluşmasını önlemek için mevcut satırı güncelliyoruz
                      cursor.execute(f"""
                          INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
                          VALUES (?, ?, ?)
                          ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = ?
                      """, (secilen_ogr, yeni_saat_araligi, hucre_degeri, hucre_degeri))
                      conn.commit()
-                     st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla kaydedildi ve öğrenci paneline eklendi!")
+                     st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla kaydedildi!")
                      st.rerun()
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Excel Program Tablosu")
@@ -1049,6 +1045,15 @@ else:
                 
                 if df_matris.empty:
                     df_matris = pd.DataFrame([{"Saat Aralığı": "08:00 - 09:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
+
+                # Mükerrer satırları veritabanında otomatik temizleyelim
+                cursor.execute("""
+                    DELETE FROM excel_program_matris 
+                    WHERE rowid NOT IN (
+                        SELECT MIN(rowid) FROM excel_program_matris WHERE ad_soyad = ? GROUP BY saat_araligi
+                    ) AND ad_soyad = ?
+                """, (secilen_ogr, secilen_ogr))
+                conn.commit()
 
                 edited_matris = st.data_editor(
                     df_matris,
@@ -1059,15 +1064,14 @@ else:
                 )
 
                 if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
+                    # Önce tabloyu tamamen temizleyip editördekileri güncel ve tekil olarak kaydedelim
+                    cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
                     for _, row in edited_matris.iterrows():
                         s_ar = str(row.get("Saat Aralığı", "")).strip()
-                        if s_ar:
+                        if s_ar and s_ar != "nan":
                             cursor.execute("""
-                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                INSERT OR REPLACE INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET 
-                                    pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba, 
-                                    persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
                             """, (
                                 secilen_ogr, s_ar,
                                 str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
@@ -1079,7 +1083,21 @@ else:
                                 str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
                             ))
                     conn.commit()
-                    st.success(f"🎉 {secilen_ogr} adlı öğrencinin haftalık programı güncellendi ve paneline yansıtıldı!")
+                    st.success(f"🎉 {secilen_ogr} adlı öğrencinin haftalık programı güncellendi ve kaydedildi!")
+                    st.rerun()
+
+                # Belirli bir saat dilimini tamamen silmek için pratik buton alanı
+                st.markdown("---")
+                st.markdown("##### 🗑️ Saat Dilimi (Satır) Silme Paneli")
+                cursor.execute("SELECT saat_araligi FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", (secilen_ogr,))
+                mevcut_saatler = [r[0] for r in cursor.fetchall()]
+                if mevcut_saatler:
+                    silinecek_saat = st.selectbox("Tamamen Silinecek Saat Aralığını Seçin:", mevcut_saatler, key="silinecek_saat_secim")
+                    if st.button("🗑️ Seçilen Saat Dilimini ve Satırı Kalıcı Olarak Sil", type="secondary"):
+                        cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ? AND saat_araligi = ?", (secilen_ogr, silinecek_saat))
+                        conn.commit()
+                        st.success(f"🗑️ `{silinecek_saat}` saat dilimi kalıcı olarak silindi.")
+                        st.rerun()
 
                 st.markdown("#### 📥 Öğrencinin Programını İndir")
                 df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
