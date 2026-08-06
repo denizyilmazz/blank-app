@@ -523,7 +523,6 @@ else:
                 if not df_p.empty:
                     st.dataframe(df_p, use_container_width=True)
                     
-                    # Telefonda Kolay Açılabilmesi İçin Excel ve PDF İndirme Seçenekleri
                     col_dl1, col_dl2 = st.columns(2)
                     with col_dl1:
                         output_excel = io.BytesIO()
@@ -537,7 +536,6 @@ else:
                             use_container_width=True
                         )
                     with col_dl2:
-                        # Basit ve telefon uyumlu metin/tablo bazlı indirme alternatifi (HTML/Text tabanlı simülasyon)
                         csv_data = df_p.to_csv(index=False).encode('utf-8')
                         st.download_button(
                             label="📥 Tablo Dosyası İndir (.csv)",
@@ -749,9 +747,10 @@ else:
                     st.success("Dosya yüklendi!")
 
                 st.divider()
-                st.markdown(f"### 💬 {sec_ogr_adi} WhatsApp Paylaşım Linki")
-.                 host_url = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
-                share_url = f"{host_url}/?ogrenci={quote(sec_ogr_adi)}"
+                sec_ogr_adi_link = locals().get('secilen_ogr', 'Öğrenci')
+                host_url = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
+                share_url = f"{host_url}/?ogrenci={quote(sec_ogr_adi_link)}"
+                st.markdown(f"### 💬 {sec_ogr_adi_link} WhatsApp Paylaşım Linki")
                 st.code(share_url, language="text")
                 st.link_button("💬 WhatsApp İle Gönder", f"https://api.whatsapp.com/send?text={quote(f'Soru linki: {share_url}')}")
 
