@@ -985,8 +985,6 @@ else:
                 bugun_str = str(datetime.date.today())
                 st.markdown(f"### ⏱️ Bugünkü Çalışma Özeti ({bugun_str})")
                 df_veli_gunluk = pd.read_sql_query("SELECT ders, konu, toplam_soru, sure, verim FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", conn, params=(v_ad, bugun_str))
-                if not df_veli_gun_luk := df_veli_gunluk.empty:
-                    pass
                 if not df_veli_gunluk.empty:
                     toplam_bugun_soru = df_veli_gunluk['toplam_soru'].sum()
                     toplam_bugun_sure = df_veli_gunluk['sure'].sum()
