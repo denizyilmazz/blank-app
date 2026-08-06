@@ -355,7 +355,7 @@ HAM_DERS_KONULARI = {
         "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
     ],
     "🕌 TYT Din Kültürü": [
-        "Inanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
+        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
     ],
     "📐 AYT Matematik": [
         "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
@@ -386,13 +386,17 @@ HAM_DERS_KONULARI = {
     ]
 }
 
-# Her konunun sonuna otomatik "Soru Çözümü" ibaresini ekleyen dinamik sözlük
+# Her konuyu hem "Konu Çalışması" hem de "Soru Çözümü" olarak ayrı ayrı üreten dinamik yapı
 YKS_KAPSAMLI_DERS_KONULAR = {}
 for k, v_list in HAM_DERS_KONULARI.items():
     if "Özel Ders" in k or "Mola" in k or "Yürüyüş" in k or "Yemeği" in k:
         YKS_KAPSAMLI_DERS_KONULAR[k] = v_list
     else:
-        YKS_KAPSAMLI_DERS_KONULAR[k] = [f"{konu} — Soru Çözümü" for konu in v_list]
+        genisletilmis_liste = []
+        for konu in v_list:
+            genisletilmis_liste.append(f"{konu} — Konu Çalışması")
+            genisletilmis_liste.append(f"{konu} — Soru Çözümü")
+        YKS_KAPSAMLI_DERS_KONULAR[k] = genisletilmis_liste
 
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
@@ -408,18 +412,18 @@ YOK_ATLAS_UNIVERSTITELER = sorted(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + 
 GENEL_BOLUM_LISTESI = ["Tıp Fakültesi (SAY)", "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Hukuk Fakültesi (EA)"]
 
 TYT_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) — Soru Çözümü", "Problem (20s) — Soru Çözümü"],
-    "📖 TYT Türkçe": ["Sözcükte Anlam — Soru Çözümü", "Cümlede Anlam — Soru Çözümü", "Paragrafta Anlam ve Yapı — Soru Çözümü"],
-    "📐 TYT Matematik": ["Temel Kavramlar — Soru Çözümü", "Sayı Basamakları — Soru Çözümü", "Problemler — Soru Çözümü"]
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf — Konu Çalışması", "Paragraf — Soru Çözümü", "Problem — Konu Çalışması", "Problem — Soru Çözümü"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam — Konu Çalışması", "Sözcükte Anlam — Soru Çözümü"],
+    "📐 TYT Matematik": ["Temel Kavramlar — Konu Çalışması", "Temel Kavramlar — Soru Çözümü"]
 }
 
 AYT_KONULAR = {
-    "📐 AYT Matematik": ["Polinomlar — Soru Çözümü", "Logaritma — Soru Çözümü", "Trigonometri — Soru Çözümü", "Türev — Soru Çözümü", "İntegral — Soru Çözümü"]
+    "📐 AYT Matematik": ["Polinomlar — Konu Çalışması", "Polinomlar — Soru Çözümü"]
 }
 
 LGS_KONULAR = {
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler — Soru Çözümü", "Sözel Mantık — Soru Çözümü"],
-    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar — Soru Çözümü", "Üslü İfadeler — Soru Çözümü"]
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler — Konu Çalışması", "Fiilimsiler — Soru Çözümü"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar — Konu Çalışması", "Çarpanlar ve Katlar — Soru Çözümü"]
 }
 
 conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=20)
@@ -764,7 +768,7 @@ else:
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Dinamik Haftalık Program Oluşturucu")
-                st.caption("⚡ Ders seçtiğinizde alt konular soru çözümü ibaresiyle anında güncellenir.")
+                st.caption("⚡ Ders seçtiğinizde alt konular 'Konu Çalışması' ve 'Soru Çözümü' olarak anında güncellenir.")
 
                 tum_dersler_listesi = list(YKS_KAPSAMLI_DERS_KONULAR.keys())
                 
