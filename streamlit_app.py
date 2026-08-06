@@ -521,6 +521,36 @@ else:
             if ogrs:
                 secilen_ogr = st.selectbox("Yönetilecek Öğrenci:", ogrs)
                 
+                # ÖĞRENCİNİN YÜKLEDİĞİ SORULARI KOÇ EKRANINDA GÖSTERME ALANI
+                st.markdown(f"### 📸 {secilen_ogr} — Öğrencinin Çözemediği Sorular")
+                df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+                if df_koc_sorular.empty:
+                    st.info(f"ℹ️ {secilen_ogr} henüz soru yüklemedi.")
+                else:
+                    for _, s_row in df_koc_sorular.iterrows():
+                        st.markdown(f"**{s_row['ders']}** — {s_row['konu']} <span style='font-size:12px; color:#64748b;'>({s_row['tarih']})</span>", unsafe_allow_html=True)
+                        if os.path.exists(s_row['dosya_yolu']):
+                            if s_row['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                                st.image(s_row['dosya_yolu'], width=350)
+                            elif s_row['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(s_row['dosya_yolu']), unsafe_allow_html=True)
+                        st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_row["dosya_yolu"], s_row["ders"], s_row["konu"])}</div>', unsafe_allow_html=True)
+                        st.divider()
+
+                # ÖĞRENCİNİN DENEME SONUÇLARI VE KARNELERİNİ KOÇ EKRANINDA GÖSTERME ALANI
+                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Sonuçları")
+                df_koc_denemeler = pd.read_sql_query("SELECT yayin, toplam_net, koc_notu, tarih FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+                if df_koc_denemeler.empty:
+                    st.info(f"ℹ️ {secilen_ogr} henüz deneme sonucu kaydetmedi.")
+                else:
+                    for _, d_row in df_koc_denemeler.iterrows():
+                        st.markdown(f"""
+                        <div class="calc-card">
+                            <strong>📌 {d_row['yayin']} — Toplam Net: {d_row['toplam_net']}</strong> <span style="font-size:12px; color:#64748b;">({d_row['tarih']})</span>
+                            <div class="ai-analysis-box">{d_row['koc_notu']}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
                 st.markdown(f"### 🗓️ {secilen_ogr} — Haftalık Pratik Program Düzenleyici")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 if df_matris.empty:
@@ -540,22 +570,21 @@ else:
                     st.success("Program güncellendi!")
 
                 st.divider()
-                sec_ogr_adi = locals().get('secilen_ogr', 'Öğrenci')
-                st.markdown(f"### 📄 {sec_ogr_adi} İçin Program Dosyası Yükle (PDF / Word / Excel)")
-                p_file = st.file_uploader("Dosya Seç:", type=["pdf", "docx", "xlsx"], key=f"pf_{sec_ogr_adi}")
+                st.markdown(f"### 📄 {secilen_ogr} İçin Program Dosyası Yükle (PDF / Word / Excel)")
+                p_file = st.file_uploader("Dosya Seç:", type=["pdf", "docx", "xlsx"], key=f"pf_{secilen_ogr}")
                 if p_file and st.button("📤 Dosyayı Öğrenciye Gönder", type="primary"):
                     f_ext = os.path.splitext(p_file.name)[1]
-                    f_path = os.path.join(PROGRAM_DIR, f"Prog_{sec_ogr_adi}_{hashlib.md5(p_file.name.encode()).hexdigest()[:6]}{f_ext}")
+                    f_path = os.path.join(PROGRAM_DIR, f"Prog_{secilen_ogr}_{hashlib.md5(p_file.name.encode()).hexdigest()[:6]}{f_ext}")
                     with open(f_path, "wb") as f: f.write(p_file.getbuffer())
                     cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
-                                   (sec_ogr_adi, st.session_state["aktif_koc"], str(datetime.date.today()), f_path, p_file.name))
+                                   (secilen_ogr, st.session_state["aktif_koc"], str(datetime.date.today()), f_path, p_file.name))
                     conn.commit()
                     st.success("Dosya yüklendi!")
 
                 st.divider()
-                st.markdown(f"### 💬 {sec_ogr_adi} WhatsApp Paylaşım Linki")
+                st.markdown(f"### 💬 {secilen_ogr} WhatsApp Paylaşım Linki")
                 host_url = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
-                share_url = f"{host_url}/?ogrenci={quote(sec_ogr_adi)}"
+                share_url = f"{host_url}/?ogrenci={quote(secilen_ogr)}"
                 st.code(share_url, language="text")
                 st.link_button("💬 WhatsApp İle Gönder", f"https://api.whatsapp.com/send?text={quote(f'Soru linki: {share_url}')}")
 
