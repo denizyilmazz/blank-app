@@ -741,7 +741,7 @@ else:
                             st.download_button(f"📥 Ekstra Dosya: {f_row['dosya_adi']}", data=fb, file_name=f_row['dosya_adi'])
 
             with tab_gunluk:
-                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & Dakika Süre Takibi) — {aktif_ogr}")
+                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & 1'er Dakikalık Süre Takibi) — {aktif_ogr}")
                 s_tarih = st.date_input("Çalışma Tarihi:", datetime.date.today())
                 
                 sec_alan_giris = st.selectbox("Çalışma Alanınızı Seçiniz:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"], index=["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"].index(ogr_alan) if ogr_alan in ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"] else 0)
@@ -778,11 +778,11 @@ else:
 
                     col_gc1, col_gc2, col_gc3 = st.columns(3)
                     with col_gc1:
-                        girilen_soru = st.number_input("Çözülen Soru Sayısı:", 0, 500, 20)
+                        girilen_soru = st.number_input("Çözülen Soru Sayısı:", 0, 500, 20, step=1)
                     with col_gc2:
-                        girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Dakika):", 0, 600, 45, 5)
+                        girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Dakika):", 0, 1440, 45, step=1)
                     with col_gc3:
-                        girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Dakika):", 0, 600, 45, 5)
+                        girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Dakika):", 0, 1440, 45, step=1)
 
                     yuklenen_soru_foto = st.file_uploader("📸 Çözülemeyen Soru Fotoğrafı (İsteğe Bağlı):", type=["png", "jpg", "jpeg"])
 
@@ -1072,8 +1072,6 @@ else:
                 if p_file and st.button("📤 Dosyayı Öğrenciye Gönder", type="primary"):
                     f_ext = os.path.splitext(p_file.name)[1]
                     f_path = os.path.join(PROGRAM_DIR, f"Prog_{sec_ogr_adi}_{hashlib.md5(p_file.name.encode()).hexdigest()[:6]}{f_ext}")
-                    with open(p_file.name, "wb") as f: f.write(p_file.getbuffer()) # Düzeltilmiş dosya kaydı
-                    # Dosya yolunu doğru şekilde kaydedelim
                     with open(f_path, "wb") as f: f.write(p_file.getbuffer())
                     cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
                                    (sec_ogr_adi, st.session_state["aktif_koc"], str(datetime.date.today()), f_path, p_file.name))
