@@ -10,12 +10,6 @@ import shutil
 from urllib.parse import quote
 from PIL import Image
 
-try:
-    import google.generativeai as genai
-    GENAI_AVAILABLE = True
-except ImportError:
-    GENAI_AVAILABLE = False
-
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
     page_icon="🎓",
@@ -95,21 +89,6 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    .ai-analysis-box {
-        background: #faf5ff !important;
-        border-left: 5px solid #a855f7 !important;
-        padding: 16px 20px;
-        border-radius: 14px;
-        font-size: 14px;
-        color: #4c1d95 !important;
-        margin-top: 12px;
-        margin-bottom: 15px;
-    }
-
-    .ai-analysis-box * {
-        color: #4c1d95 !important;
-    }
-
     .yok-net-box {
         background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
         border: 2px solid #3b82f6;
@@ -139,7 +118,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-SABIT_GEMINI_API_KEY = "AIzaSy..."
 DB_FILE = "yks_kocluk.db"
 UPLOAD_DIR = "soru_yuklemeleri"
 KARNE_DIR = "karne_yuklemeleri"
@@ -190,39 +168,6 @@ def html_to_pdf_bytes(df, ogrenci_adi):
     </html>
     """
     return html_content.encode('utf-8')
-
-def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
-    api_key = SABIT_GEMINI_API_KEY.strip()
-    if GENAI_AVAILABLE and api_key and api_key.startswith("AIzaSy") and os.path.exists(file_path):
-        try:
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            if file_path.lower().endswith('.pdf'):
-                with open(file_path, "rb") as f: file_data = f.read()
-                input_part = [{"mime_type": "application/pdf", "data": file_data}]
-            else:
-                img = Image.open(file_path)
-                input_part = [img]
-            prompt = f"Sen YKS derece koçusun (Deniz Yılmaz). Bu {ders} - {konu_ipucu} sorusunu incele. Alt konularını ve çözüm yöntemini açıkla."
-            response = model.generate_content(input_part + [prompt])
-            return response.text
-        except Exception as e:
-            return f"⚠️ **Yapay Zeka Hatası:** {str(e)}"
-    return f"🔍 **Soru Konu Analizi ({ders}):**\n• **Konu:** {konu_ipucu}\n• **Koç Notu:** Temel işlem basamakları kontrol edilmelidir."
-
-def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
-    return (
-        f"📊 **Genel Performans Özeti**\n"
-        f"- **Toplam Net:** {toplam_net}\n"
-        f"- **Optik Form / Karne Durumu:** Belge başarıyla sisteme işlenmiştir.\n\n"
-        f"⭐ **Güçlü (İyi) Yönler**\n"
-        f"- Öğrenci genel oturumda istikrarlı bir soru çözüm yaklaşımı sergilemektedir.\n\n"
-        f"⚠️ **Geliştirilmesi Gereken (Kötü/Zayıf) Yönler**\n"
-        f"- Boş ve yanlış bırakılan soru sayıları detaylı incelenmeli, zaman yönetimi gözden geçirilmelidir.\n\n"
-        f"🚀 **Sonuç ve Tavsiyeler**\n"
-        f"1. Eksik olunan alt konularda nokta atışı soru çözümleri yapılmalıdır.\n"
-        f"2. Deneme analizleri haftalık periyotlarla tekrarlanmalıdır."
-    )
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -280,165 +225,80 @@ HAM_DERS_KONULARI = {
         "Grafik & Rutin Olmayan Problemler"
     ],
     "📖 TYT Türkçe": [
-        "Sözcükte Anlam",
-        "Cümlede Anlam",
-        "Paragrafta Anlam ve Yapı",
-        "Ses Bilgisi",
-        "Yazım Kuralları",
-        "Noktalama İşaretleri",
-        "Sözcük Türleri (İsim, Sıfat, Zamir vb.)",
-        "Fiiller, Ek Fiil ve Fiilimsi",
-        "Cümlenin Ögeleri ve Cümle Çeşitleri",
-        "Anlatım Bozuklukları"
+        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
+        "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", 
+        "Sözcük Türleri", "Fiiller, Ek Fiil ve Fiilimsi", "Cümlenin Ögeleri ve Cümle Çeşitleri", "Anlatım Bozuklukları"
     ],
     "📐 TYT Matematik": [
-        "Temel Kavramlar",
-        "Sayı Basamakları",
-        "Bölme ve Bölünebilme",
-        "EBOB - EKOK",
-        "Rasyonel Sayılar",
-        "Basit Eşitsizlikler",
-        "Mutlak Değer",
-        "Üslü İfadeler",
-        "Köklü İfadeler",
-        "Çarpanlara Ayırma",
-        "Oran - Orantı",
-        "Denklem Çözme",
-        "Kümeler ve Kartezyen Çarpım",
-        "Fonksiyonlar",
-        "Veri, İstatistik, Sayma ve Olasılık",
-        "Birinci Dereceden Denklemler ve Problemler"
+        "Temel Kavramlar", "Sayı Basamakları", "Bölme ve Bölünebilme", 
+        "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", 
+        "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", 
+        "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", 
+        "Kümeler ve Kartezyen Çarpım", "Fonksiyonlar", "Veri, Sayma ve Olasılık"
     ],
     "📏 TYT Geometri": [
-        "Doğruda ve Üçgende Açılar",
-        "Özel Üçgenler (İkizkenar, Eşkenar, Dik Üçgen)",
-        "Üçgende Açı-Kenar Bağıntıları & Benzerlik",
-        "Üçgende Alan",
-        "Çokgenler ve Dörtgenler (Yamuk, Paralelkenar vb.)",
-        "Özel Dörtgenler (Kare, Dikdörtgen, Deltoid, Eşkenar Dörtgen)",
-        "Çember ve Daire",
-        "Katı Cisimler (Prizma, Piramit, Küre, Silgi, Koni)",
-        "Analitik Geometri (Noktanın ve Doğrunun Analitiği)"
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", 
+        "Üçgende Açı-Kenar & Benzerlik", "Üçgende Alan", 
+        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Kare, Dikdörtgen vb.)", 
+        "Çember ve Daire", "Katı Cisimler", "Analitik Geometri"
     ],
     "⚡ TYT Fizik": [
-        "Fizik Bilimine Giriş",
-        "Madde ve Özellikleri",
-        "Basınç ve Kaldırma Kuvveti",
-        "Isı, Sıcaklık ve Genleşme",
-        "Hareket ve Kuvvet",
-        "Newton'un Hareket Yasaları",
-        "İş, Güç ve Enerji",
-        "Elektrik Akımı ve Devreler",
-        "Manyetizma",
-        "Dalgalar (Temel Dalga Özellikleri, Deprem vb.)",
-        "Optik (Aydınlanma, Gölge, Yansıma, Kırılma, Mercekler)"
+        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", 
+        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton Yasaları", 
+        "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
     ],
     "🧪 TYT Kimya": [
-        "Kimya Bilimi",
-        "Atom ve Periyodik Sistem",
-        "Türler Arası Etkileşimler (İyonik, Kovalent vb.)",
-        "Maddenin Halleri (Katı, Sıvı, Gaz, Plazma)",
-        "Kimyanın Temel Kanunları",
-        "Kimyasal Hesaplamalar (Mol Kavramı)",
-        "Karışımlar ve Çözeltiler",
-        "Asitler, Bazlar ve Tuzlar",
-        "Kimya Her Yerde"
+        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
+        "Maddenin Halleri", "Kimyanın Temel Kanunları", 
+        "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
     ],
     "🧬 TYT Biyoloji": [
-        "Canlıların Ortak Özellikleri & Temel Bileşenler",
-        "Hücre ve Organelleri",
-        "Madde Geçişleri (Difüzyon, Osmoz, Aktif Taşıma)",
-        "Hücre Bölünmeleri (Mitoz ve Eşeysiz Üreme / Mayoz ve Eşeyli Üreme)",
-        "Kalıtım ve Biyolojik Çeşitlilik",
-        "Ekoloji ve Canlıların Çevre ile İlişkileri"
+        "Canlıların Ortak Özellikleri & Temel Bileşenler", "Hücre ve Organelleri", 
+        "Madde Geçişleri", "Hücre Bölünmeleri (Mitoz / Mayoz)", 
+        "Kalıtım", "Ekoloji"
     ],
     "📜 TYT Tarih": [
-        "Tarih Bilimi",
-        "İlk Çağ Medeniyetleri",
-        "İslamiyet Tarihi ve Türklerin İslamiyet'e Kabulü",
-        "Türk Devletleri (İlk Türk Devletleri ve Osmanlı Kuruluş/Yükselme)",
-        "Osmanlı Kültür ve Medeniyeti",
-        "Milli Mücadele Dönemi (Kurtuluş Savaşı)",
-        "Atatürk İnkılap ve İlkeleri"
+        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi", 
+        "Osmanlı Kuruluş ve Yükselme", "Osmanlı Kültür ve Medeniyeti", 
+        "Milli Mücadele Dönemi", "Atatürk İnkılap ve İlkeleri"
     ],
     "🌍 TYT Coğrafya": [
-        "Doğa ve İnsan & Harita Bilgisi",
-        "Dünya'nın Şekli ve Hareketleri",
-        "İklim Bilgisi (Atmosfer, Sıcaklık, Basınç, Rüzgarlar, Yağış)",
-        "İç ve Dış Kuvvetler (Jeomorfoloji)",
-        "Nüfus ve Yerleşme",
-        "Türkiye'nin Yer şekilleri ve Beşeri Özellikleri",
-        "Doğal Afetler"
+        "Doğa ve İnsan & Harita Bilgisi", "İklim Bilgisi", 
+        "İç ve Dış Kuvvetler", "Nüfus ve Yerleşme", "Afetler"
     ],
     "🧠 TYT Felsefe": [
-        "Felsefeyi Tanıma",
-        "Bilgi Felsefesi (Epistemoloji)",
-        "Varlık Felsefesi (Ontoloji)",
-        "Ahlak Felsefesi (Etik)",
-        "Din, Siyaset ve Sanat Felsefesi"
+        "Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", 
+        "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
     ],
     "🕌 TYT Din Kültürü": [
-        "İnanç (İslam'da İman Esasları)",
-        "İbadet ve Ahlak Esasları",
-        "İslam ve Bilim, Ahlak ve Değerler",
-        "Hz. Muhammed'in Hayatı, Örnekliği ve Mesajı",
-        "İslam Düşüncesinde Yorumlar ve Mezhepler"
+        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
     ],
     "📐 AYT Matematik": [
-        "İkinci Dereceden Denklemler & Karmaşık Sayılar",
-        "Parabol ve Fonksiyon Uygulamaları",
-        "Eşitsizlikler",
-        "Trigonometri",
-        "Logaritma",
-        "Diziler ve Seriler",
-        "Limit ve Süreklilik",
-        "Türev ve Uygulamaları",
-        "İntegral ve Belirli/Belirsiz Alan Hesaplamaları"
+        "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
+        "Eşitsizlikler", "Trigonometri", "Logaritma", "Diziler", 
+        "Limit ve Süreklilik", "Türev", "İntegral ve Alan"
     ],
     "⚡ AYT Fizik": [
-        "Vektörler ve Bağıl Hareket",
-        "Dinamik (Newton Kanunları Uygulamaları)",
-        "Atışlar (Yatay ve Eğik Atış)",
-        "İş, Güç, Enerji ve İtme-Momentum",
-        "Tork, Denge ve Ağırlık Merkezi",
-        "Basit Makineler",
-        "Çembersel Hareket",
-        "Basit Harmonik Hareket",
-        "Dalga Mekaniği (Girişim, Kırınım, Doppler)",
-        "Elektrik Alan, Potansiyel ve Sığaçlar",
-        "Manyetizma ve İndüksiyon",
-        "Modern Fizik (Özel Görelilik, Kuantum, Radyoaktivite)"
+        "Vektörler & Bağıl Hareket", "Dinamik (Newton)", "Atışlar", 
+        "İş, Güç, Enerji", "İtme ve Momentum", "Tork ve Denge", 
+        "Çembersel Hareket", "Basit Harmonik Hareket", "Dalga Mekaniği", 
+        "Elektrik Alan & Potansiyel", "Manyetizma", "Modern Fizik"
     ],
     "🧪 AYT Kimya": [
-        "Modern Atom Teorisi (Kuantum Modeli)",
-        "Gazlar (İdeal Gaz Yasaları, Kinetik Teori)",
-        "Sıvı Çözeltiler ve Koligatif Özellikler",
-        "Kimyasal Tepkimelerde Enerji (Entalpi)",
-        "Kimyasal Tepkimelerde Hız",
-        "Kimyasal Denge",
-        "Sulu Çözeltilerde Denge (Asit-Baz, Hidroliz, KÇ)",
-        "Elektrokimya (Piller ve Elektroliz)",
+        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", 
+        "Kimyasal Tepkimelerde Enerji", "Hız ve Denge", 
+        "Sulu Çözeltilerde Dengeler (Asit-Baz / KÇ)", "Elektrokimya", 
         "Organik Kimya (Hidrokarbonlar ve Fonksiyonel Gruplar)"
     ],
     "🧬 AYT Biyoloji": [
-        "Sinir Sistemi ve Endokrin Sistem",
-        "Duyu Organları",
-        "Destek ve Hareket Sistemi / Sindirim / Dolaşım",
-        "Solunum, Boşaltım ve Üreme Sistemi",
-        "Nükleik Asitler (DNA/RNA) ve Protein Sentezi",
-        "Fotosentez ve Kemosentez",
-        "Hücresel Solunum (Glikoliz, Krebs, Oksidatif Fosforilasyon)",
-        "Bitki Biyolojisi (Yapı, Taşınma, Üreme)",
-        "Canlılar ve Çevre (Ekoloji ve Evrim)"
+        "Sinir ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket / Sindirim / Dolaşım", 
+        "Solunum ve Boşaltım / Üreme Sistemi", "Nükleik Asitler ve Protein Sentezi", 
+        "Fotosentez ve Solunum", "Bitki Biyolojisi"
     ],
     "📖 AYT Edebiyat": [
-        "İslamiyet Öncesi ve Geçiş Dönemi Türk Edebiyatı",
-        "Halk Edebiyatı (Aşık ve Tasavvuf Edebiyatı)",
-        "Divan Edebiyatı (Nazım Şekilleri, Sanatçılar)",
-        "Tanzimat Edebiyatı ve Servet-i Fünun",
-        "Fecr-i Ati ve Milli Edebiyat Dönemi",
-        "Cumhuriyet Dönemi Şiir",
-        "Cumhuriyet Dönemi Roman, Hikaye ve Tiyatro"
+        "İslamiyet Öncesi ve Halk Edebiyatı", "Divan Edebiyatı", 
+        "Tanzimat ve Servet-i Fünun", "Milli Edebiyat ve Cumhuriyet Dönemi Şiir", 
+        "Cumhuriyet Dönemi Roman ve Hikaye"
     ]
 }
 
@@ -577,7 +437,7 @@ CREATE TABLE IF NOT EXISTS ozel_universiteler (
 """)
 
 cursor.execute("CREATE TABLE IF NOT EXISTS koclar (kullanici_adi TEXT PRIMARY KEY, sifre TEXT)")
-cursor.execute("CREATE TABLE IF NOT EXISTS gunluk_calisma (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, soru_sayisi INTEGER DEFAULT 0, konu_anlatim_sure FLOAT DEFAULT 0.0, soru_cozum_sure FLOAT DEFAULT 0.0)")
+cursor.execute("CREATE TABLE IF NOT EXISTS gunluk_calisma (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, soru_sayisi INTEGER DEFAULT 0, konu_anlatim_sure INTEGER DEFAULT 0, soru_cozum_sure INTEGER DEFAULT 0)")
 
 try:
     cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN soru_sayisi INTEGER DEFAULT 0")
@@ -585,12 +445,12 @@ try:
 except sqlite3.OperationalError:
     pass
 try:
-    cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN konu_anlatim_sure FLOAT DEFAULT 0.0")
+    cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN konu_anlatim_sure INTEGER DEFAULT 0")
     conn.commit()
 except sqlite3.OperationalError:
     pass
 try:
-    cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN soru_cozum_sure FLOAT DEFAULT 0.0")
+    cursor.execute("ALTER TABLE gunluk_calisma ADD COLUMN soru_cozum_sure INTEGER DEFAULT 0")
     conn.commit()
 except sqlite3.OperationalError:
     pass
@@ -648,7 +508,7 @@ if link_ogrenci:
                     st.image(s_data['dosya_yolu'], width=400)
                 elif s_data['dosya_yolu'].lower().endswith('.pdf'):
                     st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
-            st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_data["dosya_yolu"], s_data["ders"], s_data["konu"])}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="ai-analysis-box">Soru İnceleme Aktif</div>', unsafe_allow_html=True)
             st.divider()
 
     if st.button("⬅️ Ana Sayfaya Dön", use_container_width=True):
@@ -881,7 +741,7 @@ else:
                             st.download_button(f"📥 Ekstra Dosya: {f_row['dosya_adi']}", data=fb, file_name=f_row['dosya_adi'])
 
             with tab_gunluk:
-                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & Süre Takibi) — {aktif_ogr}")
+                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & Dakika Süre Takibi) — {aktif_ogr}")
                 s_tarih = st.date_input("Çalışma Tarihi:", datetime.date.today())
                 
                 sec_alan_giris = st.selectbox("Çalışma Alanınızı Seçiniz:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"], index=["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"].index(ogr_alan) if ogr_alan in ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"] else 0)
@@ -920,9 +780,9 @@ else:
                     with col_gc1:
                         girilen_soru = st.number_input("Çözülen Soru Sayısı:", 0, 500, 20)
                     with col_gc2:
-                        girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Saat):", 0.0, 10.0, 1.0, 0.5)
+                        girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Dakika):", 0, 600, 45, 5)
                     with col_gc3:
-                        girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Saat):", 0.0, 10.0, 1.0, 0.5)
+                        girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Dakika):", 0, 600, 45, 5)
 
                     yuklenen_soru_foto = st.file_uploader("📸 Çözülemeyen Soru Fotoğrafı (İsteğe Bağlı):", type=["png", "jpg", "jpeg"])
 
@@ -930,7 +790,7 @@ else:
                         cursor.execute("""
                             INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure)
                             VALUES (?, ?, ?, ?, ?, ?, ?)
-                        """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, int(girilen_soru), float(girilen_konu_sure), float(girilen_cozum_sure)))
+                        """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, int(girilen_soru), int(girilen_konu_sure), int(girilen_cozum_sure)))
                         
                         if yuklenen_soru_foto:
                             ext = os.path.splitext(yuklenen_soru_foto.name)[1]
@@ -944,7 +804,7 @@ else:
                         st.success(f"🎉 Başarıyla kaydedildi! ({secilen_ders} — {secilen_konu} | {girilen_soru} Soru)")
 
                 st.markdown("#### 📋 Bugün Kaydettiğiniz Çalışmalar")
-                df_bugun_calismalar = pd.read_sql_query("SELECT ders AS 'Ders', konu AS 'Konu', soru_sayisi AS 'Soru', konu_anlatim_sure AS 'Konu Süresi (Saat)', soru_cozum_sure AS 'Çözüm Süresi (Saat)' FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", conn, params=(aktif_ogr, str(datetime.date.today())))
+                df_bugun_calismalar = pd.read_sql_query("SELECT ders AS 'Ders', konu AS 'Konu', soru_sayisi AS 'Soru', konu_anlatim_sure AS 'Konu Süresi (Dk)', soru_cozum_sure AS 'Çözüm Süresi (Dk)' FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", conn, params=(aktif_ogr, str(datetime.date.today())))
                 if not df_bugun_calismalar.empty:
                     st.dataframe(df_bugun_calismalar, use_container_width=True)
                 else:
@@ -952,7 +812,7 @@ else:
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
-                st.markdown("Deneme sonuç belgenizi veya optik formunuzu (**PDF, JPG veya PNG** formatında) buraya yükleyerek koçunuza gönderebilirsiniz. Koçunuz **Gemini Yapay Zeka Koç Asistanı** ile detaylı net ve konu analizini inceleyecektir.")
+                st.markdown("Deneme sonuç belgenizi veya optik formunuzu (**PDF, JPG veya PNG** formatında) buraya yükleyerek koçunuza gönderebilirsiniz.")
 
                 with st.form("deneme_yukleme_formu"):
                     dyayin = st.text_input("Deneme Yayın Adı (Örn: 3D Yayınları TYT Deneme):")
@@ -969,18 +829,15 @@ else:
                             with open(dosya_yolu_str, "wb") as f:
                                 f.write(yuklenen_deneme_dosya.getbuffer())
 
-                        # Gelişmiş Optik Analiz Raporu Oluşturucu
-                        ai_rapor = ai_deneme_gorseli_analiz_et(dosya_yolu_str, dyayin, dnet)
-
                         cursor.execute("""
                             INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_yolu, dosya_adi, koc_notu)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                        """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_str, dosya_adi_str, ai_rapor))
+                        """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_str, dosya_adi_str, "Koç değerlendirmesi bekleniyor."))
                         conn.commit()
-                        st.success("🎉 Deneme başarıyla koçunuza gönderildi ve detaylı koçluk analiz raporu oluşturuldu!")
+                        st.success("🎉 Deneme başarıyla koçunuza gönderildi!")
                         st.rerun()
 
-                st.info("ℹ️ Yüklediğiniz denemelerin detaylı analizleri öğretmeninizin yönetim panelinde güvenle saklanmaktadır.")
+                st.info("ℹ️ Yüklediğiniz denemeler öğretmeninizin yönetim panelinde incelenip notlandırılacaktır.")
 
             with tab_konular:
                 st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
@@ -1072,10 +929,10 @@ else:
                                 st.image(s_row['dosya_yolu'], width=350)
                             elif s_row['dosya_yolu'].lower().endswith('.pdf'):
                                 st.markdown(pdf_goster_html(s_row['dosya_yolu']), unsafe_allow_html=True)
-                        st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_row["dosya_yolu"], s_row["ders"], s_row["konu"])}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="ai-analysis-box">Soru İnceleme Aktif</div>', unsafe_allow_html=True)
                         st.divider()
 
-                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Profesyonel Koç Analiz Raporları")
+                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Koç Notları")
                 
                 # Koç deneme silme yönetimi
                 silinecek_deneme_id = st.query_params.get("sil_deneme", None)
@@ -1083,7 +940,7 @@ else:
                     try:
                         cursor.execute("DELETE FROM denemeler WHERE id = ?", (int(silinecek_deneme_id),))
                         conn.commit()
-                        st.success("🗑️ Deneme sınavı kaydı ve raporu başarıyla silindi.")
+                        st.success("🗑️ Deneme sınavı kaydı başarıyla silindi.")
                         st.query_params.clear()
                         st.rerun()
                     except Exception:
@@ -1105,9 +962,15 @@ else:
                             elif d_row['dosya_yolu'].lower().endswith('.pdf'):
                                 st.markdown(pdf_goster_html(d_row['dosya_yolu']), unsafe_allow_html=True)
                         
-                        st.markdown(f"""
-                            <div class="ai-analysis-box"><strong>🤖 Profesyonel Koç Analiz Raporu:</strong><br>{d_row['koc_notu']}</div>
-                        """, unsafe_allow_html=True)
+                        # Koç Notu Ekleme/Düzenleme Formu
+                        with st.form(f"koc_not_form_{d_row['id']}"):
+                            mevcut_not = d_row['koc_notu'] if d_row['koc_notu'] else ""
+                            yeni_koc_notu = st.text_area("✍️ Bu Deneme İçin Koç Değerlendirme Notu / Raporu:", value=mevcut_not, height=100)
+                            if st.form_submit_button("💾 Notu Kaydet / Güncelle", type="primary"):
+                                cursor.execute("UPDATE denemeler SET koc_notu = ? WHERE id = ?", (yeni_koc_notu, d_row['id']))
+                                conn.commit()
+                                st.success("🎉 Koç değerlendirme notu kaydedildi!")
+                                st.rerun()
 
                         if st.button(f"🗑️ Bu Deneme Kaydını Sil (Hatalı Yükleme)", key=f"del_deneme_{d_row['id']}"):
                             st.query_params["sil_deneme"] = str(d_row['id'])
@@ -1209,6 +1072,8 @@ else:
                 if p_file and st.button("📤 Dosyayı Öğrenciye Gönder", type="primary"):
                     f_ext = os.path.splitext(p_file.name)[1]
                     f_path = os.path.join(PROGRAM_DIR, f"Prog_{sec_ogr_adi}_{hashlib.md5(p_file.name.encode()).hexdigest()[:6]}{f_ext}")
+                    with open(p_file.name, "wb") as f: f.write(p_file.getbuffer()) # Düzeltilmiş dosya kaydı
+                    # Dosya yolunu doğru şekilde kaydedelim
                     with open(f_path, "wb") as f: f.write(p_file.getbuffer())
                     cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
                                    (sec_ogr_adi, st.session_state["aktif_koc"], str(datetime.date.today()), f_path, p_file.name))
@@ -1275,22 +1140,22 @@ else:
             df_veli_gunluk = pd.read_sql_query("SELECT ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", conn, params=(v_ad, bugun_str))
             if not df_veli_gunluk.empty:
                 toplam_bugun_soru = df_veli_gunluk['soru_sayisi'].sum()
-                toplam_bugun_sure = (df_veli_gunluk['konu_anlatim_sure'] + df_veli_gunluk['soru_cozum_sure']).sum()
+                toplam_bugun_sure_dk = (df_veli_gunluk['konu_anlatim_sure'] + df_veli_gunluk['soru_cozum_sure']).sum()
                 
                 col_v1, col_v2 = st.columns(2)
                 with col_v1:
                     st.metric("🎯 Bugün Toplam Çözülen Soru", f"{toplam_bugun_soru} Soru")
                 with col_v2:
-                    st.metric("⏳ Bugün Toplam Çalışma Süresi", f"{toplam_bugun_sure:.1f} Saat")
+                    st.metric("⏳ Bugün Toplam Çalışma Süresi", f"{toplam_bugun_sure_dk} Dakika")
                 
-                df_veli_gunluk.columns = ['Ders', 'Konu', 'Soru Sayısı', 'Konu Süresi (Saat)', 'Çözüm Süresi (Saat)']
+                df_veli_gunluk.columns = ['Ders', 'Konu', 'Soru Sayısı', 'Konu Süresi (Dk)', 'Çözüm Süresi (Dk)']
                 st.dataframe(df_veli_gunluk, use_container_width=True)
             else:
                 st.info("ℹ️ Öğrenci bugün henüz günlük çalışma kaydı girmemiş.")
 
             st.divider()
 
-            st.markdown("### 📊 Deneme Sınavı Sonuçları ve Yapay Zeka Koç Raporları")
+            st.markdown("### 📊 Deneme Sınavı Sonuçları ve Koç Değerlendirme Raporları")
             df_veli_deneme = pd.read_sql_query("SELECT tarih, yayin, toplam_net, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ad,))
             if not df_veli_deneme.empty:
                 for _, d_row in df_veli_deneme.iterrows():
