@@ -165,6 +165,33 @@ def pdf_goster_html(pdf_path):
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
+def html_to_pdf_bytes(df, ogrenci_adi):
+    # Harici kütüphane gerektirmeyen, doğrudan tarayıcıların PDF olarak kaydetmesine uygun şık HTML şablonu
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>{ogrenci_adi} - Haftalık Ders Programı</title>
+        <style>
+            body {{ font-family: 'Helvetica', Arial, sans-serif; padding: 20px; color: #0f172a; }}
+            h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
+            p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 20px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 8px 10px; text-align: center; font-size: 11px; }}
+            th {{ background-color: #0284c7; color: white; font-weight: bold; }}
+            tr:nth-child(even) {{ background-color: #f8fafc; }}
+        </style>
+    </head>
+    <body>
+        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
+        <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
+        {df.to_html(index=False, classes='table', border=0)}
+    </body>
+    </html>
+    """
+    return html_content.encode('utf-8')
+
 def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
     api_key = SABIT_GEMINI_API_KEY.strip()
     if GENAI_AVAILABLE and api_key and api_key != "AIzaSy..." and os.path.exists(file_path):
@@ -569,15 +596,16 @@ else:
                     st.dataframe(df_p, use_container_width=True, height=400)
                     
                     st.markdown("---")
-                    st.markdown("#### 📥 Programını Cihazına İndir")
-                    csv_data = df_p.to_csv(index=False).encode('utf-8')
+                    st.markdown("#### 📥 Programını PDF Olarak İndir")
+                    pdf_bytes = html_to_pdf_bytes(df_p, aktif_ogr)
                     st.download_button(
-                        label="📥 Programı İndir (.csv)",
-                        data=csv_data,
-                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.csv",
-                        mime="text/csv",
+                        label="📥 Programı PDF İndir (.html / .pdf olarak yazdır)",
+                        data=pdf_bytes,
+                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
+                        mime="text/html",
                         use_container_width=True
                     )
+                    st.caption("💡 İpucu: İndirdiğiniz dosyaya çift tıklayarak tarayıcınızda açabilir, ardından klavyeden **Ctrl + P** tuşlarına basıp **'PDF olarak kaydet'** seçeneğini seçerek kusursuz bir PDF çıktısı alabilirsiniz.")
                 else:
                     st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi. Kaydedildiği an burada görünecektir.")
 
@@ -774,14 +802,14 @@ else:
                 st.markdown("#### 📥 Öğrencinin Programını İndir")
                 df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 if not df_koc_ind.empty:
-                    csv_data_koc = df_koc_ind.to_csv(index=False).encode('utf-8')
+                    pdf_bytes_koc = html_to_pdf_bytes(df_koc_ind, secilen_ogr)
                     st.download_button(
-                        label="📥 Programı İndir (.csv)",
-                        data=csv_data_koc,
-                        file_name=f"{secilen_ogr}_Ders_Programi.csv",
-                        mime="text/csv",
+                        label="📥 Programı PDF İndir (.html / PDF olarak kaydet)",
+                        data=pdf_bytes_koc,
+                        file_name=f"{secilen_ogr}_Ders_Programi.html",
+                        mime="text/html",
                         use_container_width=True,
-                        key="koc_csv_ind"
+                        key="koc_pdf_ind"
                     )
 
                 st.divider()
