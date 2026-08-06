@@ -9,22 +9,12 @@ import os
 import shutil
 from urllib.parse import quote
 from PIL import Image
-import io
 
 try:
     import google.generativeai as genai
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
-
-try:
-    from reportlab.lib.pagesizes import letter, landscape
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib import colors
-    REPORTLAB_AVAILABLE = True
-except ImportError:
-    REPORTLAB_AVAILABLE = False
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
@@ -174,69 +164,6 @@ def pdf_goster_html(pdf_path):
         return f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="550" type="application/pdf" style="border-radius:12px; border:1px solid #cbd5e1;"></iframe>'
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
-
-def program_pdf_olustur(df, ogrenci_adi):
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
-    elements = []
-    
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'TitleStyle',
-        parent=styles['Heading1'],
-        fontName='Helvetica-Bold',
-        fontSize=16,
-        textColor=colors.HexColor('#0f172a'),
-        alignment=1,
-        spaceAfter=15
-    )
-    
-    cell_style = ParagraphStyle(
-        'CellStyle',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=8,
-        textColor=colors.HexColor('#1e293b'),
-        leading=10
-    )
-    
-    header_style = ParagraphStyle(
-        'HeaderStyle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=9,
-        textColor=colors.white,
-        alignment=1
-    )
-
-    elements.append(Paragraph(f"🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI", title_style))
-    elements.append(Spacer(1, 10))
-
-    headers = list(df.columns)
-    table_data = [[Paragraph(str(h), header_style) for h in headers]]
-
-    for _, row in df.iterrows():
-        row_cells = []
-        for val in row:
-            val_str = str(val) if pd.notna(val) else ""
-            row_cells.append(Paragraph(val_str.replace('\n', '<br/>'), cell_style))
-        table_data.append(row_cells)
-
-    col_widths = [80] + [int(700 / (len(headers) - 1))] * (len(headers) - 1)
-    t = Table(table_data, colWidths=col_widths)
-    t.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0284c7')),
-        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#cbd5e1')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-    ]))
-    
-    elements.append(t)
-    doc.build(elements)
-    buffer.seek(0)
-    return buffer.getvalue()
 
 def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
     api_key = SABIT_GEMINI_API_KEY.strip()
@@ -643,12 +570,12 @@ else:
                     
                     st.markdown("---")
                     st.markdown("#### 📥 Programını Cihazına İndir")
-                    pdf_bytes = program_pdf_olustur(df_p, aktif_ogr)
+                    csv_data = df_p.to_csv(index=False).encode('utf-8')
                     st.download_button(
-                        label="📥 PDF Olarak İndir (.pdf)",
-                        data=pdf_bytes,
-                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.pdf",
-                        mime="application/pdf",
+                        label="📥 Programı İndir (.csv)",
+                        data=csv_data,
+                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.csv",
+                        mime="text/csv",
                         use_container_width=True
                     )
                 else:
@@ -847,14 +774,14 @@ else:
                 st.markdown("#### 📥 Öğrencinin Programını İndir")
                 df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 if not df_koc_ind.empty:
-                    pdf_bytes_koc = program_pdf_olustur(df_koc_ind, secilen_ogr)
+                    csv_data_koc = df_koc_ind.to_csv(index=False).encode('utf-8')
                     st.download_button(
-                        label="📥 PDF Olarak İndir (.pdf)",
-                        data=pdf_bytes_koc,
-                        file_name=f"{secilen_ogr}_Ders_Programi.pdf",
-                        mime="application/pdf",
+                        label="📥 Programı İndir (.csv)",
+                        data=csv_data_koc,
+                        file_name=f"{secilen_ogr}_Ders_Programi.csv",
+                        mime="text/csv",
                         use_container_width=True,
-                        key="koc_pdf_ind"
+                        key="koc_csv_ind"
                     )
 
                 st.divider()
