@@ -193,8 +193,24 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-# ÖSYM ve YKS Müfredatına Uygun Eksiksiz Ders & Konu Veritabanı
+# Müfredat ve Dinlenme Aktiviteleri İçeren Kapsamlı Veritabanı
 YKS_KAPSAMLI_DERS_KONULAR = {
+    "☕ Mola & Dinlenme": [
+        "Kısa Dinlenme & Zihin Molası (10-15 dk)",
+        "Göz Dinlendirme & Su Molası",
+        "Müzik Dinleme & Rahatlama",
+        "Serbest Zaman & Sosyal Medya Molası"
+    ],
+    "🚶‍♂️ Yürüyüş & Aktivite": [
+        "Tempolu Açık Hava Yürüyüşü (30 dk)",
+        "Hafif Esneme & Pilates Hareketleri",
+        "Temiz Hava Alma & Fiziksel Aktivite"
+    ],
+    "🍲 Öğle & Akşam Yemeği": [
+        "Öğle Yemeği & Dinlenme Arası",
+        "Akşam Yemeği & Aile Zamanı",
+        "Ana Öğün & Kahve/Çay Molası"
+    ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
         "Paragraf Hız Kampı (25 Soru)", 
         "Sözel Mantık Rutini", 
@@ -631,12 +647,11 @@ else:
                         </div>
                         """, unsafe_allow_html=True)
 
-                # EXCEL TABLOSU GİBİ HÜCRELER ÜZERİNDEN SEÇİLEBİLEN HAFTALIK PROGRAM DÜZENLEYİCİ
+                # EXCEL TABLOSU GİBİ HÜCRELER ÜZERİNDEN SEÇİLEBİLEN HAFTALIK PROGRAM DÜZENLEYİCİ (MOLA VE YEMEKLER DAHİL)
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Excel Görünümlü Pratik Haftalık Program Matrisi")
-                st.caption("⚡ Saat aralığını girip her gün (Pazartesi'den Pazar'a) için üstten ders, alttan konu seçerek hücrelere anında atama yapabilirsin.")
+                st.caption("⚡ Saat aralığını girip her gün (Pazartesi'den Pazar'a) için mola, yemek, yürüyüş veya YKS ders/konu seçenekleriyle hücreleri anında doldurabilirsin.")
 
-                # Yeni Saat Aralığı Ekleme Formu
                 with st.form("saat_ekleme_formu"):
                     c_s1, c_s2 = st.columns(2)
                     with c_s1:
@@ -646,9 +661,9 @@ else:
                     
                     c_s3, c_s4 = st.columns(2)
                     with c_s3:
-                        sec_ders_matris = st.selectbox("Ders Seçin:", list(YKS_KAPSAMLI_DERS_KONULAR.keys()), key="m_ders")
+                        sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", list(YKS_KAPSAMLI_DERS_KONULAR.keys()), key="m_ders")
                     with c_s4:
-                        sec_konu_matris = st.selectbox("Konu Seçin:", YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"]), key="m_konu")
+                        sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"]), key="m_konu")
 
                     if st.form_submit_button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True):
                          hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
