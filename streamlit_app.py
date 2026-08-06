@@ -203,7 +203,137 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-# Kapsamlı YÖK Atlas Veritabanı (Üniversite & Bölüm Bazlı Taban Net, Sıralama, TYT/AYT Dağılımı)
+HAM_DERS_KONULARI = {
+    "📐 Matematik Özel Ders": [
+        "Matematik Özel Ders - Konu Anlatımı & Föyler",
+        "Matematik Özel Ders - Soru Çözüm Kampı",
+        "Matematik Özel Ders - Ödev Kontrolü & Tekrar",
+        "Matematik Özel Ders - Yeni Nesil Soru Analizi"
+    ],
+    "⚡ Fizik Özel Ders": [
+        "Fizik Özel Ders - Konu Anlatımı & Deney/Simülasyon",
+        "Fizik Özel Ders - Soru Çözüm & Formül Pratiği",
+        "Fizik Özel Ders - Ödev Kontrolü & Zor Sorular"
+    ],
+    "🧪 Kimya Özel Ders": [
+        "Kimya Özel Ders - Konu Anlatımı",
+        "Kimya Özel Ders - Soru Çözüm & Hesaplama Pratiği"
+    ],
+    "🧬 Biyoloji Özel Ders": [
+        "Biyoloji Özel Ders - Konu Anlatımı & Şekil Analizi",
+        "Biyoloji Özel Ders - Soru Çözüm Kampı"
+    ],
+    "☕ Mola & Dinlenme": [
+        "Kısa Dinlenme & Zihin Molası (10-15 dk)",
+        "Göz Dinlendirme & Su Molası",
+        "Müzik Dinleme & Rahatlama",
+        "Serbest Zaman & Sosyal Medya Molası"
+    ],
+    "🚶‍♂️ Yürüyüş & Aktivite": [
+        "Tempolu Açık Hava Yürüyüşü (30 dk)",
+        "Hafif Esneme & Pilates Hareketleri",
+        "Temiz Hava Alma & Fiziksel Aktivite"
+    ],
+    "🍲 Öğle & Akşam Yemeği": [
+        "Öğle Yemeği & Dinlenme Arası",
+        "Akşam Yemeği & Aile Zamanı",
+        "Ana Öğün & Kahve/Çay Molası"
+    ],
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
+        "Paragraf Hız Kampı (25 Soru)", "Sözel Mantık Rutini", 
+        "Yeni Nesil Problemler (20 Soru)", "Sayı-Kesir Problemleri", 
+        "Yaş & İşçi Havuz Problemleri", "Yüzde-Kar/Zarar & Karışım", 
+        "Hız & Hareket Problemleri", "Grafik & Rutin Olmayan Problemler"
+    ],
+    "📖 TYT Türkçe": [
+        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
+        "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", 
+        "Sözcük Türleri", "Fiiller & Fiilimsi", "Cümlenin Ögeleri", "Anlatım Bozuklukları"
+    ],
+    "📐 TYT Matematik": [
+        "Temel Kavramlar", "Sayı Basamakları", "Bölme ve Bölünebilme", 
+        "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", 
+        "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", 
+        "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", 
+        "Kümeler", "Fonksiyonlar", "Veri, Sayma ve Olasılık"
+    ],
+    "📏 TYT Geometri": [
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", 
+        "Üçgende Açı-Kenar & Benzerlik", "Üçgende Alan", 
+        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Kare, Dikdörtgen vb.)", 
+        "Çember ve Daire", "Katı Cisimler", "Analitik Geometri"
+    ],
+    "⚡ TYT Fizik": [
+        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", 
+        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton Yasaları", 
+        "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
+    ],
+    "🧪 TYT Kimya": [
+        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
+        "Maddenin Halleri", "Kimyanın Temel Kanunları", 
+        "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
+    ],
+    "🧬 TYT Biyoloji": [
+        "Canlıların Ortak Özellikleri & Temel Bileşenler", "Hücre ve Organelleri", 
+        "Madde Geçişleri", "Hücre Bölünmeleri (Mitoz / Mayoz)", 
+        "Kalıtım", "Ekoloji"
+    ],
+    "📜 TYT Tarih": [
+        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi", 
+        "Osmanlı Kuruluş ve Yükselme", "Osmanlı Kültür ve Medeniyeti", 
+        "Milli Mücadele Dönemi", "Atatürk İnkılap ve İlkeleri"
+    ],
+    "🌍 TYT Coğrafya": [
+        "Doğa ve İnsan & Harita Bilgisi", "İklim Bilgisi", 
+        "İç ve Dış Kuvvetler", "Nüfus ve Yerleşme", "Afetler"
+    ],
+    "🧠 TYT Felsefe": [
+        "Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", 
+        "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
+    ],
+    "🕌 TYT Din Kültürü": [
+        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
+    ],
+    "📐 AYT Matematik": [
+        "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
+        "Eşitsizlikler", "Trigonometri", "Logaritma", "Diziler", 
+        "Limit ve Süreklilik", "Türev", "İntegral ve Alan"
+    ],
+    "⚡ AYT Fizik": [
+        "Vektörler & Bağıl Hareket", "Dinamik (Newton)", "Atışlar", 
+        "İş, Güç, Enerji", "İtme ve Momentum", "Tork ve Denge", 
+        "Çembersel Hareket", "Basit Harmonik Hareket", "Dalga Mekaniği", 
+        "Elektrik Alan & Potansiyel", "Manyetizma", "Modern Fizik"
+    ],
+    "🧪 AYT Kimya": [
+        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", 
+        "Kimyasal Tepkimelerde Enerji", "Hız ve Denge", 
+        "Sulu Çözeltilerde Denge (Asit-Baz / KÇ)", "Elektrokimya", 
+        "Organik Kimya (Hidrokarbonlar ve Fonksiyonel Gruplar)"
+    ],
+    "🧬 AYT Biyoloji": [
+        "Sinir ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket / Sindirim / Dolaşım", 
+        "Solunum ve Boşaltım / Üreme Sistemi", "Nükleik Asitler ve Protein Sentezi", 
+        "Fotosentez ve Solunum", "Bitki Biyolojisi"
+    ],
+    "📖 AYT Edebiyat": [
+        "İslamiyet Öncesi ve Halk Edebiyatı", "Divan Edebiyatı", 
+        "Tanzimat ve Servet-i Fünun", "Milli Edebiyat ve Cumhuriyet Dönemi Şiir", 
+        "Cumhuriyet Dönemi Roman ve Hikaye"
+    ]
+}
+
+YKS_KAPSAMLI_DERS_KONULAR = {}
+for k, v_list in HAM_DERS_KONULARI.items():
+    if "Özel Ders" in k or "Mola" in k or "Yürüyüş" in k or "Yemeği" in k:
+        YKS_KAPSAMLI_DERS_KONULAR[k] = v_list
+    else:
+        genisletilmis_liste = []
+        for konu in v_list:
+            genisletilmis_liste.append(f"{konu} — Konu Çalışması")
+            genisletilmis_liste.append(f"{konu} — Soru Çözümü")
+        YKS_KAPSAMLI_DERS_KONULAR[k] = genisletilmis_liste
+
 YOK_ATLAS_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
         "Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tyt_net": 102.0, "ayt_net": 76.5},
@@ -456,7 +586,6 @@ else:
                     b_idx = bolum_listesi.index(curr_bolum) if curr_bolum in bolum_listesi else 0
                     secilen_hedef_bolum = st.selectbox("Hedef Bölüm:", bolum_listesi, index=b_idx)
 
-                # YÖK Atlas Verilerini Çekme
                 bolum_detay = bolum_sozlugu.get(secilen_hedef_bolum, {"taban_net": 110.0, "tavan_net": 116.0, "taban_sira": "1.500", "tyt_net": 98.0, "ayt_net": 72.0})
                 t_net = bolum_detay["taban_net"]
                 t_sira = bolum_detay["taban_sira"]
