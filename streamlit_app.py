@@ -643,27 +643,14 @@ else:
                     
                     st.markdown("---")
                     st.markdown("#### 📥 Programını Cihazına İndir")
-                    col_dl1, col_dl2 = st.columns(2)
-                    with col_dl1:
-                        output_excel = io.BytesIO()
-                        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-                            df_p.to_excel(writer, index=False, sheet_name='Ders Programi')
-                        st.download_button(
-                            label="📥 Excel Olarak İndir (.xlsx)",
-                            data=output_excel.getvalue(),
-                            file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True
-                        )
-                    with col_dl2:
-                        pdf_bytes = program_pdf_olustur(df_p, aktif_ogr)
-                        st.download_button(
-                            label="📥 PDF Olarak İndir (.pdf)",
-                            data=pdf_bytes,
-                            file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.pdf",
-                            mime="application/pdf",
-                            use_container_width=True
-                        )
+                    pdf_bytes = program_pdf_olustur(df_p, aktif_ogr)
+                    st.download_button(
+                        label="📥 PDF Olarak İndir (.pdf)",
+                        data=pdf_bytes,
+                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
                 else:
                     st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi. Kaydedildiği an burada görünecektir.")
 
@@ -860,29 +847,15 @@ else:
                 st.markdown("#### 📥 Öğrencinin Programını İndir")
                 df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 if not df_koc_ind.empty:
-                    c_ind1, c_ind2 = st.columns(2)
-                    with c_ind1:
-                        output_excel_koc = io.BytesIO()
-                        with pd.ExcelWriter(output_excel_koc, engine='openpyxl') as writer:
-                            df_koc_ind.to_excel(writer, index=False, sheet_name='Ders Programi')
-                        st.download_button(
-                            label="📥 Excel Olarak İndir (.xlsx)",
-                            data=output_excel_koc.getvalue(),
-                            file_name=f"{secilen_ogr}_Ders_Programi.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True,
-                            key="koc_excel_ind"
-                        )
-                    with c_ind2:
-                        pdf_bytes_koc = program_pdf_olustur(df_koc_ind, secilen_ogr)
-                        st.download_button(
-                            label="📥 PDF Olarak İndir (.pdf)",
-                            data=pdf_bytes_koc,
-                            file_name=f"{secilen_ogr}_Ders_Programi.pdf",
-                            mime="application/pdf",
-                            use_container_width=True,
-                            key="koc_pdf_ind"
-                        )
+                    pdf_bytes_koc = program_pdf_olustur(df_koc_ind, secilen_ogr)
+                    st.download_button(
+                        label="📥 PDF Olarak İndir (.pdf)",
+                        data=pdf_bytes_koc,
+                        file_name=f"{secilen_ogr}_Ders_Programi.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        key="koc_pdf_ind"
+                    )
 
                 st.divider()
                 sec_ogr_adi = locals().get('secilen_ogr', 'Öğrenci')
