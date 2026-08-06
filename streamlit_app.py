@@ -208,97 +208,78 @@ YKS_KAPSAMLI_DERS_KONULAR = {
     "📖 TYT Türkçe": [
         "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
         "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", 
-        "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf)", "Fiiller & Fiilimsiler", 
-        "Cümlenin Ögeleri", "Cüce Çeşitleri & Çatı", "Anlatım Bozuklukları"
+        "Sözcük Türleri", "Fiiller & Fiilimsi", "Cümlenin Ögeleri", "Anlatım Bozuklukları"
     ],
     "📐 TYT Matematik": [
         "Temel Kavramlar", "Sayı Basamakları", "Bölme ve Bölünebilme", 
         "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", 
         "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", 
-        "Çarpanlara Ayırma & Oran-Orantı", "Denklem Çözme", "Kümeler", 
-        "Fonksiyonlar", "Veri, Sayma ve Olasılık", "Polinomlar & Karma"
+        "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", 
+        "Kümeler", "Fonksiyonlar", "Veri, Sayma ve Olasılık"
     ],
     "📏 TYT Geometri": [
-        "Doğruda ve Üçgende Açılar", "Özel Üçgenler (Dik, İkizkenar, Eşkenar)", 
-        "Üçgende Açı-Kenar Bağıntıları", "Üçgende Yardımcı Elemanlar", 
-        "Üçgende Benzerlik", "Üçgende Alan", "Açıortay & Kenarortay", 
-        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Yamuk, Paralelkenar, Eşkenar Dörtgen, Dikdörtgen, Kare, Deltoid)", 
-        "Çember ve Daire", "Katı Cisimler (Prizma, Silindir, Koni, Küre)", "Analitik Geometri (Temel)"
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", 
+        "Üçgende Açı-Kenar & Benzerlik", "Üçgende Alan", 
+        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Kare, Dikdörtgen vb.)", 
+        "Çember ve Daire", "Katı Cisimler", "Analitik Geometri"
     ],
     "⚡ TYT Fizik": [
         "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", 
-        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton'un Hareket Yasaları", 
-        "İş, Güç ve Enerji", "Elektrik ve Manyetizma (Temel)", "Dalgalar", "Optik (Aydınlanma, Gölge, Yansıma, Kırılma)"
+        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton Yasaları", 
+        "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
     ],
     "🧪 TYT Kimya": [
-        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler (İyonik, Kovalent, Zayıf Etkileşimler)", 
-        "Maddenin Halleri (Katılar, Sıvılar, Gazlar)", "Doğa ve Kimya", 
-        "Kimyanın Temel Kanunları", "Kimyasal Hesaplamalar", 
-        "Karışımlar ve Çözeltiler", "Asitler, Bazlar ve Tuzlar", "Kimya Her Yerde"
+        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
+        "Maddenin Halleri", "Kimyanın Temel Kanunları", 
+        "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
     ],
     "🧬 TYT Biyoloji": [
-        "Yaşam Bilimi Biyoloji (Canlıların Ortak Özellikleri & İnorganik/Organik Bileşikler)", 
-        "Hücrenin Yapısı ve Organelleri", "Madde Geçişleri", 
-        "Hücre Bölünmeleri (Mitoz ve Eşeyli Üreme / Mayoz)", 
-        "Kalıtımın Genel İlkeleri (Mendel Genetiği)", "Ekoloji (Canlılar ve Çevre)"
+        "Canlıların Ortak Özellikleri & Temel Bileşenler", "Hücre ve Organelleri", 
+        "Madde Geçişleri", "Hücre Bölünmeleri (Mitoz / Mayoz)", 
+        "Kalıtım", "Ekoloji"
     ],
     "📜 TYT Tarih": [
-        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi ve Türklerin İslamiyet'i Kabulü", 
-        "Türk-İslam Devletleri", "Osmanlı Devleti Kuruluş ve Yükselme", 
-        "Osmanlı Kültür ve Medeniyeti", "19. Yüzyılda Osmanlı", 
-        "Milli Mücadele Dönemi (Hazırlık ve Savaşlar)", "Atatürk İnkılapları ve İlkeleri"
+        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi", 
+        "Osmanlı Kuruluş ve Yükselme", "Osmanlı Kültür ve Medeniyeti", 
+        "Milli Mücadele Dönemi", "Atatürk İnkılap ve İlkeleri"
     ],
     "🌍 TYT Coğrafya": [
-        "Doğa ve İnsan & Harita Bilgisi", "Dünya'nın Şekli ve Hareketleri", 
-        "İklim Bilgisi (Atmosfer, Sıcaklık, Basınç, Rüzgarlar, Yağış)", 
-        "Türkiye'nin İklimi", "Yeryüzünün Şekillenmesi (İç ve Dış Kuvvetler)", 
-        "Nüfus ve Yerleşme", "Ulaşım Yolları", "Afetler ve Çevre"
+        "Doğa ve İnsan & Harita Bilgisi", "İklim Bilgisi", 
+        "İç ve Dış Kuvvetler", "Nüfus ve Yerleşme", "Afetler"
     ],
     "🧠 TYT Felsefe": [
-        "Felsefeyi Tanıma", "Bilgi Felsefesi (Epistemoloji)", "Varlık Felsefesi (Ontoloji)", 
-        "Ahlak Felsefesi (Etik)", "Din Felsefesi", "Siyaset Felsefesi", "Sanat Felsefesi (Estetik)"
+        "Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", 
+        "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
     ],
     "🕌 TYT Din Kültürü": [
-        "İnanç (Allah İnancı, Ahiret vb.)", "İbadet Esasları", 
-        "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı ve Örnekliği", "İslam ve Bilim / Dinler Tarihi"
+        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
     ],
     "📐 AYT Matematik": [
-        "İkinci Dereceden Denklemler", "Karmaşık Sayılar", "Parabol", 
-        "Eşitsizlikler", "Trigonometri (Temel ve Toplam/Fark Formülleri)", 
-        "Logaritma (Özellikler ve Denklemler)", "Diziler (Aritmetik ve Geometrik)", 
-        "Limit ve Süreklilik", "Türev (Türev Alma Kuralları, Teğet, Maksimum-Minimum)", 
-        "İntegral (Belirsiz ve Belirli İntegral, Alan Hesabı)"
+        "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
+        "Eşitsizlikler", "Trigonometri", "Logaritma", "Diziler", 
+        "Limit ve Süreklilik", "Türev", "İntegral ve Alan"
     ],
     "⚡ AYT Fizik": [
-        "Vektörler ve Bağıl Hareket", "Newton Hareket Yasaları (Dinamik)", 
-        "Atışlar (Düşey Atış, Yatay Atış, Eğik Atış)", "İş, Güç ve Enerji (İleri)", 
-        "İtme ve Momentum", "Tork, Denge ve Ağırlık Merkezi", "Basit Makineler", 
-        "Çembersel Hareket", "Döner ve Titreşim Hareketi (Basit Harmonik Hareket)", 
-        "Dalga Mekaniği (Kırınım, Girişim, Doppler)", "Elektrik Alan ve Potansiyel", 
-        "Manyetizma ve İndüksiyon", "Alternatif Akım ve Transformatörler", "Modern Fizik (Özel Görelilik, Kuantum, Radyoaktivite)"
+        "Vektörler & Bağıl Hareket", "Dinamik (Newton)", "Atışlar", 
+        "İş, Güç, Enerji", "İtme ve Momentum", "Tork ve Denge", 
+        "Çembersel Hareket", "Basit Harmonik Hareket", "Dalga Mekaniği", 
+        "Elektrik Alan & Potansiyel", "Manyetizma", "Modern Fizik"
     ],
     "🧪 AYT Kimya": [
-        "Modern Atom Teorisi (Kuantum Sayıları, Elektron Dizilimi)", "Gazlar (İdeal Gaz Yasaları, Kısmi Basınç)", 
-        "Sıvı Çözeltiler ve Koligatif Özellikler", "Kimyasal Tepkimelerde Enerji (Entalpi)", 
-        "Kimyasal Tepkimelerde Hız", "Kimyasal Denge (Denge Sabiti Kc-Kp, Le Chatelier İlkesi)", 
-        "Sulu Çözeltilerde Denge (Asit-Baz Dengeleri, pH-pOH, Tampon, Çözünürlük Çarpımı - KÇ)", 
-        "Elektrokimya (Piller, Elektroliz, Korozyon)", "Organik Kimyaya Giriş (Hibritleşme, Fonksiyonel Gruplar)", 
-        "Hidrokarbonlar (Alkanlar, Alkenler, Alkinler, Aromatikler)", "Oksijenli Organik Bileşikler (Alkoller, Eterler, Karbonil Bileşikleri, Karboksilik Asitler ve Esterler)"
+        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", 
+        "Kimyasal Tepkimelerde Enerji", "Hız ve Denge", 
+        "Sulu Çözeltilerde Denge (Asit-Baz / KÇ)", "Elektrokimya", 
+        "Organik Kimya (Hidrokarbonlar ve Fonksiyonel Gruplar)"
     ],
     "🧬 AYT Biyoloji": [
-        "Sinir Sistemi ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket Sistemi", 
-        "Sindirim, Dolaşım ve Solunum Sistemi", "Boşaltım Sistemi ve Homeostazi", 
-        "Üreme Sistemi ve Embriyonik Gelişim", "Nükleik Asitler (DNA ve RNA)", 
-        "Protein Sentezi", "Canlılarda Enerji Dönüşümleri (Fotosentez ve Kemosentez)", 
-        "Hücresel Solunum (Oksijenli ve Oksijensiz Solunum, Fermantasyon)", 
-        "Bitki Biyolojisi (Kök, Gövde, Yaprak Yapısı, Taşıma ve Hareket)", "Kss, Evrim ve Ekoloji (Popülasyon Genetiği)"
+        "Sinir ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket / Sindirim / Dolaşım", 
+        "Solunum ve Boşaltım / Üreme Sistemi", "Nükleik Asitler ve Protein Sentezi", 
+        "Fotosentez ve Solunum", "Bitki Biyolojisi"
     ],
     "📖 AYT Edebiyat": [
-        "İslamiyet Öncesi Türk Edebiyatı ve Geçiş Dönemi", "Halk Edebiyatı (Aşık, Tekke, Anonim)", 
-        "Divan Edebiyatı (Nazım Şekilleri, Akımlar, Sanatçılar)", "Tanzimat Edebiyatı (1. ve 2. Dönem)", 
-        "Servet-i Fünun ve Fecr-i Ati Edebiyatı", "Milli Edebiyat Dönemi", 
-        "Cumhuriyet Dönemi Şiir (Saf Şiir, Garipçiler, İkinci Yeni vb.)", 
-        "Cumhuriyet Dönemi Roman ve Hikaye", "Tiyatro ve Edebi Sanatlar / Akımlar"
+        "İslamiyet Öncesi ve Halk Edebiyatı", "Divan Edebiyatı", 
+        "Tanzimat ve Servet-i Fünun", "Milli Edebiyat ve Cumhuriyet Dönemi Şiir", 
+        "Cumhuriyet Dönemi Roman ve Hikaye"
     ]
 }
 
@@ -650,50 +631,77 @@ else:
                         </div>
                         """, unsafe_allow_html=True)
 
-                # YENİ PRATİK 2 SATIRLI (ÜSTTE DERS, ALTTA KONU) HAFTALIK PROGRAM DÜZENLEYİCİ
+                # EXCEL TABLOSU GİBİ HÜCRELER ÜZERİNDEN SEÇİLEBİLEN HAFTALIK PROGRAM DÜZENLEYİCİ
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — Pratik 2 Satırlı Haftalık Ders Programı Oluşturucu")
-                st.caption("⚡ Saat aralığını girip üst satırdan dersi, alt satırdan ise YKS müfredatına uygun doğru konuyu anında seçebilirsin.")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Excel Görünümlü Pratik Haftalık Program Matrisi")
+                st.caption("⚡ Saat aralığını girip her gün (Pazartesi'den Pazar'a) için üstten ders, alttan konu seçerek hücrelere anında atama yapabilirsin.")
 
-                gun_secimi = st.selectbox("Programın Güncelleneceği Günü Seçin:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"])
-                
-                c_p1, c_p2 = st.columns(2)
-                with c_p1:
-                    saat_araligi_input = st.text_input("Saat Aralığı (Örn: 09:00 - 10:00):", value="09:00 - 10:00")
-                with c_p2:
-                    secilen_ders = st.selectbox("1. Satır — Ders Seçin:", list(YKS_KAPSAMLI_DERS_KONULAR.keys()))
+                # Yeni Saat Aralığı Ekleme Formu
+                with st.form("saat_ekleme_formu"):
+                    c_s1, c_s2 = st.columns(2)
+                    with c_s1:
+                        yeni_saat_araligi = st.text_input("Yeni Saat Dilimi Ekle (Örn: 09:00 - 10:00):", value="10:00 - 11:30")
+                    with c_s2:
+                        hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"])
+                    
+                    c_s3, c_s4 = st.columns(2)
+                    with c_s3:
+                        sec_ders_matris = st.selectbox("Ders Seçin:", list(YKS_KAPSAMLI_DERS_KONULAR.keys()), key="m_ders")
+                    with c_s4:
+                        sec_konu_matris = st.selectbox("Konu Seçin:", YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"]), key="m_konu")
 
-                mevcut_konu_listesi = YKS_KAPSAMLI_DERS_KONULAR.get(secilen_ders, ["Genel Çalışma"])
-                secilen_konu = st.selectbox("2. Satır — Konu Seçin:", mevcut_konu_listesi)
+                    if st.form_submit_button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True):
+                         hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
+                         gun_sutun_map = {
+                             "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                             "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                         }
+                         t_sutun = gun_sutun_map[hedef_gun_sec]
+                         cursor.execute(f"""
+                             INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
+                             VALUES (?, ?, ?)
+                             ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = ?
+                         """, (secilen_ogr, yeni_saat_araligi, hucre_degeri, hucre_degeri))
+                         conn.commit()
+                         st.success(f"🎉 {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla güncellendi!")
+                         st.rerun()
 
-                ozel_not_ek = st.text_input("Ekstra Açıklama / Soru Hedefi (İsteğe Bağlı):", placeholder="Örn: 30 Soru çözülecek")
-
-                if st.button("➕ Bu Ders Bloğunu Haftalık Programa Ekle / Güncelle", type="primary", use_container_width=True):
-                    hucre_degeri = f"{secilen_ders}\n↳ {secilen_konu}"
-                    if ozel_not_ek:
-                        hucre_degeri += f" ({ozel_not_ek})"
-
-                    gun_sutun_map = {
-                        "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
-                        "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
-                    }
-                    hedef_sutun = gun_sutun_map[gun_secimi]
-
-                    cursor.execute(f"""
-                        INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {hedef_sutun})
-                        VALUES (?, ?, ?)
-                        ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {hedef_sutun} = ?
-                    """, (secilen_ogr, saat_araligi_input, hucre_degeri, hucre_degeri))
-                    conn.commit()
-                    st.success(f"🎉 {secilen_ogr} için {gun_secimi} günü ({saat_araligi_input}) programı güncellendi!")
-                    st.rerun()
-
-                st.markdown("#### 📋 Öğrencinin Güncel Haftalık Program Matrisi")
+                st.markdown("#### 📊 Canlı Excel Program Tablosu (Doğrudan Üzerinden Düzenleyebilirsin)")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
-                if not df_matris.empty:
-                    st.dataframe(df_matris, use_container_width=True, height=350)
-                else:
-                    st.info("Bu öğrenci için henüz program bloğu eklenmemiş.")
+                
+                if df_matris.empty:
+                    df_matris = pd.DataFrame([{"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
+
+                edited_matris = st.data_editor(
+                    df_matris,
+                    num_rows="dynamic",
+                    use_container_width=True,
+                    height=400,
+                    key=f"excel_matris_editor_{secilen_ogr}"
+                )
+
+                if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
+                    for _, row in edited_matris.iterrows():
+                        s_ar = str(row.get("Saat Aralığı", "")).strip()
+                        if s_ar:
+                            cursor.execute("""
+                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET 
+                                    pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba, 
+                                    persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
+                            """, (
+                                secilen_ogr, s_ar,
+                                str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
+                                str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
+                                str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
+                                str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
+                                str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
+                                str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
+                                str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
+                            ))
+                    conn.commit()
+                    st.success("🎉 Haftalık program tablosu güncellendi!")
 
                 st.divider()
                 sec_ogr_adi = locals().get('secilen_ogr', 'Öğrenci')
