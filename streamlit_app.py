@@ -222,12 +222,25 @@ def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
             else:
                 img = Image.open(file_path)
                 input_part = [img]
-            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Bu öğrencinin '{yayin'}' adlı deneme sonuç belgesini/optik formunu analiz et. Toplam Net: {toplam_net}. Öğrencinin hangi derslerde ve hangi konularda iyi olduğunu, hangi konularda zayıf/eksiği olduğunu madde madde analiz et ve koç için yönlendirici geri bildirim ver."
+            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Bu öğrencinin '{yayin}' adlı deneme sonuç belgesini/optik formunu analiz et. Toplam Net: {toplam_net}. Öğrencinin hangi derslerde ve hangi konularda iyi olduğunu, hangi konularda zayıf/eksiği olduğunu madde madde analiz et ve koç için yönlendirici geri bildirim ver."
             response = model.generate_content(input_part + [prompt])
             return response.text
         except Exception as e:
             return f"⚠️ **Yapay Zeka Deneme Analiz Hatası:** {str(e)}"
     return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Geri Bildirim:** Yüklenen karne/belge üzerinden genel net analizi yapılmıştır. Eksik konulara odaklanılmalıdır."
+
+def ai_deneme_detayli_analiz_et(yayin, tur, toplam_net, ders_netleri_ozeti):
+    api_key = SABIT_GEMINI_API_KEY.strip()
+    if GENAI_AVAILABLE and api_key and api_key != "AIzaSy...":
+        try:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin '{yayin}' adlı {tur} sonucunu analiz et. Toplam Net: {toplam_net}. Net dağılımı: {ders_netleri_ozeti}. Eksik konuları ve tavsiyeleri açıkla."
+            response = model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            return f"⚠️ **Yapay Zeka Analiz Hatası:** {str(e)}"
+    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Tavsiye:** Eksik konuları tekrar etmelisin."
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -465,7 +478,6 @@ except sqlite3.OperationalError:
 cursor.execute("CREATE TABLE IF NOT EXISTS yapilamayan_sorular (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, dosya_yolu TEXT, dosya_adi TEXT)")
 cursor.execute("CREATE TABLE IF NOT EXISTS denemeler (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, yayin TEXT, tur TEXT, toplam_net FLOAT, dosya_yolu TEXT DEFAULT '', dosya_adi TEXT DEFAULT '', koc_notu TEXT DEFAULT '')")
 
-# Deneme tablosu sütun kontrolleri
 try:
     cursor.execute("ALTER TABLE denemeler ADD COLUMN dosya_yolu TEXT DEFAULT ''")
     conn.commit()
@@ -827,7 +839,6 @@ else:
                             with open(dosya_yolu_str, "wb") as f:
                                 f.write(yuklenen_deneme_dosya.getbuffer())
 
-                        # Gemini Yapay Zeka Analizi
                         if yuklenen_deneme_dosya:
                             ai_rapor = ai_deneme_gorseli_analiz_et(dosya_yolu_str, dyayin, dnet)
                         else:
@@ -932,7 +943,7 @@ else:
                             st.success(f"🎉 '{y_uni} - {y_bolum}' başarıyla sisteme eklendi!")
                             st.rerun()
                         else:
-                            st.error("⚠️ Üniversite dan bölüm adını boş bırakmayın!")
+                            st.error("⚠️ Üniversite ve bölüm adını boş bırakmayın!")
 
             cursor.execute("SELECT ad_soyad FROM ogrenciler")
             ogrs = [row[0] for row in cursor.fetchall()]
