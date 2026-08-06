@@ -136,6 +136,16 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         margin-top: 15px;
     }
+
+    .program-header-box {
+        background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -199,7 +209,7 @@ def program_pdf_olustur(df, ogrenci_adi):
         alignment=1
     )
 
-    elements.append(Paragraph(f"🎓 YKS KOÇLUK — {ogrenci_adi.upper()} HAFTALIK DERS PROGRAMI", title_style))
+    elements.append(Paragraph(f"🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI", title_style))
     elements.append(Spacer(1, 10))
 
     headers = list(df.columns)
@@ -386,7 +396,6 @@ HAM_DERS_KONULARI = {
     ]
 }
 
-# Her konuyu hem "Konu Çalışması" hem de "Soru Çözümü" olarak ayrı ayrı üreten dinamik yapı
 YKS_KAPSAMLI_DERS_KONULAR = {}
 for k, v_list in HAM_DERS_KONULARI.items():
     if "Özel Ders" in k or "Mola" in k or "Yürüyüş" in k or "Yemeği" in k:
@@ -621,11 +630,19 @@ else:
                         st.rerun()
 
             with tab_program:
-                st.markdown("### 📊 Haftalık Ders Programınız")
+                st.markdown(f"""
+                <div class="program-header-box">
+                    <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
+                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Koçunuz tarafından özel olarak hazırlanan haftalık çalışma planınız aşağıdadır.</p>
+                </div>
+                """, unsafe_allow_html=True)
+
                 df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
                 if not df_p.empty:
-                    st.dataframe(df_p, use_container_width=True)
+                    st.dataframe(df_p, use_container_width=True, height=400)
                     
+                    st.markdown("---")
+                    st.markdown("#### 📥 Programını Cihazına İndir")
                     col_dl1, col_dl2 = st.columns(2)
                     with col_dl1:
                         output_excel = io.BytesIO()
@@ -634,7 +651,7 @@ else:
                         st.download_button(
                             label="📥 Excel Olarak İndir (.xlsx)",
                             data=output_excel.getvalue(),
-                            file_name=f"{aktif_ogr}_Ders_Programi.xlsx",
+                            file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             use_container_width=True
                         )
@@ -643,18 +660,18 @@ else:
                         st.download_button(
                             label="📥 PDF Olarak İndir (.pdf)",
                             data=pdf_bytes,
-                            file_name=f"{aktif_ogr}_Ders_Programi.pdf",
+                            file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.pdf",
                             mime="application/pdf",
                             use_container_width=True
                         )
                 else:
-                    st.info("Koçunuz henüz haftalık programınızı oluşturmadı.")
+                    st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi. Kaydedildiği an burada görünecektir.")
 
                 df_dosyalar = pd.read_sql_query("SELECT dosya_adi, dosya_yolu FROM program_dosyalari WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
                 for _, f_row in df_dosyalar.iterrows():
                     if os.path.exists(f_row['dosya_yolu']):
                         with open(f_row['dosya_yolu'], "rb") as fb:
-                            st.download_button(f"📥 {f_row['dosya_adi']} İndir", data=fb, file_name=f_row['dosya_adi'])
+                            st.download_button(f"📥 Ekstra Dosya: {f_row['dosya_adi']}", data=fb, file_name=f_row['dosya_adi'])
 
             with tab_gunluk:
                 st.markdown(f"### 📝 Günlük Çalışma Girişi — {aktif_ogr}")
@@ -681,7 +698,7 @@ else:
                     st.success("Çalışmalarınız başarıyla kaydedildi!")
 
             with tab_deneme:
-                st.markdown("### 📊 Denemeler & Yapay Zeka Koç Analizi")
+                st.markdown(f"### 📊 Denemeler & Yapay Zeka Koç Analizi — {aktif_ogr}")
                 with st.form("deneme_ogr"):
                     dyayin = st.text_input("Yayın Adı:")
                     dnet = st.number_input("Toplam Net:", 0.0, float(MAX_NET_LIMIT), 75.0)
@@ -767,8 +784,8 @@ else:
                         """, unsafe_allow_html=True)
 
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — Dinamik Haftalık Program Oluşturucu")
-                st.caption("⚡ Ders seçtiğinizde alt konular 'Konu Çalışması' ve 'Soru Çözümü' olarak anında güncellenir.")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
+                st.caption("⚡ Ders seçtiğinizde alt konular 'Konu Çalışması' ve 'Soru Çözümü' olarak anında güncellenir. Kaydettiğiniz an öğrenci panelinde kişiye özel olarak görünür.")
 
                 tum_dersler_listesi = list(YKS_KAPSAMLI_DERS_KONULAR.keys())
                 
@@ -800,10 +817,10 @@ else:
                          ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = ?
                      """, (secilen_ogr, yeni_saat_araligi, hucre_degeri, hucre_degeri))
                      conn.commit()
-                     st.success(f"🎉 {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla güncellendi!")
+                     st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla kaydedildi ve öğrenci paneline eklendi!")
                      st.rerun()
 
-                st.markdown("#### 📊 Canlı Excel Program Tablosu")
+                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Excel Program Tablosu")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 
                 if df_matris.empty:
@@ -838,7 +855,34 @@ else:
                                 str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
                             ))
                     conn.commit()
-                    st.success("🎉 Haftalık program tablosu güncellendi!")
+                    st.success(f"🎉 {secilen_ogr} adlı öğrencinin haftalık programı güncellendi ve paneline yansıtıldı!")
+
+                st.markdown("#### 📥 Öğrencinin Programını İndir")
+                df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+                if not df_koc_ind.empty:
+                    c_ind1, c_ind2 = st.columns(2)
+                    with c_ind1:
+                        output_excel_koc = io.BytesIO()
+                        with pd.ExcelWriter(output_excel_koc, engine='openpyxl') as writer:
+                            df_koc_ind.to_excel(writer, index=False, sheet_name='Ders Programi')
+                        st.download_button(
+                            label="📥 Excel Olarak İndir (.xlsx)",
+                            data=output_excel_koc.getvalue(),
+                            file_name=f"{secilen_ogr}_Ders_Programi.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True,
+                            key="koc_excel_ind"
+                        )
+                    with c_ind2:
+                        pdf_bytes_koc = program_pdf_olustur(df_koc_ind, secilen_ogr)
+                        st.download_button(
+                            label="📥 PDF Olarak İndir (.pdf)",
+                            data=pdf_bytes_koc,
+                            file_name=f"{secilen_ogr}_Ders_Programi.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            key="koc_pdf_ind"
+                        )
 
                 st.divider()
                 sec_ogr_adi = locals().get('secilen_ogr', 'Öğrenci')
