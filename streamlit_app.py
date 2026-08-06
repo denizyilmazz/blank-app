@@ -166,7 +166,6 @@ def pdf_goster_html(pdf_path):
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
 def html_to_pdf_bytes(df, ogrenci_adi):
-    # Harici kütüphane gerektirmeyen, doğrudan tarayıcıların PDF olarak kaydetmesine uygun şık HTML şablonu
     html_content = f"""
     <!DOCTYPE html>
     <html lang="tr">
@@ -482,7 +481,15 @@ else:
                     st.session_state["motivasyon_goster"] = False
                     st.rerun()
         
+        # Oturum kontrolü (Beni hatırla desteği ile)
         aktif_ogr = st.session_state.get("aktif_ogrenci", None)
+        if not aktif_ogr:
+            hatirlanan_ogr = st.query_params.get("hatirla_ogr", None)
+            if hatirlanan_ogr:
+                cursor.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = ?", (hatirlanan_ogr,))
+                if cursor.fetchone():
+                    st.session_state["aktif_ogrenci"] = hatirlanan_ogr
+                    aktif_ogr = hatirlanan_ogr
 
         if not aktif_ogr:
             st.markdown("<h3 style='font-weight:700; font-size:18px;'>👨‍🎓 Öğrenci Giriş & Kayıt Paneli</h3>", unsafe_allow_html=True)
@@ -492,12 +499,15 @@ else:
                 with st.form("ogrenci_giris_formu"):
                     login_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
                     login_sifre = st.text_input("Şifre / PIN:", type="password")
+                    beni_hatirla_ogr = st.checkbox("Beni Hatırla")
                     if st.form_submit_button("Giriş Yap", type="primary", use_container_width=True):
                         if login_ad and login_sifre:
                             cursor.execute("SELECT sifre FROM ogrenciler WHERE ad_soyad = ?", (login_ad,))
                             usr = cursor.fetchone()
                             if usr and verify_hash(login_sifre, usr[0]):
                                 st.session_state["aktif_ogrenci"] = login_ad
+                                if beni_hatirla_ogr:
+                                    st.query_params["hatirla_ogr"] = login_ad
                                 st.rerun()
                             else:
                                 st.error("❌ Hatalı ad veya şifre!")
@@ -532,6 +542,8 @@ else:
             with col_o_head2:
                 if st.button("🚪 ÇIKIŞ YAP", key="ogr_logout_btn", use_container_width=True):
                     st.session_state["aktif_ogrenci"] = None
+                    if "hatirla_ogr" in st.query_params:
+                        del st.query_params["hatirla_ogr"]
                     st.rerun()
 
             if "TYT (Sadece" in ogr_sinav: AKTIF_KONULAR = TYT_KONULAR
@@ -596,16 +608,15 @@ else:
                     st.dataframe(df_p, use_container_width=True, height=400)
                     
                     st.markdown("---")
-                    st.markdown("#### 📥 Programını PDF Olarak İndir")
-                    pdf_bytes = html_to_pdf_bytes(df_p, aktif_ogr)
+                    st.markdown("#### 📥 Programını Cihazına İndir")
+                    csv_data = df_p.to_csv(index=False).encode('utf-8')
                     st.download_button(
-                        label="📥 Programı PDF İndir (.html / .pdf olarak yazdır)",
-                        data=pdf_bytes,
-                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
-                        mime="text/html",
+                        label="📥 Programı İndir (.csv)",
+                        data=csv_data,
+                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.csv",
+                        mime="text/csv",
                         use_container_width=True
                     )
-                    st.caption("💡 İpucu: İndirdiğiniz dosyaya çift tıklayarak tarayıcınızda açabilir, ardından klavyeden **Ctrl + P** tuşlarına basıp **'PDF olarak kaydet'** seçeneğini seçerek kusursuz bir PDF çıktısı alabilirsiniz.")
                 else:
                     st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi. Kaydedildiği an burada görünecektir.")
 
@@ -674,22 +685,35 @@ else:
 
     with main_tab2:
         st.markdown("## 👨‍🏫 Koç Yönetim Paneli")
+        
+        # Koç oturumu kontrolü (Beni hatırla desteği ile)
         if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
+        if not st.session_state["aktif_koc"]:
+            hatirlanan_koc = st.query_params.get("hatirla_koc", None)
+            if hatirlanan_koc:
+                cursor.execute("SELECT kullanici_adi FROM koclar WHERE kullanici_adi = ?", (hatirlanan_koc,))
+                if cursor.fetchone():
+                    st.session_state["aktif_koc"] = hatirlanan_koc
 
         if not st.session_state["aktif_koc"]:
             with st.form("koc_giris"):
                 k_ad = st.text_input("Koç Kullanıcı Adı:")
                 k_sif = st.text_input("Şifre:", type="password")
+                beni_hatirla_koc = st.checkbox("Beni Hatırla", key="bh_koc")
                 if st.form_submit_button("Giriş Yap", type="primary"):
                     cursor.execute("SELECT sifre FROM koclar WHERE kullanici_adi = ?", (k_ad,))
                     r = cursor.fetchone()
                     if r and verify_hash(k_sif, r[0]):
                         st.session_state["aktif_koc"] = k_ad
+                        if beni_hatirla_koc:
+                            st.query_params["hatirla_koc"] = k_ad
                         st.rerun()
                     else: st.error("Hatalı!")
         else:
             if st.button("🚪 ÇIKIŞ YAP", key="koc_out"):
                 st.session_state["aktif_koc"] = None
+                if "hatirla_koc" in st.query_params:
+                    del st.query_params["hatirla_koc"]
                 st.rerun()
 
             cursor.execute("SELECT ad_soyad FROM ogrenciler")
@@ -802,14 +826,14 @@ else:
                 st.markdown("#### 📥 Öğrencinin Programını İndir")
                 df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 if not df_koc_ind.empty:
-                    pdf_bytes_koc = html_to_pdf_bytes(df_koc_ind, secilen_ogr)
+                    csv_data_koc = df_koc_ind.to_csv(index=False).encode('utf-8')
                     st.download_button(
-                        label="📥 Programı PDF İndir (.html / PDF olarak kaydet)",
-                        data=pdf_bytes_koc,
-                        file_name=f"{secilen_ogr}_Ders_Programi.html",
-                        mime="text/html",
+                        label="📥 Programı İndir (.csv)",
+                        data=csv_data_koc,
+                        file_name=f"{secilen_ogr}_Ders_Programi.csv",
+                        mime="text/csv",
                         use_container_width=True,
-                        key="koc_pdf_ind"
+                        key="koc_csv_ind"
                     )
 
                 st.divider()
