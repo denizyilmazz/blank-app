@@ -266,8 +266,7 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-# Özel Dersler, Aktiviteler ve YKS Müfredatını İçeren Kapsamlı Veritabanı
-YKS_KAPSAMLI_DERS_KONULAR = {
+HAM_DERS_KONULARI = {
     "📐 Matematik Özel Ders": [
         "Matematik Özel Ders - Konu Anlatımı & Föyler",
         "Matematik Özel Ders - Soru Çözüm Kampı",
@@ -356,7 +355,7 @@ YKS_KAPSAMLI_DERS_KONULAR = {
         "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
     ],
     "🕌 TYT Din Kültürü": [
-        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
+        "Inanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
     ],
     "📐 AYT Matematik": [
         "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
@@ -387,6 +386,14 @@ YKS_KAPSAMLI_DERS_KONULAR = {
     ]
 }
 
+# Her konunun sonuna otomatik "Soru Çözümü" ibaresini ekleyen dinamik sözlük
+YKS_KAPSAMLI_DERS_KONULAR = {}
+for k, v_list in HAM_DERS_KONULARI.items():
+    if "Özel Ders" in k or "Mola" in k or "Yürüyüş" in k or "Yemeği" in k:
+        YKS_KAPSAMLI_DERS_KONULAR[k] = v_list
+    else:
+        YKS_KAPSAMLI_DERS_KONULAR[k] = [f"{konu} — Soru Çözümü" for konu in v_list]
+
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
         "Computer Engineering / Bilgisayar Mühendisliği (SAY)": {"taban_net": 113.5, "tavan_net": 118.5, "taban_sira": "520", "tavan_sira": "15"},
@@ -401,18 +408,18 @@ YOK_ATLAS_UNIVERSTITELER = sorted(list(YOK_ATLAS_UNI_BOLUM_VERITABANI.keys()) + 
 GENEL_BOLUM_LISTESI = ["Tıp Fakültesi (SAY)", "Computer Engineering / Bilgisayar Mühendisliği (SAY)", "Hukuk Fakültesi (EA)"]
 
 TYT_KONULAR = {
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) + Problem (20s) Günlük Rutin"],
-    "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı"],
-    "📐 TYT Matematik": ["Temel Kavramlar", "Sayı Basamakları", "Problemler"]
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf (25s) — Soru Çözümü", "Problem (20s) — Soru Çözümü"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam — Soru Çözümü", "Cümlede Anlam — Soru Çözümü", "Paragrafta Anlam ve Yapı — Soru Çözümü"],
+    "📐 TYT Matematik": ["Temel Kavramlar — Soru Çözümü", "Sayı Basamakları — Soru Çözümü", "Problemler — Soru Çözümü"]
 }
 
 AYT_KONULAR = {
-    "📐 AYT Matematik": ["Polinomlar", "Logaritma", "Trigonometri", "Türev", "İntegral"]
+    "📐 AYT Matematik": ["Polinomlar — Soru Çözümü", "Logaritma — Soru Çözümü", "Trigonometri — Soru Çözümü", "Türev — Soru Çözümü", "İntegral — Soru Çözümü"]
 }
 
 LGS_KONULAR = {
-    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler", "Sözel Mantık"],
-    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar", "Üslü İfadeler"]
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler — Soru Çözümü", "Sözel Mantık — Soru Çözümü"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar — Soru Çözümü", "Üslü İfadeler — Soru Çözümü"]
 }
 
 conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=20)
@@ -757,9 +764,8 @@ else:
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Dinamik Haftalık Program Oluşturucu")
-                st.caption("⚡ Ders seçtiğinizde alt konular anında güncellenir.")
+                st.caption("⚡ Ders seçtiğinizde alt konular soru çözümü ibaresiyle anında güncellenir.")
 
-                # DİNAMİK SEÇİM ALANI (st.selectbox değerleri anında state üzerinden tetiklenir)
                 tum_dersler_listesi = list(YKS_KAPSAMLI_DERS_KONULAR.keys())
                 
                 c_s1, c_s2 = st.columns(2)
@@ -772,7 +778,6 @@ else:
                 with c_s3:
                     sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
                 
-                # Dinamik olarak seçilen derse ait alt konuları çekiyoruz
                 mevcut_alt_konular = YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"])
                 
                 with c_s4:
