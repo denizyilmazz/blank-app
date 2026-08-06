@@ -230,7 +230,6 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-# ÖSYM / YKS MÜFREDATINA TAM UYUMU KAPSAMLI DERS VE KONU HAVUZU (KONU & SORU ÇÖZÜMÜ İKİLEMLİ)
 HAM_DERS_KONULARI = {
     "☕ Mola & Dinlenme": [
         "Kısa Dinlenme & Zihin Molası (10-15 dk)",
@@ -248,11 +247,33 @@ HAM_DERS_KONULARI = {
         "Akşam Yemeği & Aile Zamanı",
         "Ana Öğün & Kahve/Çay Molası"
     ],
+    "👨‍🏫 Özel Ders Türkçe": [
+        "Özel Ders Türkçe - Birebir Paragraf & Dil Bilgisi",
+        "Özel Ders Türkçe - Soru Çözüm Kampı",
+        "Özel Ders Türkçe - Ödev Kontrolü & Tekrar"
+    ],
+    "👨‍🏫 Özel Ders Matematik": [
+        "Özel Ders Matematik - Birebir Konu Anlatımı",
+        "Özel Ders Matematik - Soru Çözüm Kampı",
+        "Özel Ders Matematik - Ödev Kontrolü & Tekrar",
+        "Özel Ders Matematik - Yeni Nesil Soru Analizi"
+    ],
+    "👨‍🏫 Özel Ders Fizik": [
+        "Özel Ders Fizik - Birebir Konu Anlatımı & Deney",
+        "Özel Ders Fizik - Soru Çözüm & Formül Pratiği",
+        "Özel Ders Fizik - Ödev Kontrolü & Zor Sorular"
+    ],
+    "👨‍🏫 Özel Ders Kimya": [
+        "Özel Ders Kimya - Birebir Konu Anlatımı",
+        "Özel Ders Kimya - Soru Çözüm & Hesaplama Pratiği"
+    ],
+    "👨‍🏫 Özel Ders Biyoloji": [
+        "Özel Ders Biyoloji - Birebir Konu Anlatımı & Şekil Analizi",
+        "Özel Ders Biyoloji - Soru Çözüm Kampı"
+    ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru)",
-        "Yeni Nesil Problemler (20 Soru)",
-        "Sözel Mantık Rutini",
-        "Sayı-Kesir Problemleri",
+        "Paragraf Hız Kampı (25 Soru) + Yeni Nesil Problemler (20 Soru)",
+        "Sözel Mantık Rutini + Sayı-Kesir Problemleri",
         "Yaş & İşçi Havuz Problemleri",
         "Yüzde-Kar/Zarar & Karışım Problemleri",
         "Hız & Hareket Problemleri",
@@ -421,10 +442,9 @@ HAM_DERS_KONULARI = {
     ]
 }
 
-# Her alt konuyu otomatik olarak "Konu Çalışması" ve "Soru Çözümü" olarak iki ayrı başlığa dönüştüren gelişmiş fonksiyon
 EVRENSEL_DERS_KONULARI = {}
 for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
-    if "Mola" in ders_adi or "Yürüyüş" in ders_adi or "Yemeği" in ders_adi:
+    if "Mola" in ders_adi or "Yürüyüş" in ders_adi or "Yemeği" in ders_adi or "Özel Ders" in ders_adi:
         EVRENSEL_DERS_KONULARI[ders_adi] = konu_listesi
     else:
         genisletilmis = []
@@ -728,6 +748,11 @@ else:
                     st.rerun()
 
             AKTIF_DERSLER = [
+                "👨‍🏫 Özel Ders Türkçe",
+                "👨‍🏫 Özel Ders Matematik",
+                "👨‍🏫 Özel Ders Fizik",
+                "👨‍🏫 Özel Ders Kimya",
+                "👨‍🏫 Özel Ders Biyoloji",
                 "⚡ 📖 Paragraf + 📐 Problem Rutini",
                 "📖 TYT Türkçe",
                 "📐 TYT Matematik",
@@ -862,6 +887,11 @@ else:
                 sec_alan_giris = st.selectbox("Çalışma Alanınızı Seçiniz:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"], index=["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"].index(ogr_alan) if ogr_alan in ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"] else 0)
 
                 aktif_giris_dersleri = [
+                    "👨‍🏫 Özel Ders Türkçe",
+                    "👨‍🏫 Özel Ders Matematik",
+                    "👨‍🏫 Özel Ders Fizik",
+                    "👨‍🏫 Özel Ders Kimya",
+                    "👨‍🏫 Özel Ders Biyoloji",
                     "⚡ 📖 Paragraf + 📐 Problem Rutini",
                     "📖 TYT Türkçe",
                     "📐 TYT Matematik",
