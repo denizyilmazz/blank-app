@@ -212,35 +212,33 @@ def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
 
 def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
     api_key = SABIT_GEMINI_API_KEY.strip()
-    if GENAI_AVAILABLE and api_key and api_key != "AIzaSy..." and os.path.exists(file_path):
-        try:
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            if file_path.lower().endswith('.pdf'):
-                with open(file_path, "rb") as f: file_data = f.read()
-                input_part = [{"mime_type": "application/pdf", "data": file_data}]
-            else:
-                img = Image.open(file_path)
-                input_part = [img]
-            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Bu öğrencinin '{yayin}' adlı deneme sonuç belgesini/optik formunu analiz et. Toplam Net: {toplam_net}. Öğrencinin hangi derslerde ve hangi konularda iyi olduğunu, hangi konularda zayıf/eksiği olduğunu madde madde analiz et ve koç için yönlendirici geri bildirim ver."
-            response = model.generate_content(input_part + [prompt])
-            return response.text
-        except Exception as e:
-            return f"⚠️ **Yapay Zeka Deneme Analiz Hatası:** {str(e)}"
-    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Geri Bildirim:** Yüklenen karne/belge üzerinden genel net analizi yapılmıştır. Eksik konulara odaklanılmalıdır."
-
-def ai_deneme_detayli_analiz_et(yayin, tur, toplam_net, ders_netleri_ozeti):
-    api_key = SABIT_GEMINI_API_KEY.strip()
-    if GENAI_AVAILABLE and api_key and api_key != "AIzaSy...":
-        try:
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            prompt = f"Sen YKS baş koçusun (Deniz Yılmaz). Öğrencinin '{yayin}' adlı {tur} sonucunu analiz et. Toplam Net: {toplam_net}. Net dağılımı: {ders_netleri_ozeti}. Eksik konuları ve tavsiyeleri açıkla."
-            response = model.generate_content(prompt)
-            return response.text
-        except Exception as e:
-            return f"⚠️ **Yapay Zeka Analiz Hatası:** {str(e)}"
-    return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Tavsiye:** Eksik konuları tekrar etmelisin."
+    if not GENAI_AVAILABLE or not api_key or not os.path.exists(file_path):
+        return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Değerlendirme:** Yüklenen belge işlendi, ancak API anahtarı veya dosya erişiminde eksiklik var. Lütfen net dağılımınızı manuel gözden geçirin."
+    
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        if file_path.lower().endswith('.pdf'):
+            with open(file_path, "rb") as f: file_data = f.read()
+            input_part = [{"mime_type": "application/pdf", "data": file_data}]
+        else:
+            img = Image.open(file_path)
+            input_part = [img]
+            
+        prompt = (
+            f"Sen profesyonel bir YKS baş koçusun (Deniz Yılmaz). Bu öğrencinin yüklemiş olduğu '{yayin}' adlı deneme sonuç belgesini / optik formunu titizlikle incele. "
+            f"Öğrencinin toplam neti: {toplam_net}. "
+            "Lütfen raporda şunlara yer ver:\n"
+            "1. **Genel Durum Değerlendirmesi:** Netlerin hedeflere göre durumu.\n"
+            "2. **İyi Olunan Dersler ve Konular:** Öğrencinin başarı gösterdiği alanlar.\n"
+            "3. **Gelişime Açık / Zayıf Yönler:** Yanlış veya boş bırakılan sorulara dayanarak eksik olunan konular.\n"
+            "4. **Koç Tavsiyeleri:** Bu netleri artırmak için koçun öğrenciye vereceği somut çalışma aksiyonları."
+        )
+        response = model.generate_content(input_part + [prompt])
+        return response.text
+    except Exception as e:
+        return f"⚠️ **Gemini Yapay Zeka Analiz Hatası:** {str(e)}"
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -1172,7 +1170,7 @@ else:
                         if d_row['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
                             st.image(d_row['dosya_yolu'], width=350)
                         elif d_row['dosya_yolu'].lower().endswith('.pdf'):
-                            st.markdown(pdf_goster_html(d_row['dosya_yolu']), unsafe_allow_html=True)
+                            st.markdown(pdf_goster_html(row['dosya_yolu']), unsafe_allow_html=True)
                     st.markdown(f"""
                         <div class="ai-analysis-box"><strong>🤖 Gemini Koç Geri Bildirimi:</strong><br>{d_row['koc_notu']}</div>
                     </div>
