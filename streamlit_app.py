@@ -216,7 +216,6 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-# Dinlenme, yemek ve aktivite kısımlarını da içeren kapsamlı program oluşturucu havuzu
 EVRENSEL_DERS_KONULARI = {
     "☕ Mola & Dinlenme": [
         "Kısa Dinlenme & Zihin Molası (10-15 dk)",
@@ -235,10 +234,12 @@ EVRENSEL_DERS_KONULARI = {
         "Ana Öğün & Kahve/Çay Molası"
     ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru)", "Sözel Mantık Rutini", 
-        "Yeni Nesil Problemler (20 Soru)", "Sayı-Kesir Problemleri", 
-        "Yaş & İşçi Havuz Problemleri", "Yüzde-Kar/Zarar & Karışım", 
-        "Hız & Hareket Problemleri", "Grafik & Rutin Olmayan Problemler"
+        "Paragraf Hız Kampı (25 Soru) + Yeni Nesil Problemler (20 Soru)",
+        "Sözel Mantık Rutini + Sayı-Kesir Problemleri",
+        "Yaş & İşçi Havuz Problemleri",
+        "Yüzde-Kar/Zarar & Karışım Problemleri",
+        "Hız & Hareket Problemleri",
+        "Grafik & Rutin Olmayan Problemler"
     ],
     "📖 TYT Türkçe": [
         "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
@@ -824,28 +825,25 @@ else:
                             with open(dosya_yolu_str, "wb") as f:
                                 f.write(yuklenen_deneme_dosya.getbuffer())
 
-                        # Gemini Derinlemesine Görüntü Analizi
-                        if yuklenen_deneme_dosya:
-                            ai_rapor = ai_deneme_gorseli_analiz_et(dosya_yolu_str, dyayin, dnet)
-                        else:
-                            ai_rapor = ai_deneme_detayli_analiz_et(dyayin, "Genel Deneme", dnet, "Genel Dersler")
+                        # Gelişmiş Optik Analiz Raporu Oluşturucu
+                        ai_rapor = ai_deneme_gorseli_analiz_et(dosya_yolu_str, dyayin, dnet)
 
                         cursor.execute("""
                             INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_yolu, dosya_adi, koc_notu)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_str, dosya_adi_str, ai_rapor))
                         conn.commit()
-                        st.success("🎉 Deneme başarıyla koçunuza gönderildi ve yapay zeka analiz raporu oluşturuldu!")
+                        st.success("🎉 Deneme başarıyla koçunuza gönderildi ve detaylı koçluk analiz raporu oluşturuldu!")
                         st.rerun()
 
-                st.info("ℹ️ Yüklediğiniz denemelerin detaylı yapay zeka analizleri ve koç değerlendirmeleri öğretmeninizin yönetim panelinde güvenle saklanmaktadır.")
+                st.info("ℹ️ Yüklediğiniz denemelerin detaylı analizleri öğretmeninizin yönetim panelinde güvenle saklanmaktadır.")
 
             with tab_konular:
                 st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
                 slider_index = 0
                 for d_adi, k_list in EVRENSEL_DERS_KONULARI.items():
                     if d_adi in ["☕ Mola & Dinlenme", "🚶‍♂️ Yürüyüş & Aktivite", "🍲 Öğle & Akşam Yemeği"]:
-                        continue # Dinlenme ve aktiviteler konu hakimiyetinde yer almaz
+                        continue
                     st.markdown(f"**{d_adi}**")
                     for kn in k_list:
                         cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
@@ -933,7 +931,7 @@ else:
                         st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_row["dosya_yolu"], s_row["ders"], s_row["konu"])}</div>', unsafe_allow_html=True)
                         st.divider()
 
-                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Gemini Derinlemesine Analiz Raporları")
+                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Profesyonel Koç Analiz Raporları")
                 
                 # Koç deneme silme yönetimi
                 silinecek_deneme_id = st.query_params.get("sil_deneme", None)
@@ -964,7 +962,7 @@ else:
                                 st.markdown(pdf_goster_html(d_row['dosya_yolu']), unsafe_allow_html=True)
                         
                         st.markdown(f"""
-                            <div class="ai-analysis-box"><strong>🤖 Gemini Yapay Zeka Derinlemesine Koç Analizi:</strong><br>{d_row['koc_notu']}</div>
+                            <div class="ai-analysis-box"><strong>🤖 Profesyonel Koç Analiz Raporu:</strong><br>{d_row['koc_notu']}</div>
                         """, unsafe_allow_html=True)
 
                         if st.button(f"🗑️ Bu Deneme Kaydını Sil (Hatalı Yükleme)", key=f"del_deneme_{d_row['id']}"):
