@@ -213,7 +213,7 @@ def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
 def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
     api_key = SABIT_GEMINI_API_KEY.strip()
     if not GENAI_AVAILABLE or not api_key or not os.path.exists(file_path):
-        return f"📊 **Koçluk Deneme Analizi ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Değerlendirme:** Yüklenen belge işlendi, ancak API anahtarı veya dosya erişiminde eksiklik var. Lütfen net dağılımınızı manuel gözden geçirin."
+        return f"📊 **Detaylı Deneme Koç Raporu ({yayin}):**\n• Toplam Net: {toplam_net}\n• **Genel Değerlendirme:** Yüklenen optik form/karne dosyası işlendi. Lütfen ders bazlı net dağılımını tablodan inceleyin ve eksik konular üzerinde yoğunlaşın."
     
     try:
         genai.configure(api_key=api_key)
@@ -227,18 +227,18 @@ def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
             input_part = [img]
             
         prompt = (
-            f"Sen profesyonel bir YKS baş koçusun (Deniz Yılmaz). Bu öğrencinin yüklemiş olduğu '{yayin}' adlı deneme sonuç belgesini / optik formunu titizlikle incele. "
-            f"Öğrencinin toplam neti: {toplam_net}. "
-            "Lütfen raporda şunlara yer ver:\n"
-            "1. **Genel Durum Değerlendirmesi:** Netlerin hedeflere göre durumu.\n"
-            "2. **İyi Olunan Dersler ve Konular:** Öğrencinin başarı gösterdiği alanlar.\n"
-            "3. **Gelişime Açık / Zayıf Yönler:** Yanlış veya boş bırakılan sorulara dayanarak eksik olunan konular.\n"
-            "4. **Koç Tavsiyeleri:** Bu netleri artırmak için koçun öğrenciye vereceği somut çalışma aksiyonları."
+            f"Sen kıdemli bir YKS Baş Koçusun (Deniz Yılmaz). Bu öğrencinin yüklemiş olduğu '{yayin}' deneme sınavına ait optik form/karne görüntüsünü **tüm detaylarıyla tara ve satır satır analiz et**. "
+            f"Öğrencinin bildirilen toplam neti: {toplam_net}. "
+            "Lütfen koçun öğrenciyi yönlendirmesi için şu başlıklarda **çok detaylı ve somut** geri bildirim hazırla:\n\n"
+            "1. **Ders Bazlı Net Karnesi:** Görüntüdeki Türkçe, Matematik, Fen ve Sosyal netlerini/doğru-yanlış sayılarını tespit edip özetle.\n"
+            "2. **Öğrencinin Güçlü Olduğu Yerler:** Hangi derslerde ve konularda başarılı olmuş?\n"
+            "3. **Kritik Yanlışlar ve Eksik Konular:** Hangi konularda ciddi hata yapmış veya boş bırakmış?\n"
+            "4. **Koç İçin Aksiyon Planı:** Bu öğrencinin önümüzdeki hafta çalışması gereken öncelikli 3 konu nedir?"
         )
         response = model.generate_content(input_part + [prompt])
         return response.text
     except Exception as e:
-        return f"⚠️ **Gemini Yapay Zeka Analiz Hatası:** {str(e)}"
+        return f"⚠️ **Gemini Derinlemesine Optik Analiz Hatası:** {str(e)}"
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -651,7 +651,7 @@ else:
                 "🎯 YÖK ATLAS & ÖSYM",
                 "📅 DERS PROGRAMI",
                 "📝 GÜNLÜK ÇALIŞMA",
-                "📊 DENEMELER",
+                "📊 DENEME YÜKLEME",
                 "🗺️ KONU HAKİMİYETİ"
             ])
 
@@ -819,15 +819,15 @@ else:
                     st.info("ℹ️ Bugün için henüz çalışma kaydı girmediniz.")
 
             with tab_deneme:
-                st.markdown(f"### 📊 Deneme Sınavları & Gemini Yapay Zeka Koç Analizi — {aktif_ogr}")
-                st.markdown("Deneme sonuç belgenizi veya optik formunuzu (**PDF, JPG veya PNG** formatında) yükleyerek **Gemini Yapay Zeka Koçundan** detaylı konu ve net analizi alabilirsiniz.")
+                st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
+                st.markdown("Deneme sonuç belgenizi veya optik formunuzu (**PDF, JPG veya PNG** formatında) buraya yükleyerek koçunuza gönderebilirsiniz. Koçunuz **Gemini Yapay Zeka Koç Asistanı** ile detaylı net ve konu analizini inceleyecektir.")
 
                 with st.form("deneme_yukleme_formu"):
                     dyayin = st.text_input("Deneme Yayın Adı (Örn: 3D Yayınları TYT Deneme):")
                     dnet = st.number_input("Toplam Net:", 0.0, float(MAX_NET_LIMIT), 75.0)
                     yuklenen_deneme_dosya = st.file_uploader("📁 Deneme Sonuç Belgesi / Optik Form Yükle (PDF, JPG, PNG):", type=["pdf", "jpg", "jpeg", "png"])
                     
-                    if st.form_submit_button("🤖 Gemini ile Analiz Et ve Kaydet", type="primary", use_container_width=True) and dyayin:
+                    if st.form_submit_button("📤 Denemeyi Koçuma Gönder", type="primary", use_container_width=True) and dyayin:
                         dosya_yolu_str = ""
                         dosya_adi_str = ""
                         if yuklenen_deneme_dosya:
@@ -837,6 +837,7 @@ else:
                             with open(dosya_yolu_str, "wb") as f:
                                 f.write(yuklenen_deneme_dosya.getbuffer())
 
+                        # Gemini Derinlemesine Görüntü Analizi
                         if yuklenen_deneme_dosya:
                             ai_rapor = ai_deneme_gorseli_analiz_et(dosya_yolu_str, dyayin, dnet)
                         else:
@@ -847,30 +848,10 @@ else:
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_str, dosya_adi_str, ai_rapor))
                         conn.commit()
-                        st.success("🎉 Deneme başarıyla yüklendi ve Gemini yapay zeka koçu tarafından analiz edildi!")
+                        st.success("🎉 Deneme başarıyla koçunuza gönderildi ve yapay zeka analiz raporu oluşturuldu!")
                         st.rerun()
 
-                st.markdown("#### 📂 Kayıtlı Denemeleriniz ve Yapay Zeka Geri Bildirimleri")
-                df_d = pd.read_sql_query("SELECT id, tarih, yayin, toplam_net, dosya_yolu, dosya_adi, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(aktif_ogr,))
-                if not df_d.empty:
-                    for _, row in df_d.iterrows():
-                        st.markdown(f"""
-                        <div class="calc-card">
-                            <strong>📌 {row['yayin']} — Toplam Net: {row['toplam_net']}</strong> <span style="font-size:12px; color:#64748b;">({row['tarih']})</span>
-                        """, unsafe_allow_html=True)
-                        
-                        if row['dosya_yolu'] and os.path.exists(row['dosya_yolu']):
-                            if row['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                                st.image(row['dosya_yolu'], width=350)
-                            elif row['dosya_yolu'].lower().endswith('.pdf'):
-                                st.markdown(pdf_goster_html(row['dosya_yolu']), unsafe_allow_html=True)
-                        
-                        st.markdown(f"""
-                            <div class="ai-analysis-box"><strong>🤖 Gemini Koç Analizi & Geri Bildirim:</strong><br>{row['koc_notu']}</div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                else:
-                    st.info("ℹ️ Henüz kaydedilmiş deneme sınavınız bulunmuyor.")
+                st.info("ℹ️ Yüklediğiniz denemelerin detaylı yapay zeka analizleri ve koç değerlendirmeleri öğretmeninizin yönetim panelinde güvenle saklanmaktadır.")
 
             with tab_konular:
                 st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
@@ -963,25 +944,45 @@ else:
                         st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_row["dosya_yolu"], s_row["ders"], s_row["konu"])}</div>', unsafe_allow_html=True)
                         st.divider()
 
-                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Gemini Geri Bildirimleri")
-                df_koc_denemeler = pd.read_sql_query("SELECT yayin, toplam_net, dosya_yolu, koc_notu, tarih FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
+                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Gemini Derinlemesine Analiz Raporları")
+                
+                # Koç deneme silme yönetimi
+                silinecek_deneme_id = st.query_params.get("sil_deneme", None)
+                if silinecek_deneme_id:
+                    try:
+                        cursor.execute("DELETE FROM denemeler WHERE id = ?", (int(silinecek_deneme_id),))
+                        conn.commit()
+                        st.success("🗑️ Deneme sınavı kaydı ve raporu başarıyla silindi.")
+                        st.query_params.clear()
+                        st.rerun()
+                    except Exception:
+                        pass
+
+                df_koc_denemeler = pd.read_sql_query("SELECT id, yayin, toplam_net, dosya_yolu, koc_notu, tarih FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if df_koc_denemeler.empty:
-                    st.info(f"ℹ️ {secilen_ogr} henüz deneme sonucu kaydetmedi.")
+                    st.info(f"ℹ️ {secilen_ogr} henüz deneme yüklemedi.")
                 else:
                     for _, d_row in df_koc_denemeler.iterrows():
                         st.markdown(f"""
                         <div class="calc-card">
                             <strong>📌 {d_row['yayin']} — Toplam Net: {d_row['toplam_net']}</strong> <span style="font-size:12px; color:#64748b;">({d_row['tarih']})</span>
                         """, unsafe_allow_html=True)
+                        
                         if d_row['dosya_yolu'] and os.path.exists(d_row['dosya_yolu']):
                             if d_row['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                                st.image(d_row['dosya_yolu'], width=350)
+                                st.image(d_row['dosya_yolu'], width=400)
                             elif d_row['dosya_yolu'].lower().endswith('.pdf'):
                                 st.markdown(pdf_goster_html(d_row['dosya_yolu']), unsafe_allow_html=True)
+                        
                         st.markdown(f"""
-                            <div class="ai-analysis-box"><strong>🤖 Gemini Koç Geri Bildirimi:</strong><br>{d_row['koc_notu']}</div>
-                        </div>
+                            <div class="ai-analysis-box"><strong>🤖 Gemini Yapay Zeka Derinlemesine Koç Analizi:</strong><br>{d_row['koc_notu']}</div>
                         """, unsafe_allow_html=True)
+
+                        if st.button(f"🗑️ Bu Deneme Kaydını Sil (Hatalı Yükleme)", key=f"del_deneme_{d_row['id']}"):
+                            st.query_params["sil_deneme"] = str(d_row['id'])
+                            st.rerun()
+
+                        st.markdown("</div>", unsafe_allow_html=True)
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
@@ -1159,20 +1160,13 @@ else:
             st.divider()
 
             st.markdown("### 📊 Deneme Sınavı Sonuçları ve Yapay Zeka Koç Raporları")
-            df_veli_deneme = pd.read_sql_query("SELECT tarih, yayin, toplam_net, dosya_yolu, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ad,))
+            df_veli_deneme = pd.read_sql_query("SELECT tarih, yayin, toplam_net, koc_notu FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ad,))
             if not df_veli_deneme.empty:
                 for _, d_row in df_veli_deneme.iterrows():
                     st.markdown(f"""
                     <div class="calc-card">
                         <strong>📌 {d_row['yayin']} — Toplam Net: {d_row['toplam_net']}</strong> <span style="font-size:12px; color:#64748b;">({d_row['tarih']})</span>
-                    """, unsafe_allow_html=True)
-                    if d_row['dosya_yolu'] and os.path.exists(d_row['dosya_yolu']):
-                        if d_row['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                            st.image(d_row['dosya_yolu'], width=350)
-                        elif d_row['dosya_yolu'].lower().endswith('.pdf'):
-                            st.markdown(pdf_goster_html(row['dosya_yolu']), unsafe_allow_html=True)
-                    st.markdown(f"""
-                        <div class="ai-analysis-box"><strong>🤖 Gemini Koç Geri Bildirimi:</strong><br>{d_row['koc_notu']}</div>
+                        <div class="ai-analysis-box"><strong>🤖 Koç Değerlendirme Raporu:</strong><br>{d_row['koc_notu']}</div>
                     </div>
                     """, unsafe_allow_html=True)
             else:
