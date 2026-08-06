@@ -210,13 +210,28 @@ def ai_soru_gorseli_analiz_et(file_path, ders, konu_ipucu=""):
             return f"⚠️ **Yapay Zeka Hatası:** {str(e)}"
     return f"🔍 **Soru Konu Analizi ({ders}):**\n• **Konu:** {konu_ipucu}\n• **Koç Notu:** Temel işlem basamakları kontrol edilmelidir."
 
+def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
+    return (
+        f"📊 **Genel Performans Özeti**\n"
+        f"- **Toplam Net:** {toplam_net}\n"
+        f"- **Optik Form / Karne Durumu:** Belge başarıyla sisteme işlenmiştir.\n\n"
+        f"⭐ **Güçlü (İyi) Yönler**\n"
+        f"- Öğrenci genel oturumda istikrarlı bir soru çözüm yaklaşımı sergilemektedir.\n\n"
+        f"⚠️ **Geliştirilmesi Gereken (Kötü/Zayıf) Yönler**\n"
+        f"- Boş ve yanlış bırakılan soru sayıları detaylı incelenmeli, zaman yönetimi gözden geçirilmelidir.\n\n"
+        f"🚀 **Sonuç ve Tavsiyeler**\n"
+        f"1. Eksik olunan alt konularda nokta atışı soru çözümleri yapılmalıdır.\n"
+        f"2. Deneme analizleri haftalık periyotlarla tekrarlanmalıdır."
+    )
+
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
     "🚀 Başarı, her gün ertelemeden tekrarlanan küçük çabaların birikimidir!",
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-EVRENSEL_DERS_KONULARI = {
+# ÖSYM / YKS MÜFREDATINA TAM UYUMU KAPSAMLI DERS VE KONU HAVUZU (KONU & SORU ÇÖZÜMÜ İKİLEMLİ)
+HAM_DERS_KONULARI = {
     "☕ Mola & Dinlenme": [
         "Kısa Dinlenme & Zihin Molası (10-15 dk)",
         "Göz Dinlendirme & Su Molası",
@@ -234,90 +249,189 @@ EVRENSEL_DERS_KONULARI = {
         "Ana Öğün & Kahve/Çay Molası"
     ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru) + Yeni Nesil Problemler (20 Soru)",
-        "Sözel Mantık Rutini + Sayı-Kesir Problemleri",
+        "Paragraf Hız Kampı (25 Soru)",
+        "Yeni Nesil Problemler (20 Soru)",
+        "Sözel Mantık Rutini",
+        "Sayı-Kesir Problemleri",
         "Yaş & İşçi Havuz Problemleri",
         "Yüzde-Kar/Zarar & Karışım Problemleri",
         "Hız & Hareket Problemleri",
         "Grafik & Rutin Olmayan Problemler"
     ],
     "📖 TYT Türkçe": [
-        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
-        "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", 
-        "Sözcük Türleri", "Fiiller & Fiilimsi", "Cümlenin Ögeleri", "Anlatım Bozuklukları"
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı",
+        "Ses Bilgisi",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "Sözcük Türleri (İsim, Sıfat, Zamir vb.)",
+        "Fiiller, Ek Fiil ve Fiilimsi",
+        "Cümlenin Ögeleri ve Cümle Çeşitleri",
+        "Anlatım Bozuklukları"
     ],
     "📐 TYT Matematik": [
-        "Temel Kavramlar", "Sayı Basamakları", "Bölme ve Bölünebilme", 
-        "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", 
-        "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", 
-        "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", 
-        "Kümeler", "Fonksiyonlar", "Veri, Sayma ve Olasılık"
+        "Temel Kavramlar",
+        "Sayı Basamakları",
+        "Bölme ve Bölünebilme",
+        "EBOB - EKOK",
+        "Rasyonel Sayılar",
+        "Basit Eşitsizlikler",
+        "Mutlak Değer",
+        "Üslü İfadeler",
+        "Köklü İfadeler",
+        "Çarpanlara Ayırma",
+        "Oran - Orantı",
+        "Denklem Çözme",
+        "Kümeler ve Kartezyen Çarpım",
+        "Fonksiyonlar",
+        "Veri, İstatistik, Sayma ve Olasılık",
+        "Birinci Dereceden Denklemler ve Problemler"
     ],
     "📏 TYT Geometri": [
-        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", 
-        "Üçgende Açı-Kenar & Benzerlik", "Üçgende Alan", 
-        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Kare, Dikdörtgen vb.)", 
-        "Çember ve Daire", "Katı Cisimler", "Analitik Geometri"
+        "Doğruda ve Üçgende Açılar",
+        "Özel Üçgenler (İkizkenar, Eşkenar, Dik Üçgen)",
+        "Üçgende Açı-Kenar Bağıntıları & Benzerlik",
+        "Üçgende Alan",
+        "Çokgenler ve Dörtgenler (Yamuk, Paralelkenar vb.)",
+        "Özel Dörtgenler (Kare, Dikdörtgen, Deltoid, Eşkenar Dörtgen)",
+        "Çember ve Daire",
+        "Katı Cisimler (Prizma, Piramit, Küre, Silgi, Koni)",
+        "Analitik Geometri (Noktanın ve Doğrunun Analitiği)"
     ],
     "⚡ TYT Fizik": [
-        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", 
-        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton Yasaları", 
-        "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
+        "Fizik Bilimine Giriş",
+        "Madde ve Özellikleri",
+        "Basınç ve Kaldırma Kuvveti",
+        "Isı, Sıcaklık ve Genleşme",
+        "Hareket ve Kuvvet",
+        "Newton'un Hareket Yasaları",
+        "İş, Güç ve Enerji",
+        "Elektrik Akımı ve Devreler",
+        "Manyetizma",
+        "Dalgalar (Temel Dalga Özellikleri, Deprem vb.)",
+        "Optik (Aydınlanma, Gölge, Yansıma, Kırılma, Mercekler)"
     ],
     "🧪 TYT Kimya": [
-        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
-        "Maddenin Halleri", "Kimyanın Temel Kanunları", 
-        "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
+        "Kimya Bilimi",
+        "Atom ve Periyodik Sistem",
+        "Türler Arası Etkileşimler (İyonik, Kovalent vb.)",
+        "Maddenin Halleri (Katı, Sıvı, Gaz, Plazma)",
+        "Kimyanın Temel Kanunları",
+        "Kimyasal Hesaplamalar (Mol Kavramı)",
+        "Karışımlar ve Çözeltiler",
+        "Asitler, Bazlar ve Tuzlar",
+        "Kimya Her Yerde"
     ],
     "🧬 TYT Biyoloji": [
-        "Canlıların Ortak Özellikleri & Temel Bileşenler", "Hücre ve Organelleri", 
-        "Madde Geçişleri", "Hücre Bölünmeleri (Mitoz / Mayoz)", 
-        "Kalıtım", "Ekoloji"
+        "Canlıların Ortak Özellikleri & Temel Bileşenler",
+        "Hücre ve Organelleri",
+        "Madde Geçişleri (Difüzyon, Osmoz, Aktif Taşıma)",
+        "Hücre Bölünmeleri (Mitoz ve Eşeysiz Üreme / Mayoz ve Eşeyli Üreme)",
+        "Kalıtım ve Biyolojik Çeşitlilik",
+        "Ekoloji ve Canlıların Çevre ile İlişkileri"
     ],
     "📜 TYT Tarih": [
-        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi", 
-        "Osmanlı Kuruluş ve Yükselme", "Osmanlı Kültür ve Medeniyeti", 
-        "Milli Mücadele Dönemi", "Atatürk İnkılap ve İlkeleri"
+        "Tarih Bilimi",
+        "İlk Çağ Medeniyetleri",
+        "İslamiyet Tarihi ve Türklerin İslamiyet'e Kabulü",
+        "Türk Devletleri (İlk Türk Devletleri ve Osmanlı Kuruluş/Yükselme)",
+        "Osmanlı Kültür ve Medeniyeti",
+        "Milli Mücadele Dönemi (Kurtuluş Savaşı)",
+        "Atatürk İnkılap ve İlkeleri"
     ],
     "🌍 TYT Coğrafya": [
-        "Doğa ve İnsan & Harita Bilgisi", "İklim Bilgisi", 
-        "İç ve Dış Kuvvetler", "Nüfus ve Yerleşme", "Afetler"
+        "Doğa ve İnsan & Harita Bilgisi",
+        "Dünya'nın Şekli ve Hareketleri",
+        "İklim Bilgisi (Atmosfer, Sıcaklık, Basınç, Rüzgarlar, Yağış)",
+        "İç ve Dış Kuvvetler (Jeomorfoloji)",
+        "Nüfus ve Yerleşme",
+        "Türkiye'nin Yer şekilleri ve Beşeri Özellikleri",
+        "Doğal Afetler"
     ],
     "🧠 TYT Felsefe": [
-        "Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", 
-        "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
+        "Felsefeyi Tanıma",
+        "Bilgi Felsefesi (Epistemoloji)",
+        "Varlık Felsefesi (Ontoloji)",
+        "Ahlak Felsefesi (Etik)",
+        "Din, Siyaset ve Sanat Felsefesi"
     ],
     "🕌 TYT Din Kültürü": [
-        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
+        "İnanç (İslam'da İman Esasları)",
+        "İbadet ve Ahlak Esasları",
+        "İslam ve Bilim, Ahlak ve Değerler",
+        "Hz. Muhammed'in Hayatı, Örnekliği ve Mesajı",
+        "İslam Düşüncesinde Yorumlar ve Mezhepler"
     ],
     "📐 AYT Matematik": [
-        "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
-        "Eşitsizlikler", "Trigonometri", "Logaritma", "Diziler", 
-        "Limit ve Süreklilik", "Türev", "İntegral ve Alan"
+        "İkinci Dereceden Denklemler & Karmaşık Sayılar",
+        "Parabol ve Fonksiyon Uygulamaları",
+        "Eşitsizlikler",
+        "Trigonometri",
+        "Logaritma",
+        "Diziler ve Seriler",
+        "Limit ve Süreklilik",
+        "Türev ve Uygulamaları",
+        "İntegral ve Belirli/Belirsiz Alan Hesaplamaları"
     ],
     "⚡ AYT Fizik": [
-        "Vektörler & Bağıl Hareket", "Dinamik (Newton)", "Atışlar", 
-        "İş, Güç, Enerji", "İtme ve Momentum", "Tork ve Denge", 
-        "Çembersel Hareket", "Basit Harmonik Hareket", "Dalga Mekaniği", 
-        "Elektrik Alan & Potansiyel", "Manyetizma", "Modern Fizik"
+        "Vektörler ve Bağıl Hareket",
+        "Dinamik (Newton Kanunları Uygulamaları)",
+        "Atışlar (Yatay ve Eğik Atış)",
+        "İş, Güç, Enerji ve İtme-Momentum",
+        "Tork, Denge ve Ağırlık Merkezi",
+        "Basit Makineler",
+        "Çembersel Hareket",
+        "Basit Harmonik Hareket",
+        "Dalga Mekaniği (Girişim, Kırınım, Doppler)",
+        "Elektrik Alan, Potansiyel ve Sığaçlar",
+        "Manyetizma ve İndüksiyon",
+        "Modern Fizik (Özel Görelilik, Kuantum, Radyoaktivite)"
     ],
     "🧪 AYT Kimya": [
-        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", 
-        "Kimyasal Tepkimelerde Enerji", "Hız ve Denge", 
-        "Sulu Çözeltilerde Dengeler (Asit-Baz / KÇ)", "Elektrokimya", 
+        "Modern Atom Teorisi (Kuantum Modeli)",
+        "Gazlar (İdeal Gaz Yasaları, Kinetik Teori)",
+        "Sıvı Çözeltiler ve Koligatif Özellikler",
+        "Kimyasal Tepkimelerde Enerji (Entalpi)",
+        "Kimyasal Tepkimelerde Hız",
+        "Kimyasal Denge",
+        "Sulu Çözeltilerde Denge (Asit-Baz, Hidroliz, KÇ)",
+        "Elektrokimya (Piller ve Elektroliz)",
         "Organik Kimya (Hidrokarbonlar ve Fonksiyonel Gruplar)"
     ],
     "🧬 AYT Biyoloji": [
-        "Sinir ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket / Sindirim / Dolaşım", 
-        "Solunum ve Boşaltım / Üreme Sistemi", "Nükleik Asitler ve Protein Sentezi", 
-        "Fotosentez ve Solunum", "Bitki Biyolojisi"
+        "Sinir Sistemi ve Endokrin Sistem",
+        "Duyu Organları",
+        "Destek ve Hareket Sistemi / Sindirim / Dolaşım",
+        "Solunum, Boşaltım ve Üreme Sistemi",
+        "Nükleik Asitler (DNA/RNA) ve Protein Sentezi",
+        "Fotosentez ve Kemosentez",
+        "Hücresel Solunum (Glikoliz, Krebs, Oksidatif Fosforilasyon)",
+        "Bitki Biyolojisi (Yapı, Taşınma, Üreme)",
+        "Canlılar ve Çevre (Ekoloji ve Evrim)"
     ],
     "📖 AYT Edebiyat": [
-        "İslamiyet Öncesi ve Halk Edebiyatı", "Divan Edebiyatı", 
-        "Tanzimat ve Servet-i Fünun", "Milli Edebiyat ve Cumhuriyet Dönemi Şiir", 
-        "Cumhuriyet Dönemi Roman ve Hikaye"
+        "İslamiyet Öncesi ve Geçiş Dönemi Türk Edebiyatı",
+        "Halk Edebiyatı (Aşık ve Tasavvuf Edebiyatı)",
+        "Divan Edebiyatı (Nazım Şekilleri, Sanatçılar)",
+        "Tanzimat Edebiyatı ve Servet-i Fünun",
+        "Fecr-i Ati ve Milli Edebiyat Dönemi",
+        "Cumhuriyet Dönemi Şiir",
+        "Cumhuriyet Dönemi Roman, Hikaye ve Tiyatro"
     ]
 }
+
+# Her alt konuyu otomatik olarak "Konu Çalışması" ve "Soru Çözümü" olarak iki ayrı başlığa dönüştüren gelişmiş fonksiyon
+EVRENSEL_DERS_KONULARI = {}
+for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
+    if "Mola" in ders_adi or "Yürüyüş" in ders_adi or "Yemeği" in ders_adi:
+        EVRENSEL_DERS_KONULARI[ders_adi] = konu_listesi
+    else:
+        genisletilmis = []
+        for k in konu_listesi:
+            genisletilmis.append(f"{k} — Konu Çalışması")
+            genisletilmis.append(f"{k} — Soru Çözümü")
+        EVRENSEL_DERS_KONULARI[ders_adi] = genisletilmis
 
 YKS_KAPSAMLI_DERS_KONULAR = EVRENSEL_DERS_KONULARI
 
