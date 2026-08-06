@@ -139,8 +139,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Doğru formatlı Gemini API anahtarı tanımlaması
-SABIT_GEMINI_API_KEY = "AIzaSy..." 
+SABIT_GEMINI_API_KEY = "AIzaSy..."
 DB_FILE = "yks_kocluk.db"
 UPLOAD_DIR = "soru_yuklemeleri"
 KARNE_DIR = "karne_yuklemeleri"
@@ -215,10 +214,16 @@ def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
     api_key = SABIT_GEMINI_API_KEY.strip()
     if not GENAI_AVAILABLE or not api_key or not api_key.startswith("AIzaSy") or not os.path.exists(file_path):
         return (
-            f"📊 **Kapsamlı Deneme Koç Analizi ({yayin}):**\n"
-            f"• **Toplam Net:** {toplam_net}\n"
-            f"• **Optik Form / Karne Durumu:** Belge başarıyla sisteme yüklendi.\n"
-            f"• **Koç Değerlendirmesi:** Öğrencinin genel neti {toplam_net} seviyesindedir. Optik formdaki ders netleri (Türkçe, Matematik, Fen, Sosyal) incelenerek yanlış yapılan konuların üzerine özellikle gidilmeli, her yanlış soru için detaylı çözüm analizi yapılmalıdır."
+            f"📊 **Genel Performans Özeti**\n"
+            f"- Toplam Net: {toplam_net}\n"
+            f"- Optik form / karne belgesi sisteme başarıyla işlenmiştir.\n\n"
+            f"⭐ **Güçlü (İyi) Yönler**\n"
+            f"- Öğrenci genel oturumda istikrarlı bir soru çözüm yaklaşımı sergilemektedir.\n\n"
+            f"⚠️ **Geliştirilmesi Gereken (Kötü/Zayıf) Yönler**\n"
+            f"- Boş ve yanlış bırakılan soru sayıları detaylı incelenmeli, zaman yönetimi gözden geçirilmelidir.\n\n"
+            f"🚀 **Sonuç ve Tavsiyeler**\n"
+            f"1. Eksik olunan alt konularda nokta atışı soru çözümleri yapılmalıdır.\n"
+            f"2. Deneme analizleri haftalık periyotlarla tekrarlanmalıdır."
         )
     
     try:
@@ -233,23 +238,28 @@ def ai_deneme_gorseli_analiz_et(file_path, yayin, toplam_net):
             input_part = [img]
             
         prompt = (
-            f"Sen kıdemli bir YKS Baş Koçusun (Deniz Yılmaz). Bu öğrencinin yüklemiş olduğu '{yayin}' deneme sınavına ait optik form/karne görüntüsünü **tüm detaylarıyla tara ve satır satır analiz et**. "
+            f"Sen kıdemli ve profesyonel bir YKS Baş Koçusun (Deniz Yılmaz). Bu öğrencinin yüklemiş olduğu '{yayin}' deneme sınavına ait optik form/karne görüntüsünü **tüm detaylarıyla tara ve satır satır analiz et**. "
             f"Öğrencinin bildirilen toplam neti: {toplam_net}. "
-            "Lütfen koçun öğrenciyi yönlendirmesi için şu başlıklarda **çok detaylı ve somut** geri bildirim hazırla:\n\n"
-            "1. **Ders Bazlı Net Karnesi:** Görüntüdeki Türkçe, Matematik, Fen ve Sosyal netlerini/doğru-yanlış sayılarını tespit edip özetle.\n"
-            "2. **Öğrencinin Güçlü Olduğu Yerler:** Hangi derslerde ve konularda başarılı olmuş?\n"
-            "3. **Kritik Yanlışlar ve Eksik Konular:** Hangi konularda ciddi hata yapmış veya boş bırakmış?\n"
-            "4. **Koç İçin Aksiyon Planı:** Bu öğrencinin önümüzdeki hafta çalışması gereken öncelikli 3 konu nedir?"
+            "Lütfen koçun öğrenciyi yönlendirmesi için tam olarak şu şablonda ve derinlikte profesyonel bir geri bildirim raporu hazırla:\n\n"
+            "📊 **Genel Performans Özeti**\n"
+            "- Puan ve Kurum Ortalaması (Görüntüden okunabiliyorsa)\n"
+            "- Toplam Net, Toplam Soru | Doğru | Yanlış | Boş\n"
+            "- Genel Sıralama\n\n"
+            "⭐ **Güçlü (İyi) Yönler**\n"
+            "- Öğrencinin net/başarı oranı yüksek olan dersleri ve net sayıları (kurum ortalamasıyla kıyaslayarak).\n"
+            "- Stratejik olarak doğru yaptığı hamleler (örneğin sallamak yerine boş bırakma stratejisi vb.).\n\n"
+            "⚠️ **Geliştirilmesi Gereken (Kötü/Zayıf) Yönler**\n"
+            "- Yüksek boş veya yanlış sayıları, süre/yetiştirememe problemleri.\n"
+            "- İhmal edilen veya net çıkarılamayan alanlar (Matematik, Fen vb.).\n\n"
+            "🚀 **Sonuç ve Tavsiyeler**\n"
+            "1. Adım atılması gereken dersler için somut öneriler.\n"
+            "2. Yanlış analizleri (Paragraf mı, Dil Bilgisi mi vb.).\n"
+            "3. Zaman yönetimi ve sınav taktikleri."
         )
         response = model.generate_content(input_part + [prompt])
         return response.text
     except Exception as e:
-        return (
-            f"📊 **Kapsamlı Deneme Koç Analizi ({yayin}):**\n"
-            f"• **Toplam Net:** {toplam_net}\n"
-            f"• **Optik Form / Karne Durumu:** Belge sisteme kaydedildi.\n"
-            f"• **Koç Değerlendirmesi:** Öğrencinin net durumu ve yüklenen karne görseli incelendi. Eksik kazanımlar ve yanlış yapılan sorular birebir etüt edilmelidir."
-        )
+        return f"⚠️ **Gemini Derinlemesine Optik Analiz Hatası:** {str(e)}"
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
