@@ -752,7 +752,7 @@ else:
 
                 with st.form("gunluk_detayli_calisma_formu"):
                     secilen_ders = st.selectbox("Ders Seçin:", aktif_giris_dersleri)
-                    konu_listesi_secim = YKS_KAPSAMLI_DERS_KONULAR.get(secilen_ders, ["Genel Konu Çalışması"])
+                    konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
                     secilen_konu = st.selectbox("Konu Seçin:", konu_listesi_secim)
 
                     col_gc1, col_gc2, col_gc3 = st.columns(3)
@@ -812,13 +812,18 @@ else:
 
             with tab_konular:
                 st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
+                slider_index = 0
                 for d_adi, k_list in EVRENSEL_DERS_KONULARI.items():
                     st.markdown(f"**{d_adi}**")
                     for kn in k_list:
                         cursor.execute("SELECT puan FROM konu_puanlari WHERE ad_soyad = ? AND konu_adi = ?", (aktif_ogr, kn))
                         r = cursor.fetchone()
                         p_val = r[0] if r else 3
-                        yp = st.select_slider(kn, options=[1, 2, 3, 4, 5], value=p_val, key=f"kp_{aktif_ogr}_{kn}")
+                        # Her slider için benzersiz key oluşturuldu (StreamlitDuplicateElementKey hatası önlendi)
+                        slider_key = f"kp_{aktif_ogr}_{d_adi}_{kn}_{slider_index}"
+                        slider_index += 1
+                        
+                        yp = st.select_slider(kn, options=[1, 2, 3, 4, 5], value=p_val, key=slider_key)
                         cursor.execute("INSERT INTO konu_puanlari (ad_soyad, konu_adi, puan) VALUES (?, ?, ?) ON CONFLICT(ad_soyad, konu_adi) DO UPDATE SET puan = ?", (aktif_ogr, kn, yp, yp))
                     conn.commit()
 
@@ -914,7 +919,7 @@ else:
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
                 st.caption("⚡ Ders seçtiğinizde alt konular 'Konu Çalışması' ve 'Soru Çözümü' olarak anında güncellenir. Kaydettiğiniz an öğrenci panelinde kişiye özel olarak görünür.")
 
-                tum_dersler_listesi = list(YKS_KAPSAMLI_DERS_KONULAR.keys())
+                tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 
                 c_s1, c_s2 = st.columns(2)
                 with c_s1:
@@ -926,7 +931,7 @@ else:
                 with c_s3:
                     sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
                 
-                mevcut_alt_konular = YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"])
+                mevcut_alt_konular = EVRENSEL_DERS_KONULARI.get(sec_ders_matris, ["Genel Soru"])
                 
                 with c_s4:
                     sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", mevcut_alt_konular, key="dinamik_konu_secim")
