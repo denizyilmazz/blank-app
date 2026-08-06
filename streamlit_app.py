@@ -217,10 +217,12 @@ HAM_DERS_KONULARI = {
         "Özel Ders Biyoloji - Soru Çözüm Kampı"
     ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru) + Yeni Nesil Problemler (20 Soru)",
-        "Sözel Mantık Rutini + Sayı-Kesir Problemleri",
+        "Paragraf Hız Kampı (25 Soru)",
+        "Yeni Nesil Problemler (20 Soru)",
+        "Sözel Mantık Rutini",
+        "Sayı-Kesir Problemleri",
         "Yaş & İşçi Havuz Problemleri",
-        "Yüzde-Kar/Zarar & Karışım Problemleri",
+        "Yüzde-Kar/Zarar & Karışım",
         "Hız & Hareket Problemleri",
         "Grafik & Rutin Olmayan Problemler"
     ],
@@ -314,6 +316,13 @@ for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
         EVRENSEL_DERS_KONULARI[ders_adi] = genisletilmis
 
 YKS_KAPSAMLI_DERS_KONULAR = EVRENSEL_DERS_KONULARI
+
+STANDART_SAAT_DILIMLERI = [
+    "08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00", 
+    "12:00 - 13:00 (Öğle Molası)", "13:00 - 14:00", "14:00 - 15:00", 
+    "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00", 
+    "18:00 - 19:00 (Akşam Molası)", "19:00 - 20:00", "20:00 - 21:00", "21:00 - 22:00"
+]
 
 UNIVERSITE_LISTESI = [
     "Acıbadem Mehmet Ali Aydınlar Üniversitesi (İstanbul)", "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi", 
@@ -741,7 +750,7 @@ else:
                             st.download_button(f"📥 Ekstra Dosya: {f_row['dosya_adi']}", data=fb, file_name=f_row['dosya_adi'])
 
             with tab_gunluk:
-                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & 1'er Dakikalık Süre Takibi) — {aktif_ogr}")
+                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & Dakika Süre Takibi) — {aktif_ogr}")
                 s_tarih = st.date_input("Çalışma Tarihi:", datetime.date.today())
                 
                 sec_alan_giris = st.selectbox("Çalışma Alanınızı Seçiniz:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"], index=["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"].index(ogr_alan) if ogr_alan in ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"] else 0)
@@ -980,13 +989,13 @@ else:
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
-                st.caption("⚡ Ders veya Mola/Dinlenme seçtiğinizde alt detaylar anında güncellenir. Kaydettiğiniz an öğrenci panelinde kişiye özel olarak görünür.")
+                st.caption("⚡ Saat dilimini seç veya yaz, ders/aktivite seç ve tabloya işle.")
 
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 
                 c_s1, c_s2 = st.columns(2)
                 with c_s1:
-                    yeni_saat_araligi = st.text_input("Saat Dilimi:", value="09:00 - 10:00", key="dinamik_saat")
+                    yeni_saat_araligi = st.selectbox("Saat Dilimi Seç / Belirle:", STANDART_SAAT_DILIMLERI, key="standart_saat_secim")
                 with c_s2:
                     hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="dinamik_gun")
                 
@@ -1016,7 +1025,7 @@ else:
                      st.rerun()
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Excel Program Tablosu")
-                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
                 
                 if df_matris.empty:
                     df_matris = pd.DataFrame([{"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
@@ -1053,7 +1062,7 @@ else:
                     st.success(f"🎉 {secilen_ogr} adlı öğrencinin haftalık programı güncellendi ve paneline yansıtıldı!")
 
                 st.markdown("#### 📥 Öğrencinin Programını İndir")
-                df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+                df_koc_ind = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
                 if not df_koc_ind.empty:
                     html_bytes_koc = html_to_pdf_bytes(df_koc_ind, secilen_ogr)
                     st.download_button(
@@ -1125,7 +1134,7 @@ else:
                     st.rerun()
 
             st.markdown("### 📅 Haftalık Ders Programı")
-            df_veli_prog = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(v_ad,))
+            df_veli_prog = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(v_ad,))
             if not df_veli_prog.empty:
                 st.dataframe(df_veli_prog, use_container_width=True)
             else:
