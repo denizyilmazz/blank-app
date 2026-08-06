@@ -250,7 +250,7 @@ HAM_DERS_KONULARI = {
         "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
     ],
     "🧪 TYT Kimya": [
-        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
+        "Kimya Bilimi", "Atom dan Periyodik Sistem", "Türler Arası Etkileşimler", 
         "Maddenin Halleri", "Kimyanın Temel Kanunları", 
         "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
     ],
@@ -316,22 +316,6 @@ for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
         EVRENSEL_DERS_KONULARI[ders_adi] = genisletilmis
 
 YKS_KAPSAMLI_DERS_KONULAR = EVRENSEL_DERS_KONULARI
-
-# 15'er dakikalık saat dilimleri listesi oluşturma
-STANDART_SAAT_DILIMLERI = []
-for saat in range(7, 24):
-    for dakika in [0, 15, 30, 45]:
-        bas_saat = f"{saat:02d}:{dakika:02d}"
-        
-        # Bitiş saatini hesapla
-        bit_dakika = dakika + 15
-        bit_saat = saat
-        if bit_dakika >= 60:
-            bit_dakika = 0
-            bit_saat += 1
-        bit_str = f"{bit_saat:02d}:{bit_dakika:02d}"
-        
-        STANDART_SAAT_DILIMLERI.append(f"{bas_saat} - {bit_str}")
 
 UNIVERSITE_LISTESI = [
     "Acıbadem Mehmet Ali Aydınlar Üniversitesi (İstanbul)", "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi", 
@@ -826,7 +810,7 @@ else:
                 if not df_bugun_calismalar.empty:
                     st.dataframe(df_bugun_calismalar, use_container_width=True)
                 else:
-                    st.info("ℹ️ Bugün için henüz çalışma kaydı girmediniz.")
+                    st.info("ℹ️ Bugün için henüz çalışma kaydı girmemiş.")
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
@@ -998,16 +982,28 @@ else:
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
-                st.caption("⚡ 15'er dakikalık standart saat aralıklarından birini seçerek haftalık planı profesyonelce oluşturun.")
+                st.caption("⚡ Saat ve dakikayı ayrı ayrı seçerek programı dilediğiniz hassasiyette oluşturun.")
 
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 
-                c_s1, c_s2 = st.columns(2)
-                with c_s1:
-                    yeni_saat_araligi = st.selectbox("15 Dakikalık Saat Dilimi Seçin:", STANDART_SAAT_DILIMLERI, key="standart_saat_secim_15dk")
-                with c_s2:
-                    hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="dinamik_gun")
+                # Saat ve Dakika Seçimi için Ayrı Alanlar
+                saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
+                dakika_secenekleri = ["00", "15", "30", "45"]
                 
+                c_saat1, c_dak1, c_saat2, c_dak2, c_gun = st.columns([1.1, 1.1, 1.1, 1.1, 1.6])
+                with c_saat1:
+                    bas_saat = st.selectbox("Başlangıç Saat:", saat_secenekleri, index=1, key="koc_bas_saat")
+                with c_dak1:
+                    bas_dakika = st.selectbox("Başlangıç Dakika:", dakika_secenekleri, index=0, key="koc_bas_dakika")
+                with c_saat2:
+                    bit_saat = st.selectbox("Bitiş Saat:", saat_secenekleri, index=2, key="koc_bit_saat")
+                with c_dak2:
+                    bit_dakika = st.selectbox("Bitiş Dakika:", dakika_secenekleri, index=0, key="koc_bit_dakika")
+                with c_gun:
+                    hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="dinamik_gun")
+
+                yeni_saat_araligi = f"{bas_saat}:{bas_dakika} - {bit_saat}:{bit_dakika}"
+
                 c_s3, c_s4 = st.columns(2)
                 with c_s3:
                     sec_ders_matris = st.selectbox("Ders / Aktivite / Mola Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
@@ -1037,7 +1033,7 @@ else:
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
                 
                 if df_matris.empty:
-                    df_matris = pd.DataFrame([{"Saat Aralığı": "08:00 - 08:15", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
+                    df_matris = pd.DataFrame([{"Saat Aralığı": "08:00 - 09:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
 
                 edited_matris = st.data_editor(
                     df_matris,
