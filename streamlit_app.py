@@ -110,15 +110,6 @@ st.markdown("""
         color: #4c1d95 !important;
     }
 
-    .share-link-card {
-        background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
-        color: white !important;
-        padding: 20px 24px;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
-        margin-bottom: 20px;
-    }
-
     .yok-net-box {
         background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
         border: 2px solid #3b82f6;
@@ -139,7 +130,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 SABIT_GEMINI_API_KEY = "AQ.Ab8RN6Iu0rNJR14IpQDnEyaXDJPMFnkgaOBn4lZ8j2qZrysa6A"
-SISTEM_YONETICI_KATILIM_KODU = "YKS2026KOC"
 DB_FILE = "yks_kocluk.db"
 UPLOAD_DIR = "soru_yuklemeleri"
 KARNE_DIR = "karne_yuklemeleri"
@@ -202,6 +192,115 @@ MOTIVASYON_SOZLERI = [
     "🚀 Başarı, her gün ertelemeden tekrarlanan küçük çabaların birikimidir!",
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
+
+# ÖSYM ve YKS Müfredatına Uygun Eksiksiz Ders & Konu Veritabanı
+YKS_KAPSAMLI_DERS_KONULAR = {
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
+        "Paragraf Hız Kampı (25 Soru)", 
+        "Sözel Mantık Rutini", 
+        "Yeni Nesil Problemler (20 Soru)", 
+        "Sayı-Kesir Problemleri", 
+        "Yaş & İşçi Havuz Problemleri", 
+        "Yüzde-Kar/Zarar & Karışım", 
+        "Hız & Hareket Problemleri", 
+        "Grafik & Rutin Olmayan Problemler"
+    ],
+    "📖 TYT Türkçe": [
+        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
+        "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", 
+        "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf)", "Fiiller & Fiilimsiler", 
+        "Cümlenin Ögeleri", "Cüce Çeşitleri & Çatı", "Anlatım Bozuklukları"
+    ],
+    "📐 TYT Matematik": [
+        "Temel Kavramlar", "Sayı Basamakları", "Bölme ve Bölünebilme", 
+        "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", 
+        "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", 
+        "Çarpanlara Ayırma & Oran-Orantı", "Denklem Çözme", "Kümeler", 
+        "Fonksiyonlar", "Veri, Sayma ve Olasılık", "Polinomlar & Karma"
+    ],
+    "📏 TYT Geometri": [
+        "Doğruda ve Üçgende Açılar", "Özel Üçgenler (Dik, İkizkenar, Eşkenar)", 
+        "Üçgende Açı-Kenar Bağıntıları", "Üçgende Yardımcı Elemanlar", 
+        "Üçgende Benzerlik", "Üçgende Alan", "Açıortay & Kenarortay", 
+        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Yamuk, Paralelkenar, Eşkenar Dörtgen, Dikdörtgen, Kare, Deltoid)", 
+        "Çember ve Daire", "Katı Cisimler (Prizma, Silindir, Koni, Küre)", "Analitik Geometri (Temel)"
+    ],
+    "⚡ TYT Fizik": [
+        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", 
+        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton'un Hareket Yasaları", 
+        "İş, Güç ve Enerji", "Elektrik ve Manyetizma (Temel)", "Dalgalar", "Optik (Aydınlanma, Gölge, Yansıma, Kırılma)"
+    ],
+    "🧪 TYT Kimya": [
+        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler (İyonik, Kovalent, Zayıf Etkileşimler)", 
+        "Maddenin Halleri (Katılar, Sıvılar, Gazlar)", "Doğa ve Kimya", 
+        "Kimyanın Temel Kanunları", "Kimyasal Hesaplamalar", 
+        "Karışımlar ve Çözeltiler", "Asitler, Bazlar ve Tuzlar", "Kimya Her Yerde"
+    ],
+    "🧬 TYT Biyoloji": [
+        "Yaşam Bilimi Biyoloji (Canlıların Ortak Özellikleri & İnorganik/Organik Bileşikler)", 
+        "Hücrenin Yapısı ve Organelleri", "Madde Geçişleri", 
+        "Hücre Bölünmeleri (Mitoz ve Eşeyli Üreme / Mayoz)", 
+        "Kalıtımın Genel İlkeleri (Mendel Genetiği)", "Ekoloji (Canlılar ve Çevre)"
+    ],
+    "📜 TYT Tarih": [
+        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi ve Türklerin İslamiyet'i Kabulü", 
+        "Türk-İslam Devletleri", "Osmanlı Devleti Kuruluş ve Yükselme", 
+        "Osmanlı Kültür ve Medeniyeti", "19. Yüzyılda Osmanlı", 
+        "Milli Mücadele Dönemi (Hazırlık ve Savaşlar)", "Atatürk İnkılapları ve İlkeleri"
+    ],
+    "🌍 TYT Coğrafya": [
+        "Doğa ve İnsan & Harita Bilgisi", "Dünya'nın Şekli ve Hareketleri", 
+        "İklim Bilgisi (Atmosfer, Sıcaklık, Basınç, Rüzgarlar, Yağış)", 
+        "Türkiye'nin İklimi", "Yeryüzünün Şekillenmesi (İç ve Dış Kuvvetler)", 
+        "Nüfus ve Yerleşme", "Ulaşım Yolları", "Afetler ve Çevre"
+    ],
+    "🧠 TYT Felsefe": [
+        "Felsefeyi Tanıma", "Bilgi Felsefesi (Epistemoloji)", "Varlık Felsefesi (Ontoloji)", 
+        "Ahlak Felsefesi (Etik)", "Din Felsefesi", "Siyaset Felsefesi", "Sanat Felsefesi (Estetik)"
+    ],
+    "🕌 TYT Din Kültürü": [
+        "İnanç (Allah İnancı, Ahiret vb.)", "İbadet Esasları", 
+        "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı ve Örnekliği", "İslam ve Bilim / Dinler Tarihi"
+    ],
+    "📐 AYT Matematik": [
+        "İkinci Dereceden Denklemler", "Karmaşık Sayılar", "Parabol", 
+        "Eşitsizlikler", "Trigonometri (Temel ve Toplam/Fark Formülleri)", 
+        "Logaritma (Özellikler ve Denklemler)", "Diziler (Aritmetik ve Geometrik)", 
+        "Limit ve Süreklilik", "Türev (Türev Alma Kuralları, Teğet, Maksimum-Minimum)", 
+        "İntegral (Belirsiz ve Belirli İntegral, Alan Hesabı)"
+    ],
+    "⚡ AYT Fizik": [
+        "Vektörler ve Bağıl Hareket", "Newton Hareket Yasaları (Dinamik)", 
+        "Atışlar (Düşey Atış, Yatay Atış, Eğik Atış)", "İş, Güç ve Enerji (İleri)", 
+        "İtme ve Momentum", "Tork, Denge ve Ağırlık Merkezi", "Basit Makineler", 
+        "Çembersel Hareket", "Döner ve Titreşim Hareketi (Basit Harmonik Hareket)", 
+        "Dalga Mekaniği (Kırınım, Girişim, Doppler)", "Elektrik Alan ve Potansiyel", 
+        "Manyetizma ve İndüksiyon", "Alternatif Akım ve Transformatörler", "Modern Fizik (Özel Görelilik, Kuantum, Radyoaktivite)"
+    ],
+    "🧪 AYT Kimya": [
+        "Modern Atom Teorisi (Kuantum Sayıları, Elektron Dizilimi)", "Gazlar (İdeal Gaz Yasaları, Kısmi Basınç)", 
+        "Sıvı Çözeltiler ve Koligatif Özellikler", "Kimyasal Tepkimelerde Enerji (Entalpi)", 
+        "Kimyasal Tepkimelerde Hız", "Kimyasal Denge (Denge Sabiti Kc-Kp, Le Chatelier İlkesi)", 
+        "Sulu Çözeltilerde Denge (Asit-Baz Dengeleri, pH-pOH, Tampon, Çözünürlük Çarpımı - KÇ)", 
+        "Elektrokimya (Piller, Elektroliz, Korozyon)", "Organik Kimyaya Giriş (Hibritleşme, Fonksiyonel Gruplar)", 
+        "Hidrokarbonlar (Alkanlar, Alkenler, Alkinler, Aromatikler)", "Oksijenli Organik Bileşikler (Alkoller, Eterler, Karbonil Bileşikleri, Karboksilik Asitler ve Esterler)"
+    ],
+    "🧬 AYT Biyoloji": [
+        "Sinir Sistemi ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket Sistemi", 
+        "Sindirim, Dolaşım ve Solunum Sistemi", "Boşaltım Sistemi ve Homeostazi", 
+        "Üreme Sistemi ve Embriyonik Gelişim", "Nükleik Asitler (DNA ve RNA)", 
+        "Protein Sentezi", "Canlılarda Enerji Dönüşümleri (Fotosentez ve Kemosentez)", 
+        "Hücresel Solunum (Oksijenli ve Oksijensiz Solunum, Fermantasyon)", 
+        "Bitki Biyolojisi (Kök, Gövde, Yaprak Yapısı, Taşıma ve Hareket)", "Kss, Evrim ve Ekoloji (Popülasyon Genetiği)"
+    ],
+    "📖 AYT Edebiyat": [
+        "İslamiyet Öncesi Türk Edebiyatı ve Geçiş Dönemi", "Halk Edebiyatı (Aşık, Tekke, Anonim)", 
+        "Divan Edebiyatı (Nazım Şekilleri, Akımlar, Sanatçılar)", "Tanzimat Edebiyatı (1. ve 2. Dönem)", 
+        "Servet-i Fünun ve Fecr-i Ati Edebiyatı", "Milli Edebiyat Dönemi", 
+        "Cumhuriyet Dönemi Şiir (Saf Şiir, Garipçiler, İkinci Yeni vb.)", 
+        "Cumhuriyet Dönemi Roman ve Hikaye", "Tiyatro ve Edebi Sanatlar / Akımlar"
+    ]
+}
 
 YOK_ATLAS_UNI_BOLUM_VERITABANI = {
     "Orta Doğu Teknik Üniversitesi (ODTÜ)": {
@@ -551,40 +650,68 @@ else:
                         </div>
                         """, unsafe_allow_html=True)
 
-                st.markdown(f"### 🗓️ {secilen_ogr} — Haftalık Pratik Program Düzenleyici")
-                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
-                if df_matris.empty:
-                    df_matris = pd.DataFrame([{"Saat Aralığı": "09:00 - 10:00", "Pazartesi": "Paragraf", "Salı": "Matematik", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
+                # YENİ PRATİK 2 SATIRLI (ÜSTTE DERS, ALTTA KONU) HAFTALIK PROGRAM DÜZENLEYİCİ
+                st.divider()
+                st.markdown(f"### 🗓️ {secilen_ogr} — Pratik 2 Satırlı Haftalık Ders Programı Oluşturucu")
+                st.caption("⚡ Saat aralığını girip üst satırdan dersi, alt satırdan ise YKS müfredatına uygun doğru konuyu anında seçebilirsin.")
+
+                gun_secimi = st.selectbox("Programın Güncelleneceği Günü Seçin:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"])
                 
-                ed_df = st.data_editor(df_matris, num_rows="dynamic", use_container_width=True, key=f"edit_{secilen_ogr}")
-                if st.button("💾 Tüm Değişiklikleri Kaydet", type="primary"):
-                    for _, row in ed_df.iterrows():
-                        cursor.execute("""
-                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET 
-                                pazartesi=excluded.pazartesi, sali=excluded.sali, carsamba=excluded.carsamba, 
-                                persembe=excluded.persembe, cuma=excluded.cuma, cumartesi=excluded.cumartesi, pazar=excluded.pazar
-                        """, (secilen_ogr, row["Saat Aralığı"], row["Pazartesi"], row["Salı"], row["Çarşamba"], row["Perşembe"], row["Cuma"], row["Cumartesi"], row["Pazar"]))
+                c_p1, c_p2 = st.columns(2)
+                with c_p1:
+                    saat_araligi_input = st.text_input("Saat Aralığı (Örn: 09:00 - 10:00):", value="09:00 - 10:00")
+                with c_p2:
+                    secilen_ders = st.selectbox("1. Satır — Ders Seçin:", list(YKS_KAPSAMLI_DERS_KONULAR.keys()))
+
+                mevcut_konu_listesi = YKS_KAPSAMLI_DERS_KONULAR.get(secilen_ders, ["Genel Çalışma"])
+                secilen_konu = st.selectbox("2. Satır — Konu Seçin:", mevcut_konu_listesi)
+
+                ozel_not_ek = st.text_input("Ekstra Açıklama / Soru Hedefi (İsteğe Bağlı):", placeholder="Örn: 30 Soru çözülecek")
+
+                if st.button("➕ Bu Ders Bloğunu Haftalık Programa Ekle / Güncelle", type="primary", use_container_width=True):
+                    hucre_degeri = f"{secilen_ders}\n↳ {secilen_konu}"
+                    if ozel_not_ek:
+                        hucre_degeri += f" ({ozel_not_ek})"
+
+                    gun_sutun_map = {
+                        "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                        "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                    }
+                    hedef_sutun = gun_sutun_map[gun_secimi]
+
+                    cursor.execute(f"""
+                        INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {hedef_sutun})
+                        VALUES (?, ?, ?)
+                        ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {hedef_sutun} = ?
+                    """, (secilen_ogr, saat_araligi_input, hucre_degeri, hucre_degeri))
                     conn.commit()
-                    st.success("Program güncellendi!")
+                    st.success(f"🎉 {secilen_ogr} için {gun_secimi} günü ({saat_araligi_input}) programı güncellendi!")
+                    st.rerun()
+
+                st.markdown("#### 📋 Öğrencinin Güncel Haftalık Program Matrisi")
+                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
+                if not df_matris.empty:
+                    st.dataframe(df_matris, use_container_width=True, height=350)
+                else:
+                    st.info("Bu öğrenci için henüz program bloğu eklenmemiş.")
 
                 st.divider()
-                st.markdown(f"### 📄 {secilen_ogr} İçin Program Dosyası Yükle (PDF / Word / Excel)")
-                p_file = st.file_uploader("Dosya Seç:", type=["pdf", "docx", "xlsx"], key=f"pf_{secilen_ogr}")
+                sec_ogr_adi = locals().get('secilen_ogr', 'Öğrenci')
+                st.markdown(f"### 📄 {sec_ogr_adi} İçin Program Dosyası Yükle (PDF / Word / Excel)")
+                p_file = st.file_uploader("Dosya Seç:", type=["pdf", "docx", "xlsx"], key=f"pf_{sec_ogr_adi}")
                 if p_file and st.button("📤 Dosyayı Öğrenciye Gönder", type="primary"):
                     f_ext = os.path.splitext(p_file.name)[1]
-                    f_path = os.path.join(PROGRAM_DIR, f"Prog_{secilen_ogr}_{hashlib.md5(p_file.name.encode()).hexdigest()[:6]}{f_ext}")
+                    f_path = os.path.join(PROGRAM_DIR, f"Prog_{sec_ogr_adi}_{hashlib.md5(p_file.name.encode()).hexdigest()[:6]}{f_ext}")
                     with open(f_path, "wb") as f: f.write(p_file.getbuffer())
                     cursor.execute("INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi) VALUES (?, ?, ?, ?, ?)",
-                                   (secilen_ogr, st.session_state["aktif_koc"], str(datetime.date.today()), f_path, p_file.name))
+                                   (sec_ogr_adi, st.session_state["aktif_koc"], str(datetime.date.today()), f_path, p_file.name))
                     conn.commit()
                     st.success("Dosya yüklendi!")
 
                 st.divider()
-                st.markdown(f"### 💬 {secilen_ogr} WhatsApp Paylaşım Linki")
+                st.markdown(f"### 💬 {sec_ogr_adi} WhatsApp Paylaşım Linki")
                 host_url = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
-                share_url = f"{host_url}/?ogrenci={quote(secilen_ogr)}"
+                share_url = f"{host_url}/?ogrenci={quote(sec_ogr_adi)}"
                 st.code(share_url, language="text")
                 st.link_button("💬 WhatsApp İle Gönder", f"https://api.whatsapp.com/send?text={quote(f'Soru linki: {share_url}')}")
 
