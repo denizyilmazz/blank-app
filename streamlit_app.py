@@ -250,7 +250,7 @@ HAM_DERS_KONULARI = {
         "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
     ],
     "🧪 TYT Kimya": [
-        "Kimya Bilimi", "Atom dan Periyodik Sistem", "Türler Arası Etkileşimler", 
+        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
         "Maddenin Halleri", "Kimyanın Temel Kanunları", 
         "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
     ],
@@ -316,6 +316,19 @@ for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
         EVRENSEL_DERS_KONULARI[ders_adi] = genisletilmis
 
 YKS_KAPSAMLI_DERS_KONULAR = EVRENSEL_DERS_KONULARI
+
+# 15'er dakikalık saat dilimleri listesi oluşturma
+STANDART_SAAT_DILIMLERI = []
+for saat in range(7, 24):
+    for dakika in [0, 15, 30, 45]:
+        bas_saat = f"{saat:02d}:{dakika:02d}"
+        bit_dakika = dakika + 15
+        bit_saat = saat
+        if bit_dakika >= 60:
+            bit_dakika = 0
+            bit_saat += 1
+        bit_str = f"{bit_saat:02d}:{bit_dakika:02d}"
+        STANDART_SAAT_DILIMLERI.append(f"{bas_saat} - {bit_str}")
 
 UNIVERSITE_LISTESI = [
     "Acıbadem Mehmet Ali Aydınlar Üniversitesi (İstanbul)", "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi", 
@@ -718,7 +731,7 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-                df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
+                df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(aktif_ogr,))
                 if not df_p.empty:
                     st.dataframe(df_p, use_container_width=True, height=400)
                     
@@ -810,7 +823,7 @@ else:
                 if not df_bugun_calismalar.empty:
                     st.dataframe(df_bugun_calismalar, use_container_width=True)
                 else:
-                    st.info("ℹ️ Bugün için henüz çalışma kaydı girmemiş.")
+                    st.info("ℹ️ Bugün için henüz çalışma kaydı girmediniz.")
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
@@ -988,7 +1001,7 @@ else:
                 
                 # Saat ve Dakika Seçimi için Ayrı Alanlar
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
-                dakika_secenekleri = ["00", "15", "30", "45"]
+                dakika_secenekleri = [f"{d:02d}" for d in range(0, 60, 5)] # 5'er dakikalık hassas seçim
                 
                 c_saat1, c_dak1, c_saat2, c_dak2, c_gun = st.columns([1.1, 1.1, 1.1, 1.1, 1.6])
                 with c_saat1:
@@ -1020,6 +1033,8 @@ else:
                          "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
                      }
                      t_sutun = gun_sutun_map[hedef_gun_sec]
+                     
+                     # Veritabanında mükerrer satır oluşmaması için aynı saat aralığını güncelliyoruz
                      cursor.execute(f"""
                          INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
                          VALUES (?, ?, ?)
