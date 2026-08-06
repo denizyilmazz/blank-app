@@ -334,12 +334,76 @@ for k, v_list in HAM_DERS_KONULARI.items():
             genisletilmis_liste.append(f"{konu} — Soru Çözümü")
         YKS_KAPSAMLI_DERS_KONULAR[k] = genisletilmis_liste
 
-# Gelişmiş Üniversite ve Bölüm Veritabanı (Özel eklenenler buraya kaydedilir)
-DEFAULT_UNIVERSITELER = [
-    "Giresun Üniversitesi", "Karadeniz Teknik Üniversitesi (Trabzon)", "Ondokuz Mayıs Üniversitesi (Samsun)",
-    "Orta Doğu Teknik Üniversitesi (ODTÜ - Ankara)", "Boğaziçi Üniversitesi (İstanbul)", "İstanbul Teknik Üniversitesi (İTÜ)",
-    "Hacettepe Üniversitesi (Ankara)", "Ankara Üniversitesi", "İstanbul Üniversitesi", "Gazi Üniversitesi (Ankara)",
-    "Ege Üniversitesi (İzmir)", "Dokuz Eylül Üniversitesi (İzmir)", "Akdeniz Üniversitesi (Antalya)", "Selçuk Üniversitesi (Konya)"
+TYT_KONULAR = {
+    "⚡ 📖 Paragraf + 📐 Problem Rutini": ["Paragraf — Konu Çalışması", "Paragraf — Soru Çözümü", "Problem — Konu Çalışması", "Problem — Soru Çözümü"],
+    "📖 TYT Türkçe": ["Sözcükte Anlam — Konu Çalışması", "Sözcükte Anlam — Soru Çözümü"],
+    "📐 TYT Matematik": ["Temel Kavramlar — Konu Çalışması", "Temel Kavramlar — Soru Çözümü"]
+}
+
+AYT_KONULAR = {
+    "📐 AYT Matematik": ["Polinomlar — Konu Çalışması", "Polinomlar — Soru Çözümü"]
+}
+
+LGS_KONULAR = {
+    "📖 LGS Türkçe (20 Soru)": ["Fiilimsiler — Konu Çalışması", "Fiilimsiler — Soru Çözümü"],
+    "📐 LGS Matematik (20 Soru)": ["Çarpanlar ve Katlar — Konu Çalışması", "Çarpanlar ve Katlar — Soru Çözümü"]
+}
+
+UNIVERSITE_LISTESI = [
+    "Acıbadem Mehmet Ali Aydınlar Üniversitesi (İstanbul)", "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi", 
+    "Adıyaman Üniversitesi", "Afyon Kocatepe Üniversitesi", "Afyonkarahisar Sağlık Bilimleri Üniversitesi", 
+    "Ağrı İbrahim Çeçen Üniversitesi", "Akdeniz Üniversitesi (Antalya)", "Aksaray Üniversitesi", 
+    "Alanya Alaaddin Keykubat Üniversitesi (Antalya)", "Altınbaş Üniversitesi (İstanbul)", "Amasya Üniversitesi", 
+    "Anadolu Üniversitesi (Eskişehir)", "Ankara Üniversitesi", "Ankara Hacı Bayram Veli Üniversitesi", 
+    "Ankara Medipol Üniversitesi", "Ankara Müzik ve Güzel Sanatlar Üniversitesi", "Ankara Sosyal Bilimler Üniversitesi", 
+    "Ankara Yıldırım Beyazıt Üniversitesi", "Antalya Bilim Üniversitesi", "Ardahan Üniversitesi", 
+    "Artvin Çoruh Üniversitesi", "Atatürk Üniversitesi (Erzurum)", "Atılım Üniversitesi (Ankara)", 
+    "Aydın Adnan Menderes Üniversitesi", "Bahçeşehir Üniversitesi (İstanbul)", "Balıkesir Üniversitesi", 
+    "Bandırma Onyedi Eylül Üniversitesi (Balıkesir)", "Bartın Üniversitesi", "Batman Üniversitesi", 
+    "Bayburt Üniversitesi", "Beykent Üniversitesi (İstanbul)", "Bezm-i Âlem Vakıf Üniversitesi (İstanbul)", 
+    "Bilecik Şeyh Edebali Üniversitesi", "Bingöl Üniversitesi", "Bitlis Eren Üniversitesi", 
+    "Boğaziçi Üniversitesi (İstanbul)", "Bolu Abant İzzet Baysal Üniversitesi", "Burdur Mehmet Akif Ersoy Üniversitesi", 
+    "Bursa Teknik Üniversitesi", "Bursa Uludağ Üniversitesi", "Çağ Üniversitesi (Mersin)", 
+    "Çankaya Üniversitesi (Ankara)", "Çanakkale Onsekiz Mart Üniversitesi", "Çankırı Karatekin Üniversitesi", 
+    "Çukurova Üniversitesi (Adana)", "Dicle Üniversitesi (Diyarbakır)", "Doğuş Üniversitesi (İstanbul)", 
+    "Dokuz Eylül Üniversitesi (İzmir)", "Düzce Üniversitesi", "Ege Üniversitesi (İzmir)", 
+    "Erciyes Üniversitesi (Kayseri)", "Erzincan Binali Yıldırım Üniversitesi", "Erzurum Teknik Üniversitesi", 
+    "Eskişehir Osmangazi Üniversitesi", "Eskişehir Teknik Üniversitesi", "Fatih Sultan Mehmet Vakıf Üniversitesi (İstanbul)", 
+    "Fırat Üniversitesi (Elazığ)", "Galatasaray Üniversitesi (İstanbul)", "Gazi Üniversitesi (Ankara)", 
+    "Gaziantep Üniversitesi", "Giresun Üniversitesi", "Gümüşhane Üniversitesi", "Hacettepe Üniversitesi (Ankara)", 
+    "Hakkari Üniversitesi", "Haliç Üniversitesi (İstanbul)", "Harran Üniversitesi (Şanlıurfa)", 
+    "Hatay Mustafa Kemal Üniversitesi", "Iğdır Üniversitesi", "Isparta Uygulamalı Bilimler Üniversitesi", 
+    "İbn Haldun Üniversitesi (İstanbul)", "İhsan Doğramacı Bilkent Üniversitesi (Ankara)", "İnönü Üniversitesi (Malatya)", 
+    "İstanbul Üniversitesi", "İstanbul Üniversitesi-Cerrahpaşa", "İstanbul Arel Üniversitesi", 
+    "İstanbul Aydın Üniversitesi", "İstanbul Bilgi Üniversitesi", "İstanbul Esenyurt Üniversitesi", 
+    "İstanbul Gedik Üniversitesi", "İstanbul Gelişim Üniversitesi", "İstanbul Kültür Üniversitesi", 
+    "İstanbul Medeniyet Üniversitesi", "İstanbul Medipol Üniversitesi", "İstanbul Okan Üniversitesi", 
+    "İstanbul Rumeli Üniversitesi", "İstanbul Sabahattin Zaim Üniversitesi", "İstanbul Ticaret Üniversitesi", 
+    "İstinye Üniversitesi (İstanbul)", "İzmir Bakırçay Üniversitesi", "İzmir Demokrasi Üniversitesi", 
+    "İzmir Ekonomi Üniversitesi", "İzmir Katip Çelebi Üniversitesi", "İzmir Yüksek Teknoloji Enstitüsü", 
+    "Kadir Has Üniversitesi (İstanbul)", "Kafkas Üniversitesi (Kars)", "Kahramanmaraş Sütçü İmam Üniversitesi", 
+    "Karabük Üniversitesi", "Karadeniz Teknik Üniversitesi (Trabzon)", "Karamanoğlu Mehmetbey Üniversitesi (Karaman)", 
+    "Kastamonu Üniversitesi", "Kayseri Üniversitesi", "Kırıkkale Üniversitesi", "Kırklareli Üniversitesi", 
+    "Kırşehir Ahi Evran Üniversitesi", "Kilis 7 Aralık Üniversitesi", "Kocaeli Üniversitesi", 
+    "Kocaeli Sağlık ve Teknoloji Üniversitesi", "Konya Gıda ve Tarım Üniversitesi", "Konya Teknik Üniversitesi", 
+    "KTO Karatay Üniversitesi (Konya)", "Kütahya Dumlupınar Üniversitesi", "Kütahya Sağlık Bilimleri Üniversitesi", 
+    "Malatya Turgut Özal Üniversitesi", "Manisa Celal Bayar Üniversitesi", "Mardin Artuklu Üniversitesi", 
+    "Marmara Üniversitesi (İstanbul)", "Mersin Üniversitesi", "Mimar Sinan Güzel Sanatlar Üniversitesi (İstanbul)", 
+    "Muğla Sıtkı Koçman Üniversitesi", "Munzur Üniversitesi (Tunceli)", "Muş Alparslan Üniversitesi", 
+    "Necmettin Erbakan Üniversitesi (Konya)", "Nevşehir Hacı Bektaş Veli Üniversitesi", "Niğde Ömer Halisdemir Üniversitesi", 
+    "Nuh Naci Yazgan Üniversitesi (Kayseri)", "Ondokuz Mayıs Üniversitesi (Samsun)", "Ordu Üniversitesi", 
+    "Orta Doğu Teknik Üniversitesi (ODTÜ - Ankara)", "Osmaniye Korkut Ata Üniversitesi", "Özyeğin Üniversitesi (İstanbul)", 
+    "Pamukkale Üniversitesi (Denizli)", "Piri Reis Üniversitesi (İstanbul)", "Recep Tayyip Erdoğan Üniversitesi (Rize)", 
+    "Sabancı Üniversitesi (İstanbul)", "Sağlık Bilimleri Üniversitesi (İstanbul)", "Sakarya Üniversitesi", 
+    "Sakarya Uygulamalı Bilimler Üniversitesi", "Samsun Üniversitesi", "Sanko Üniversitesi (Gaziantep)", 
+    "Selçuk Üniversitesi (Konya)", "Siirt Üniversitesi", "Sinop Üniversitesi", "Sivas Cumhuriyet Üniversitesi", 
+    "Süleyman Demirel Üniversitesi (Isparta)", "Şırnak Üniversitesi", "Tarsus Üniversitesi (Mersin)", 
+    "TED Üniversitesi (Ankara)", "Tekirdağ Namık Kemal Üniversitesi", "TOBB Ekonomi ve Teknoloji Üniversitesi (Ankara)", 
+    "Tokat Gaziosmanpaşa Üniversitesi", "Toros Üniversitesi (Mersin)", "Trabzon Üniversitesi", "Trakya Üniversitesi (Edirne)", 
+    "Türk-Alman Üniversitesi (İstanbul)", "Türk Hava Kurumu Üniversitesi (Ankara)", "Ufuk Üniversitesi (Ankara)", 
+    "Uşak Üniversitesi", "Üsküdar Üniversitesi (İstanbul)", "Van Yüzüncü Yıl Üniversitesi", 
+    "Yalova Üniversitesi", "Yaşar Üniversitesi (İzmir)", "Yeditepe Üniversitesi (İstanbul)", 
+    "Yıldız Teknik Üniversitesi (İstanbul)", "Yozgat Bozok Üniversitesi", "Zonguldak Bülent Ecevit Üniversitesi"
 ]
 
 BOLUM_KATEGORILERI = {
@@ -380,7 +444,6 @@ CREATE TABLE IF NOT EXISTS ogrenciler (
 )
 """)
 
-# Özel eklenen üniversite ve bölümleri tutmak için veritabanı tablosu
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ozel_universiteler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -552,10 +615,9 @@ else:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 YÖK Atlas Hedef & Net Analiz Merkezi — {aktif_ogr}</h3>", unsafe_allow_html=True)
                 st.caption("🏛️ Üniversitenizi ve bölümünüzü seçerek ÖSYM / YÖK Atlas verilerine göre gereken taban netleri ve başarı sırasını anında görüntüleyin.")
 
-                # Özel eklenenleri veritabanından çek ve listeye dahil et
                 cursor.execute("SELECT DISTINCT universite_adi FROM ozel_universiteler")
                 ozel_unis = [r[0] for r in cursor.fetchall()]
-                toplam_uni_listesi = sorted(list(set(DEFAULT_UNIVERSITELER + ozel_unis)))
+                toplam_uni_listesi = sorted(list(set(UNIVERSITE_LISTESI + ozel_unis)))
 
                 col_h_u1, col_h_u2, col_h_u3 = st.columns([1.2, 1.2, 0.8])
                 with col_h_u1:
@@ -565,7 +627,6 @@ else:
                 with col_h_u2:
                     secilen_kategori = st.selectbox("Puan Türü / Kategori:", list(BOLUM_KATEGORILERI.keys()))
                 
-                # Özel eklenen bölümleri de kategoriye ekle
                 cursor.execute("SELECT bolum_adi FROM ozel_universiteler WHERE universite_adi = ? AND kategori = ?", (secilen_hedef_uni, secilen_kategori))
                 ozel_bolumler = [r[0] for r in cursor.fetchall()]
                 toplam_bolum_listesi = sorted(list(set(BOLUM_KATEGORILERI[secilen_kategori] + ozel_bolumler)))
@@ -574,7 +635,6 @@ else:
                     b_idx = toplam_bolum_listesi.index(curr_bolum) if curr_bolum in toplam_bolum_listesi else 0
                     secilen_hedef_bolum = st.selectbox("Bölüm:", toplam_bolum_listesi, index=b_idx)
 
-                # Veritabanında özel tanımlı veri var mı kontrol et, yoksa akıllı hesapla
                 cursor.execute("SELECT taban_net, taban_sira, tyt_net, ayt_net FROM ozel_universiteler WHERE universite_adi = ? AND bolum_adi = ?", (secilen_hedef_uni, secilen_hedef_bolum))
                 ozel_kayit = cursor.fetchone()
 
@@ -736,7 +796,6 @@ else:
                     del st.query_params["hatirla_koc"]
                 st.rerun()
 
-            # KOÇ ÖZEL ÜNİVERSİTE / BÖLÜM EKLEME PANELİ
             with st.expander("➕ Sistemde Olmayan Üniversite / Bölüm Ekle (Özel Tanımlama)"):
                 with st.form("ozel_uni_ekle_form"):
                     st.markdown("**Listede bulamadığınız üniversite ve bölümü ekleyerek anında hedef olarak seçilmesini sağlayabilirsiniz.**")
@@ -926,6 +985,8 @@ else:
                 bugun_str = str(datetime.date.today())
                 st.markdown(f"### ⏱️ Bugünkü Çalışma Özeti ({bugun_str})")
                 df_veli_gunluk = pd.read_sql_query("SELECT ders, konu, toplam_soru, sure, verim FROM gunluk_calisma WHERE ad_soyad = ? AND tarih = ?", conn, params=(v_ad, bugun_str))
+                if not df_veli_gun_luk := df_veli_gunluk.empty:
+                    pass
                 if not df_veli_gunluk.empty:
                     toplam_bugun_soru = df_veli_gunluk['toplam_soru'].sum()
                     toplam_bugun_sure = df_veli_gunluk['sure'].sum()
