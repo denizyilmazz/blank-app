@@ -9,6 +9,7 @@ import os
 import shutil
 from urllib.parse import quote
 from PIL import Image
+import io
 
 try:
     import google.generativeai as genai
@@ -193,7 +194,6 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
-# Müfredat ve Dinlenme Aktiviteleri İçeren Kapsamlı Veritabanı
 YKS_KAPSAMLI_DERS_KONULAR = {
     "☕ Mola & Dinlenme": [
         "Kısa Dinlenme & Zihin Molası (10-15 dk)",
@@ -212,14 +212,10 @@ YKS_KAPSAMLI_DERS_KONULAR = {
         "Ana Öğün & Kahve/Çay Molası"
     ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru)", 
-        "Sözel Mantık Rutini", 
-        "Yeni Nesil Problemler (20 Soru)", 
-        "Sayı-Kesir Problemleri", 
-        "Yaş & İşçi Havuz Problemleri", 
-        "Yüzde-Kar/Zarar & Karışım", 
-        "Hız & Hareket Problemleri", 
-        "Grafik & Rutin Olmayan Problemler"
+        "Paragraf Hız Kampı (25 Soru)", "Sözel Mantık Rutini", 
+        "Yeni Nesil Problemler (20 Soru)", "Sayı-Kesir Problemleri", 
+        "Yaş & İşçi Havuz Problemleri", "Yüzde-Kar/Zarar & Karışım", 
+        "Hız & Hareket Problemleri", "Grafik & Rutin Olmayan Problemler"
     ],
     "📖 TYT Türkçe": [
         "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
@@ -526,6 +522,30 @@ else:
                 df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
                 if not df_p.empty:
                     st.dataframe(df_p, use_container_width=True)
+                    
+                    # Telefonda Kolay Açılabilmesi İçin Excel ve PDF İndirme Seçenekleri
+                    col_dl1, col_dl2 = st.columns(2)
+                    with col_dl1:
+                        output_excel = io.BytesIO()
+                        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                            df_p.to_excel(writer, index=False, sheet_name='Ders Programi')
+                        st.download_button(
+                            label="📥 Excel Olarak İndir (.xlsx)",
+                            data=output_excel.getvalue(),
+                            file_name=f"{aktif_ogr}_Ders_Programi.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+                    with col_dl2:
+                        # Basit ve telefon uyumlu metin/tablo bazlı indirme alternatifi (HTML/Text tabanlı simülasyon)
+                        csv_data = df_p.to_csv(index=False).encode('utf-8')
+                        st.download_button(
+                            label="📥 Tablo Dosyası İndir (.csv)",
+                            data=csv_data,
+                            file_name=f"{aktif_ogr}_Ders_Programi.csv",
+                            mime="text/csv",
+                            use_container_width=True
+                        )
                 else:
                     st.info("Koçunuz henüz haftalık programınızı oluşturmadı.")
 
@@ -617,7 +637,6 @@ else:
             if ogrs:
                 secilen_ogr = st.selectbox("Yönetilecek Öğrenci:", ogrs)
                 
-                # ÖĞRENCİNİN YÜKLEDİĞİ SORULARI KOÇ EKRANINDA GÖSTERME ALANI
                 st.markdown(f"### 📸 {secilen_ogr} — Öğrencinin Çözemediği Sorular")
                 df_koc_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if df_koc_sorular.empty:
@@ -633,7 +652,6 @@ else:
                         st.markdown(f'<div class="ai-analysis-box">{ai_soru_gorseli_analiz_et(s_row["dosya_yolu"], s_row["ders"], s_row["konu"])}</div>', unsafe_allow_html=True)
                         st.divider()
 
-                # ÖĞRENCİNİN DENEME SONUÇLARI VE KARNELERİNİ KOÇ EKRANINDA GÖSTERME ALANI
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Karneleri & Sonuçları")
                 df_koc_denemeler = pd.read_sql_query("SELECT yayin, toplam_net, koc_notu, tarih FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(secilen_ogr,))
                 if df_koc_denemeler.empty:
@@ -647,10 +665,9 @@ else:
                         </div>
                         """, unsafe_allow_html=True)
 
-                # EXCEL TABLOSU GİBİ HÜCRELER ÜZERİNDEN SEÇİLEBİLEN HAFTALIK PROGRAM DÜZENLEYİCİ (MOLA VE YEMEKLER DAHİL)
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Excel Görünümlü Pratik Haftalık Program Matrisi")
-                st.caption("⚡ Saat aralığını girip her gün (Pazartesi'den Pazar'a) için mola, yemek, yürüyüş veya YKS ders/konu seçenekleriyle hücreleri anında doldurabilirsin.")
+                st.caption("⚡ Saat aralığını girip mola, yemek, yürüyüş veya YKS ders/konu seçenekleriyle hücreleri doldurabilirsin.")
 
                 with st.form("saat_ekleme_formu"):
                     c_s1, c_s2 = st.columns(2)
@@ -681,7 +698,7 @@ else:
                          st.success(f"🎉 {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla güncellendi!")
                          st.rerun()
 
-                st.markdown("#### 📊 Canlı Excel Program Tablosu (Doğrudan Üzerinden Düzenleyebilirsin)")
+                st.markdown("#### 📊 Canlı Excel Program Tablosu")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
                 
                 if df_matris.empty:
@@ -733,7 +750,7 @@ else:
 
                 st.divider()
                 st.markdown(f"### 💬 {sec_ogr_adi} WhatsApp Paylaşım Linki")
-                host_url = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
+.                 host_url = "https://blank-app-mtyl8rm3xgtksm5qer7qng.streamlit.app"
                 share_url = f"{host_url}/?ogrenci={quote(sec_ogr_adi)}"
                 st.code(share_url, language="text")
                 st.link_button("💬 WhatsApp İle Gönder", f"https://api.whatsapp.com/send?text={quote(f'Soru linki: {share_url}')}")
