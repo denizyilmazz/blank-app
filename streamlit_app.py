@@ -266,7 +266,27 @@ MOTIVASYON_SOZLERI = [
     "🎓 Bugün döktüğün her damla alın teri, hayalindeki okulun kapısını açar!"
 ]
 
+# Özel Dersler, Aktiviteler ve YKS Müfredatını İçeren Kapsamlı Veritabanı
 YKS_KAPSAMLI_DERS_KONULAR = {
+    "📐 Matematik Özel Ders": [
+        "Matematik Özel Ders - Konu Anlatımı & Föyler",
+        "Matematik Özel Ders - Soru Çözüm Kampı",
+        "Matematik Özel Ders - Ödev Kontrolü & Tekrar",
+        "Matematik Özel Ders - Yeni Nesil Soru Analizi"
+    ],
+    "⚡ Fizik Özel Ders": [
+        "Fizik Özel Ders - Konu Anlatımı & Deney/Simülasyon",
+        "Fizik Özel Ders - Soru Çözüm & Formül Pratiği",
+        "Fizik Özel Ders - Ödev Kontrolü & Zor Sorular"
+    ],
+    "🧪 Kimya Özel Ders": [
+        "Kimya Özel Ders - Konu Anlatımı",
+        "Kimya Özel Ders - Soru Çözüm & Hesaplama Pratiği"
+    ],
+    "🧬 Biyoloji Özel Ders": [
+        "Biyoloji Özel Ders - Konu Anlatımı & Şekil Analizi",
+        "Biyoloji Özel Ders - Soru Çözüm Kampı"
+    ],
     "☕ Mola & Dinlenme": [
         "Kısa Dinlenme & Zihin Molası (10-15 dk)",
         "Göz Dinlendirme & Su Molası",
@@ -736,37 +756,43 @@ else:
                         """, unsafe_allow_html=True)
 
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — Excel Görünümlü Pratik Haftalık Program Matrisi")
-                st.caption("⚡ Saat aralığını girip mola, yemek, yürüyüş veya YKS ders/konu seçenekleriyle hücreleri doldurabilirsin.")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Dinamik Haftalık Program Oluşturucu")
+                st.caption("⚡ Ders seçtiğinizde alt konular anında güncellenir.")
 
-                with st.form("saat_ekleme_formu"):
-                    c_s1, c_s2 = st.columns(2)
-                    with c_s1:
-                        yeni_saat_araligi = st.text_input("Yeni Saat Dilimi Ekle (Örn: 09:00 - 10:00):", value="10:00 - 11:30")
-                    with c_s2:
-                        hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"])
-                    
-                    c_s3, c_s4 = st.columns(2)
-                    with c_s3:
-                        sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", list(YKS_KAPSAMLI_DERS_KONULAR.keys()), key="m_ders")
-                    with c_s4:
-                        sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"]), key="m_konu")
+                # DİNAMİK SEÇİM ALANI (st.selectbox değerleri anında state üzerinden tetiklenir)
+                tum_dersler_listesi = list(YKS_KAPSAMLI_DERS_KONULAR.keys())
+                
+                c_s1, c_s2 = st.columns(2)
+                with c_s1:
+                    yeni_saat_araligi = st.text_input("Saat Dilimi:", value="09:00 - 10:00", key="dinamik_saat")
+                with c_s2:
+                    hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="dinamik_gun")
+                
+                c_s3, c_s4 = st.columns(2)
+                with c_s3:
+                    sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
+                
+                # Dinamik olarak seçilen derse ait alt konuları çekiyoruz
+                mevcut_alt_konular = YKS_KAPSAMLI_DERS_KONULAR.get(sec_ders_matris, ["Genel Soru"])
+                
+                with c_s4:
+                    sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", mevcut_alt_konular, key="dinamik_konu_secim")
 
-                    if st.form_submit_button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True):
-                         hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
-                         gun_sutun_map = {
-                             "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
-                             "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
-                         }
-                         t_sutun = gun_sutun_map[hedef_gun_sec]
-                         cursor.execute(f"""
-                             INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
-                             VALUES (?, ?, ?)
-                             ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = ?
-                         """, (secilen_ogr, yeni_saat_araligi, hucre_degeri, hucre_degeri))
-                         conn.commit()
-                         st.success(f"🎉 {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla güncellendi!")
-                         st.rerun()
+                if st.button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True):
+                     hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
+                     gun_sutun_map = {
+                         "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                         "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                     }
+                     t_sutun = gun_sutun_map[hedef_gun_sec]
+                     cursor.execute(f"""
+                         INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
+                         VALUES (?, ?, ?)
+                         ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = ?
+                     """, (secilen_ogr, yeni_saat_araligi, hucre_degeri, hucre_degeri))
+                     conn.commit()
+                     st.success(f"🎉 {hedef_gun_sec} günü ({yeni_saat_araligi}) başarıyla güncellendi!")
+                     st.rerun()
 
                 st.markdown("#### 📊 Canlı Excel Program Tablosu")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ?", conn, params=(secilen_ogr,))
