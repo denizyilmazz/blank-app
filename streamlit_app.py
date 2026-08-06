@@ -217,8 +217,7 @@ HAM_DERS_KONULARI = {
         "Özel Ders Biyoloji - Soru Çözüm Kampı"
     ],
     "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru)",
-        "Yeni Nesil Problemler (20 Soru)",
+        "Paragraf Hız Kampı (25 Soru) + Yeni Nesil Problemler (20 Soru)",
         "Sözel Mantık Rutini",
         "Sayı-Kesir Problemleri",
         "Yaş & İşçi Havuz Problemleri",
@@ -785,9 +784,33 @@ else:
                 elif "SÖZ" in sec_alan_giris:
                     aktif_giris_dersleri.append("📖 AYT Edebiyat")
 
+                # Paragraf + Problem rutini için istenen birleşik alt konu tanımı
+                PARAGRAF_PROBLEM_ALT_KONULARI = [
+                    "Paragraf Hız Kampı (25 Soru) — Konu Çalışması",
+                    "Paragraf Hız Kampı (25 Soru) — Soru Çözümü",
+                    "Yeni Nesil Problemler (20 Soru) — Konu Çalışması",
+                    "Yeni Nesil Problemler (20 Soru) — Soru Çözümü",
+                    "Sözel Mantık Rutini — Konu Çalışması",
+                    "Sözel Mantık Rutini — Soru Çözümü",
+                    "Sayı-Kesir Problemleri — Konu Çalışması",
+                    "Sayı-Kesir Problemleri — Soru Çözümü",
+                    "Yaş & İşçi Havuz Problemleri — Konu Çalışması",
+                    "Yaş & İşçi Havuz Problemleri — Soru Çözümü",
+                    "Yüzde-Kar/Zarar & Karışım — Konu Çalışması",
+                    "Yüzde-Kar/Zarar & Karışım — Soru Çözümü",
+                    "Hız & Hareket Problemleri — Konu Çalışması",
+                    "Hız & Hareket Problemleri — Soru Çözümü",
+                    "Grafik & Rutin Olmayan Problemler — Konu Çalışması",
+                    "Grafik & Rutin Olmayan Problemler — Soru Çözümü"
+                ]
+
                 with st.form("gunluk_detayli_calisma_formu"):
                     secilen_ders = st.selectbox("Ders Seçin:", aktif_giris_dersleri)
-                    konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
+                    if secilen_ders == "⚡ 📖 Paragraf + 📐 Problem Rutini":
+                        konu_listesi_secim = PARAGRAF_PROBLEM_ALT_KONULARI
+                    else:
+                        konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
+                    
                     secilen_konu = st.selectbox("Konu Seçin:", konu_listesi_secim)
 
                     col_gc1, col_gc2, col_gc3 = st.columns(3)
@@ -1017,7 +1040,30 @@ else:
                 with c_s3:
                     sec_ders_matris = st.selectbox("Ders / Aktivite / Mola Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
                 
-                mevcut_alt_konular = EVRENSEL_DERS_KONULARI.get(sec_ders_matris, ["Genel Soru"])
+                # Paragraf + Problem rutini için istenen birleşik alt konu tanımı
+                PARAGRAF_PROBLEM_ALT_KONULARI_KOC = [
+                    "Paragraf Hız Kampı (25 Soru) — Konu Çalışması",
+                    "Paragraf Hız Kampı (25 Soru) — Soru Çözümü",
+                    "Yeni Nesil Problemler (20 Soru) — Konu Çalışması",
+                    "Yeni Nesil Problemler (20 Soru) — Soru Çözümü",
+                    "Sözel Mantık Rutini — Konu Çalışması",
+                    "Sözel Mantık Rutini — Soru Çözümü",
+                    "Sayı-Kesir Problemleri — Konu Çalışması",
+                    "Sayı-Kesir Problemleri — Soru Çözümü",
+                    "Yaş & İşçi Havuz Problemleri — Konu Çalışması",
+                    "Yaş & İşçi Havuz Problemleri — Soru Çözümü",
+                    "Yüzde-Kar/Zarar & Karışım — Konu Çalışması",
+                    "Yüzde-Kar/Zarar & Karışım — Soru Çözümü",
+                    "Hız & Hareket Problemleri — Konu Çalışması",
+                    "Hız & Hareket Problemleri — Soru Çözümü",
+                    "Grafik & Rutin Olmayan Problemler — Konu Çalışması",
+                    "Grafik & Rutin Olmayan Problemler — Soru Çözümü"
+                ]
+
+                if sec_ders_matris == "⚡ 📖 Paragraf + 📐 Problem Rutini":
+                    mevcut_alt_konular = PARAGRAF_PROBLEM_ALT_KONULARI_KOC
+                else:
+                    mevcut_alt_konular = EVRENSEL_DERS_KONULARI.get(sec_ders_matris, ["Genel Soru"])
                 
                 with c_s4:
                     sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", mevcut_alt_konular, key="dinamik_konu_secim")
@@ -1030,7 +1076,6 @@ else:
                      }
                      t_sutun = gun_sutun_map[hedef_gun_sec]
                      
-                     # Mükerrerliği önlemek için mevcut kaydı güncelliyoruz
                      cursor.execute(f"""
                          INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
                          VALUES (?, ?, ?)
@@ -1042,7 +1087,7 @@ else:
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Excel Program Tablosu")
                 
-                # Veritabanındaki mükerrer satırları anında temizleyelim
+                # Mükerrer satırları anında temizle
                 cursor.execute("""
                     DELETE FROM excel_program_matris 
                     WHERE rowid NOT IN (
@@ -1065,7 +1110,6 @@ else:
                 )
 
                 if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
-                    # Tabloyu tamamen güncelleyelim
                     cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
                     for _, row in edited_matris.iterrows():
                         s_ar = str(row.get("Saat Aralığı", "")).strip()
