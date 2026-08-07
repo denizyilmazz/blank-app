@@ -8,8 +8,11 @@ import hashlib
 import os
 import io
 from urllib.parse import quote
-from PIL import Image
-# import openpyxl
+from PIL import
+import subprocess
+import sys
+subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])Image
+import openpyxl
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
