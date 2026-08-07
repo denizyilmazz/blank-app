@@ -11,7 +11,7 @@ from urllib.parse import quote
 from PIL import Image
 import subprocess
 import sys
-subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])Image
+subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
 import openpyxl
 
 st.set_page_config(
