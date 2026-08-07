@@ -9,7 +9,7 @@ import os
 import io
 from urllib.parse import quote
 from PIL import Image
-# import openpyxl
+import openpyxl
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
