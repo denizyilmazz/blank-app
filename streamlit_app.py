@@ -6,10 +6,8 @@ import random
 import base64
 import hashlib
 import os
-import io
 from urllib.parse import quote
 from PIL import Image
-import openpyxl
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
@@ -169,12 +167,6 @@ def html_to_pdf_bytes(df, ogrenci_adi):
     </html>
     """
     return html_content.encode('utf-8')
-
-def ilerleme_tablosu_excel_byte(df):
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Ilerleme')
-    return output.getvalue()
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -730,27 +722,15 @@ else:
                         st.rerun()
 
                 st.markdown("---")
-                st.markdown("#### 📥 İlerleme Tablosunu İndir (Excel / PDF)")
+                st.markdown("#### 📥 İlerleme Tablosunu İndir (Excel / CSV)")
                 df_tum_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN 'Evet' ELSE 'Hayır' END AS 'Tamamlandı', soru_miktari AS 'Soru Miktarı' FROM konu_ilerleme WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
-                
                 if not df_tum_ilerleme.empty:
-                    col_d1, col_d2 = st.columns(2)
-                    
-                    excel_data = ilerleme_tablosu_excel_byte(df_tum_ilerleme)
-                    col_d1.download_button(
-                        label="📥 Excel (.xlsx) İndir",
-                        data=excel_data,
-                        file_name=f"{aktif_ogr}_Ilerleme.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        use_container_width=True
-                    )
-                    
-                    pdf_html = html_to_pdf_bytes(df_tum_ilerleme, aktif_ogr)
-                    col_d2.download_button(
-                        label="📥 PDF (.html / Yazdırılabilir) İndir",
-                        data=pdf_html,
-                        file_name=f"{aktif_ogr}_Ilerleme.html",
-                        mime="text/html",
+                    csv_data = df_tum_ilerleme.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="📥 Tüm İlerleme Tablosunu İndir (.csv / Excel ile açılabilir)",
+                        data=csv_data,
+                        file_name=f"{aktif_ogr}_Ders_Ilerleme_Tablosu.csv",
+                        mime="text/csv",
                         use_container_width=True
                     )
 
