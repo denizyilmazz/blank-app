@@ -96,15 +96,6 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    .calc-card {
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        margin-top: 15px;
-    }
-
     .program-header-box {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
         color: white;
@@ -175,22 +166,6 @@ MOTIVASYON_SOZLERI = [
 ]
 
 HAM_DERS_KONULARI = {
-    "☕ Mola & Dinlenme": [
-        "Kısa Dinlenme & Zihin Molası (10-15 dk)",
-        "Göz Dinlendirme & Su Molası",
-        "Müzik Dinleme & Rahatlama",
-        "Serbest Zaman & Sosyal Medya Molası"
-    ],
-    "🚶‍♂️ Yürüyüş & Aktivite": [
-        "Tempolu Açık Hava Yürüyüşü (30 dk)",
-        "Hafif Esneme & Pilates Hareketleri",
-        "Temiz Hava Alma & Fiziksel Aktivite"
-    ],
-    "🍲 Öğle & Akşam Yemeği": [
-        "Öğle Yemeği & Dinlenme Arası",
-        "Akşam Yemeği & Aile Zamanı",
-        "Ana Öğün & Kahve/Çay Molası"
-    ],
     "👨‍🏫 Özel Ders Türkçe": [
         "Özel Ders Türkçe - Birebir Paragraf & Dil Bilgisi",
         "Özel Ders Türkçe - Soru Çözüm Kampı",
@@ -304,14 +279,11 @@ HAM_DERS_KONULARI = {
 
 EVRENSEL_DERS_KONULARI = {}
 for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
-    if "Mola" in ders_adi or "Yürüyüş" in ders_adi or "Yemeği" in ders_adi or "Özel Ders" in ders_adi:
-        EVRENSEL_DERS_KONULARI[ders_adi] = konu_listesi
-    else:
-        genisletilmis = []
-        for k in konu_listesi:
-            genisletilmis.append(f"{k} — Konu Çalışması")
-            genisletilmis.append(f"{k} — Soru Çözümü")
-        EVRENSEL_DERS_KONULARI[ders_adi] = genisletilmis
+    genisletilmis = []
+    for k in konu_listesi:
+        genisletilmis.append(f"{k} — Konu Çalışması")
+        genisletilmis.append(f"{k} — Soru Çözümü")
+    EVRENSEL_DERS_KONULARI[ders_adi] = genisletilmis
 
 UNIVERSITE_LISTESI = [
     "Acıbadem Mehmet Ali Aydınlar Üniversitesi (İstanbul)", "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi", 
@@ -479,7 +451,6 @@ if link_ogrenci:
                     st.image(s_data['dosya_yolu'], width=400)
                 elif s_data['dosya_yolu'].lower().endswith('.pdf'):
                     st.markdown(pdf_goster_html(s_data['dosya_yolu']), unsafe_allow_html=True)
-            st.markdown(f'<div class="ai-analysis-box">Soru İnceleme Aktif</div>', unsafe_allow_html=True)
             st.divider()
 
     if st.button("⬅️ Ana Sayfaya Dön", use_container_width=True):
@@ -722,12 +693,12 @@ else:
                         st.rerun()
 
                 st.markdown("---")
-                st.markdown("#### 📥 İlerleme Tablosunu İndir (Excel / CSV)")
+                st.markdown("#### 📥 İlerleme Tablosunu İndir (CSV / Excel ile açılabilir)")
                 df_tum_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN 'Evet' ELSE 'Hayır' END AS 'Tamamlandı', soru_miktari AS 'Soru Miktarı' FROM konu_ilerleme WHERE ad_soyad = ?", conn, params=(aktif_ogr,))
                 if not df_tum_ilerleme.empty:
                     csv_data = df_tum_ilerleme.to_csv(index=False).encode('utf-8')
                     st.download_button(
-                        label="📥 Tüm İlerleme Tablosunu İndir (.csv / Excel ile açılabilir)",
+                        label="📥 Tüm İlerleme Tablosunu İndir",
                         data=csv_data,
                         file_name=f"{aktif_ogr}_Ders_Ilerleme_Tablosu.csv",
                         mime="text/csv",
@@ -828,14 +799,14 @@ else:
                 yeni_saat_araligi = f"{bas_saat}:{bas_dakika} - {bit_saat}:{bit_dakika}"
 
                 c_s3, c_s4 = st.columns(2)
-                with c_s3: sec_ders_matris = st.selectbox("Ders / Aktivite / Mola Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
+                with c_s3: sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
                 with c_s4: sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", EVRENSEL_DERS_KONULARI.get(sec_ders_matris, ["Genel Soru"]), key="dinamik_konu_secim")
 
                 if st.button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True):
                      hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
                      gun_sutun_map = {
-                         "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
-                         "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
+                        "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
+                        "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
                      }
                      t_sutun = gun_sutun_map[hedef_gun_sec]
                      cursor.execute(f"""
@@ -847,7 +818,7 @@ else:
                      st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) kaydedildi!")
                      st.rerun()
 
-                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Excel Program Tablosu")
+                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
                 
                 if df_matris.empty:
@@ -906,9 +877,32 @@ else:
                     st.session_state[f"veli_dogrulanmis_{v_ad}"] = False
                     st.rerun()
 
+            # Öğrencinin Hedef Bilgileri
+            cursor.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (v_ad,))
+            h_bilgi = cursor.fetchone()
+            if h_bilgi:
+                st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
+
+            # Konu İlerleme Durumu
             st.markdown("### ✅ Öğrenci Konu İlerleme Durumu")
             df_v_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN '✅ Tamamlandı' ELSE '⏳ Devam Ediyor' END AS 'Durum', soru_miktari AS 'Çözülen Soru' FROM konu_ilerleme WHERE ad_soyad = ?", conn, params=(v_ad,))
             if not df_v_ilerleme.empty:
                 st.dataframe(df_v_ilerleme, use_container_width=True)
             else:
                 st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işlem yapmamış.")
+
+            # Günlük Çalışma Özeti
+            st.markdown("### 📝 Öğrencinin Günlük Çalışma Takibi")
+            df_v_calisma = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', soru_sayisi AS 'Soru', konu_anlatim_sure AS 'Konu Süre (dk)', soru_cozum_sure AS 'Çözüm Süre (dk)' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC LIMIT 20", conn, params=(v_ad,))
+            if not df_v_calisma.empty:
+                st.dataframe(df_v_calisma, use_container_width=True, hide_index=True)
+            else:
+                st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
+
+            # DENEME SINAVLARI VE KOÇ NOTLARI (Eksikti, eklendi)
+            st.markdown("### 📊 Deneme Sınavı Sonuçları ve Koç Notları")
+            df_v_deneme = pd.read_sql_query("SELECT tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ad,))
+            if not df_v_deneme.empty:
+                st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
+            else:
+                st.info("ℹ️ Henüz deneme sınavı sonucu yüklenmemiş.")
