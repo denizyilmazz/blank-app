@@ -16,148 +16,154 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- TEMA SEÇİMİ (KULLANICI KONTROLÜ) ---
-# Kullanıcının tema tercihini saklıyoruz (Varsayılan: Gündüz Modu)
-if "tema_modu" not in st.session_state:
-    st.session_state["tema_modu"] = "☀️ Gündüz Modu (Açık)"
+# --- TELEFONUN GECE / GÜNDÜZ MODUNU OTOMATİK ALGILAYAN JAVASCRIPT & CSS ---
+st.markdown("""
+<script>
+    // Tarayıcının koyu modda olup olmadığını kontrol et ve Streamlit'e bildir
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+</script>
 
-with st.sidebar:
-    st.markdown("### ⚙️ Görünüm Ayarları")
-    secilen_tema = st.radio("Tema Seçimi:", ["☀️ Gündüz Modu (Açık)", "🌙 Gece Modu (Koyu)"], index=0 if st.session_state["tema_modu"]=="☀️ Gündüz Modu (Açık)" else 1)
-    if secilen_tema != st.session_state["tema_modu"]:
-        st.session_state["tema_modu"] = secilen_tema
-        st.rerun()
-
-# Temaya göre renk paletini belirliyoruz
-if st.session_state["tema_modu"] == "🌙 Gece Modu (Koyu)":
-    bg_gradient = "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%)"
-    text_color = "#f8fafc"
-    container_bg = "#1e293b"
-    border_color = "#334155"
-    input_bg = "#0f172a"
-    input_text = "#f8fafc"
-    tab_bg = "#1e293b"
-    yok_box_bg = "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
-    hero_bg = "linear-gradient(135deg, #0284c7 0%, #4f46e5 50%, #7c3aed 100%)"
-else:
-    bg_gradient = "linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%)"
-    text_color = "#0f172a"
-    container_bg = "#ffffff"
-    border_color = "#cbd5e1"
-    input_bg = "#ffffff"
-    input_text = "#0f172a"
-    tab_bg = "#ffffff"
-    yok_box_bg = "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)"
-    hero_bg = "linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%)"
-
-st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
-    html, body, [class*="css"], .stMarkdown, p, div, label, span, input, textarea, select {{
+    /* Otomatik Sistem Teması Algılama (Medya Sorgusu) */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%);
+            --text-color: #f8fafc;
+            --container-bg: #1e293b;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+            --input-text: #f8fafc;
+            --tab-bg: #1e293b;
+            --yok-box-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --hero-bg: linear-gradient(135deg, #0284c7 0%, #4f46e5 50%, #7c3aed 100%);
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%);
+            --text-color: #0f172a;
+            --container-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --input-bg: #ffffff;
+            --input-text: #0f172a;
+            --tab-bg: #ffffff;
+            --yok-box-bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            --hero-bg: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+        }
+    }
+
+    html, body, [class*="css"], .stMarkdown, p, div, label, span, input, textarea, select {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
-        color: {text_color} !important;
-    }}
+        color: var(--text-color, #0f172a) !important;
+    }
 
-    #MainMenu, footer, header, .stDeployButton {{display: none !important;}}
+    #MainMenu, footer, header, .stDeployButton {display: none !important;}
 
-    .stApp {{
-        background: {bg_gradient} !important;
+    .stApp {
+        background: var(--bg-gradient, linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%)) !important;
         background-attachment: fixed !important;
-    }}
+    }
 
-    .main .block-container {{
+    .main .block-container {
         padding-top: 1rem !important;
         padding-bottom: 3rem !important;
         max-width: 1420px !important;
-    }}
+    }
 
-    .stTabs [data-baseweb="tab-list"] {{
+    .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
-        background: {tab_bg} !important;
+        background: var(--tab-bg, #ffffff) !important;
         padding: 8px;
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid {border_color} !important;
-    }}
+        border: 1px solid var(--border-color, #cbd5e1) !important;
+    }
 
-    .stTabs [data-baseweb="tab"] {{
+    .stTabs [data-baseweb="tab"] {
         height: 48px;
-        background-color: {container_bg} !important;
+        background-color: var(--container-bg, #ffffff) !important;
         border-radius: 10px;
         padding: 8px 16px;
         font-weight: 700 !important;
         font-size: 13px !important;
-        color: {text_color} !important;
-        border: 1px solid {border_color} !important;
-    }}
+        color: var(--text-color, #0f172a) !important;
+        border: 1px solid var(--border-color, #cbd5e1) !important;
+    }
 
-    .stTabs [aria-selected="true"] {{
+    .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         border: none !important;
-    }}
+    }
 
-    .stTabs [aria-selected="true"] span, .stTabs [aria-selected="true"] div {{
+    .stTabs [aria-selected="true"] span, .stTabs [aria-selected="true"] div {
         color: #ffffff !important;
-    }}
+    }
 
-    input, textarea, select, div[data-baseweb="select"] {{
-        background-color: {input_bg} !important;
-        color: {input_text} !important;
-        border: 1.5px solid {border_color} !important;
+    input, textarea, select, div[data-baseweb="select"] {
+        background-color: var(--input-bg, #ffffff) !important;
+        color: var(--input-text, #0f172a) !important;
+        border: 1.5px solid var(--border-color, #94a3b8) !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
-    }}
+    }
 
-    div[data-baseweb="select"] > div {{
-        background-color: {input_bg} !important;
-        color: {input_text} !important;
-    }}
+    div[data-baseweb="select"] > div {
+        background-color: var(--input-bg, #ffffff) !important;
+        color: var(--input-text, #0f172a) !important;
+    }
     
-    div[data-baseweb="select"] span {{
-        color: {input_text} !important;
-    }}
+    div[data-baseweb="select"] span {
+        color: var(--input-text, #0f172a) !important;
+    }
 
-    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"] {{
-        background-color: {container_bg} !important;
-    }}
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"] {
+        background-color: var(--container-bg, #ffffff) !important;
+    }
     
-    div[data-baseweb="popover"] div, li[role="option"], span[data-baseweb="tag"] {{
-        color: {text_color} !important;
-        background-color: {container_bg} !important;
-    }}
+    div[data-baseweb="popover"] div, li[role="option"], span[data-baseweb="tag"] {
+        color: var(--text-color, #0f172a) !important;
+        background-color: var(--container-bg, #ffffff) !important;
+    }
     
-    li[role="option"]:hover {{
+    li[role="option"]:hover {
         background-color: #0284c7 !important;
         color: #ffffff !important;
-    }}
+    }
 
-    .hero-motivation-card {{
-        background: {hero_bg} !important;
+    .hero-motivation-card {
+        background: var(--hero-bg, linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%)) !important;
         color: #ffffff !important;
         padding: 20px 24px;
         border-radius: 20px;
         font-weight: 700;
         margin-bottom: 20px;
-    }}
+    }
 
-    .hero-motivation-card * {{
+    .hero-motivation-card * {
         color: #ffffff !important;
-    }}
+    }
 
-    .yok-net-box {{
-        background: {yok_box_bg} !important;
+    .yok-net-box {
+        background: var(--yok-box-bg, linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)) !important;
         border: 2px solid #3b82f6;
         border-radius: 16px;
         padding: 18px 22px;
         margin-bottom: 15px;
-    }}
+    }
     
-    .yok-net-box * {{
-        color: {text_color} !important;
-    }}
+    .yok-net-box * {
+        color: var(--text-color, #0f172a) !important;
+    }
 
-    .program-header-box {{
+    .program-header-box {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         color: white !important;
         padding: 20px;
@@ -165,11 +171,11 @@ st.markdown(f"""
         margin-bottom: 20px;
         text-align: center;
         box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
-    }}
+    }
     
-    .program-header-box * {{
+    .program-header-box * {
         color: #ffffff !important;
-    }}
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -194,7 +200,7 @@ def pdf_goster_html(pdf_path):
     try:
         with open(pdf_path, "rb") as f:
             base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-        return f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="550" type="application/pdf" style="border-radius:12px; border:1px solid {border_color};"></iframe>'
+        return f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="550" type="application/pdf" style="border-radius:12px; border:1px solid #cbd5e1;"></iframe>'
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
@@ -736,19 +742,19 @@ else:
                 <div class="yok-net-box">
                     <div style="font-size:16px; font-weight:800; margin-bottom:8px;">🏛️ {secilen_hedef_uni} — {secilen_hedef_bolum}</div>
                     <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
-                        <div style="background: {container_bg}; padding: 10px 15px; border-radius: 10px; border: 1px solid {border_color}; flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">YÖK ATLAS TABAN NET</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #0284c7;">{t_net} Net</span>
                         </div>
-                        <div style="background: {container_bg}; padding: 10px 15px; border-radius: 10px; border: 1px solid {border_color}; flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">YÖK ATLAS BAŞARI SIRASI</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #16a34a;">İlk {t_sira}</span>
                         </div>
-                        <div style="background: {container_bg}; padding: 10px 15px; border-radius: 10px; border: 1px solid {border_color}; flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">GEREKLİ ORTALAMA TYT</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #9333ea;">~{tyt_gerekli} Net</span>
                         </div>
-                        <div style="background: {container_bg}; padding: 10px 15px; border-radius: 10px; border: 1px solid {border_color}; flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">GEREKLİ ORTALAMA AYT</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #ea580c;">~{ayt_gerekli} Net</span>
                         </div>
