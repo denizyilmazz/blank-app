@@ -79,16 +79,26 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"], div.stSelectbox div[data-baseweb="select"] {
+    /* TELEFONLARDA VE TÜM SAYFALARDA SELECTBOX / AÇILIR MENÜ KESİN ÇÖZÜMÜ */
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+    
+    div[data-baseweb="select"] span {
+        color: #0f172a !important;
+    }
+
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"] {
         background-color: #ffffff !important;
     }
     
-    div[data-baseweb="popover"] div, ul[data-baseweb="menu"] li, span[data-baseweb="tag"] {
+    div[data-baseweb="popover"] div, li[role="option"], span[data-baseweb="tag"] {
         color: #0f172a !important;
         background-color: #ffffff !important;
     }
     
-    ul[data-baseweb="menu"] li:hover {
+    li[role="option"]:hover {
         background-color: #e0f2fe !important;
         color: #0284c7 !important;
     }
@@ -885,7 +895,6 @@ else:
                     yk_master = st.text_input("Ana Koç Onay Kodu (Güvenlik Kodu):", type="password")
                     if st.form_submit_button("Koç Kaydı Oluştur", type="primary"):
                         if yk_ad and yk_sif:
-                            # Eğer ana koç şifresi doğruysa direkt onaylı, değilse onaysız düşer
                             onay_durum = 1 if yk_master == "Koc123!" else 0
                             try:
                                 cursor.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (?, ?, ?)", (yk_ad, make_hash(yk_sif), onay_durum))
@@ -904,7 +913,6 @@ else:
                     st.session_state["aktif_koc"] = None
                     st.rerun()
 
-            # --- BEKLEYEN ÖĞRENCİ ONAY EKRANI ---
             st.markdown("### ⏳ Onay Bekleyen Yeni Öğrenciler")
             cursor.execute("SELECT ad_soyad, alan, sinav_turu FROM ogrenciler WHERE koc_adi = ? AND onaylandi = 0", (st.session_state['aktif_koc'],))
             bekleyen_ogrenciler = cursor.fetchall()
@@ -924,7 +932,6 @@ else:
             else:
                 st.info("ℹ️ Onay bekleyen yeni öğrenci bulunmuyor.")
 
-            # --- BEKLEYEN KOÇ ONAY EKRANI (Sadece koc1 görebilir) ---
             if st.session_state['aktif_koc'] == 'koc1':
                 cursor.execute("SELECT kullanici_adi FROM koclar WHERE onaylandi = 0")
                 bekleyen_koclar = cursor.fetchall()
