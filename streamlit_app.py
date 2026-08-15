@@ -20,6 +20,11 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
+    /* Telefonlar karanlık modda olsa bile renklerin bozulmasını engelle */
+    :root {
+        color-scheme: light !important;
+    }
+
     html, body, [class*="css"], .stMarkdown, p, div, label, span, input, textarea, select {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         color: #0f172a !important;
@@ -76,7 +81,7 @@ st.markdown("""
     }
 
     .hero-motivation-card {
-        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%) !important;
         color: #ffffff !important;
         padding: 20px 24px;
         border-radius: 20px;
@@ -89,21 +94,29 @@ st.markdown("""
     }
 
     .yok-net-box {
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
         border: 2px solid #3b82f6;
         border-radius: 16px;
         padding: 18px 22px;
         margin-bottom: 15px;
     }
+    
+    .yok-net-box * {
+        color: #0f172a !important;
+    }
 
     .program-header-box {
-        background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-        color: white;
+        background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+        color: white !important;
         padding: 20px;
         border-radius: 16px;
         margin-bottom: 20px;
         text-align: center;
         box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+    }
+    
+    .program-header-box * {
+        color: #ffffff !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -275,6 +288,46 @@ HAM_DERS_KONULARI = {
         "Tanzimat ve Servet-i Fünun", "Milli Edebiyat ve Cumhuriyet Dönemi Şiir", 
         "Cumhuriyet Dönemi Roman ve Hikaye"
     ]
+}
+
+# ÖSYM Soru Dağılım Sözlüğü
+OSYM_SORU_DAGILIMLARI = {
+    "Sözcükte Anlam": "Ort. 2-3 Soru",
+    "Cümlede Anlam": "Ort. 2 Soru",
+    "Paragrafta Anlam ve Yapı": "Ort. 14-16 Soru",
+    "Ses Bilgisi": "Ort. 1 Soru",
+    "Yazım Kuralları": "Ort. 2 Soru",
+    "Noktalama İşaretleri": "Ort. 2 Soru",
+    "Sözcük Türleri": "Ort. 1-2 Soru",
+    "Fiiller, Ek Fiil ve Fiilimsi": "Ort. 1 Soru",
+    "Cümlenin Ögeleri ve Cümle Çeşitleri": "Ort. 1-2 Soru",
+    "Anlatım Bozuklukları": "Ort. 1 Soru",
+    
+    "Temel Kavramlar": "Ort. 3-4 Soru",
+    "Sayı Basamakları": "Ort. 1 Soru",
+    "Bölme ve Bölünebilme": "Ort. 1 Soru",
+    "EBOB - EKOK": "Ort. 1 Soru",
+    "Rasyonel Sayılar": "Ort. 1 Soru",
+    "Basit Eşitsizlikler": "Ort. 1 Soru",
+    "Mutlak Değer": "Ort. 1 Soru",
+    "Üslü İfadeler": "Ort. 1-2 Soru",
+    "Köklü İfadeler": "Ort. 1 Soru",
+    "Çarpanlara Ayırma": "Ort. 1 Soru",
+    "Oran - Orantı": "Ort. 1 Soru",
+    "Denklem Çözme": "Ort. 1 Soru",
+    "Kümeler ve Kartezyen Çarpım": "Ort. 1 Soru",
+    "Fonksiyonlar": "Ort. 2-3 Soru",
+    "Veri, Sayma ve Olasılık": "Ort. 3-4 Soru",
+    
+    "İkinci Dereceden Denklemler & Karmaşık Sayılar": "Ort. 2 Soru",
+    "Parabol": "Ort. 1 Soru",
+    "Eşitsizlikler": "Ort. 1 Soru",
+    "Trigonometri": "Ort. 4 Soru",
+    "Logaritma": "Ort. 2 Soru",
+    "Diziler": "Ort. 2 Soru",
+    "Limit ve Süreklilik": "Ort. 2 Soru",
+    "Türev": "Ort. 3-4 Soru",
+    "İntegral ve Alan": "Ort. 3-4 Soru"
 }
 
 EVRENSEL_DERS_KONULARI = {}
@@ -650,8 +703,8 @@ else:
                     st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi.")
 
             with tab_ilerleme:
-                st.markdown(f"### ✅ Konu İlerleme & Soru Takip Tablosu — {aktif_ogr}")
-                st.caption("📚 Her ders için konuları tamamlandığında tik atabilir ve çözdüğünüz soru miktarını yazarak kaydedebilirsiniz.")
+                st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
+                st.caption("📚 Her ders için konuların ÖSYM'de kaç soru getirdiğini görerek çalışmanı planlayabilir, tamamlandığında tik atabilirsin.")
 
                 secilen_takip_ders = st.selectbox("İlerlemesini Görmek / Düzenlemek İstediğiniz Dersi Seçin:", list(HAM_DERS_KONULARI.keys()), key="takip_ders_secim")
                 konu_listesi_ogrenci = HAM_DERS_KONULARI[secilen_takip_ders]
@@ -662,8 +715,12 @@ else:
                     res = cursor.fetchone()
                     t_val = bool(res[0]) if res else False
                     s_val = int(res[1]) if res else 0
+                    
+                    osym_bilgi = OSYM_SORU_DAGILIMLARI.get(konu, "ÖSYM Ort. 1-2 Soru")
+                    
                     takip_verileri.append({
                         "Konu Adı": konu,
+                        "ÖSYM Çıkmış Soru Dağılımı": osym_bilgi,
                         "Tamamlandı ✅": t_val,
                         "Çözülen Soru Miktarı": s_val
                     })
@@ -899,7 +956,7 @@ else:
             else:
                 st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
 
-            # DENEME SINAVLARI VE KOÇ NOTLARI (Eksikti, eklendi)
+            # DENEME SINAVLARI VE KOÇ NOTLARI
             st.markdown("### 📊 Deneme Sınavı Sonuçları ve Koç Notları")
             df_v_deneme = pd.read_sql_query("SELECT tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn, params=(v_ad,))
             if not df_v_deneme.empty:
