@@ -8,6 +8,7 @@ import hashlib
 import os
 from urllib.parse import quote
 from PIL import Image
+import shutil
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
@@ -15,6 +16,24 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# --- OTOMATİK GÜNLÜK VERİTABANI YEDEKLEME SİSTEMİ ---
+DB_FILE = "yks_kocluk.db"
+YEDEK_DIR = "veritabani_yedekleri"
+os.makedirs(YEDEK_DIR, exist_ok=True)
+
+def otomatik_yedekle():
+    if os.path.exists(DB_FILE):
+        bugun = datetime.date.today().strftime("%Y-%m-%d")
+        yedek_yolu = os.path.join(YEDEK_DIR, f"yks_kocluk_yedek_{bugun}.db")
+        # Eğer bugün henüz yedek alınmadıysa kopyala
+        if not os.path.exists(yedek_yolu):
+            try:
+                shutil.copy2(DB_FILE, yedek_yolu)
+            except Exception:
+                pass
+
+otomatik_yedekle()
 
 # --- TELEFONUN GECE / GÜNDÜZ MODUNU OTOMATİK ALGILAYAN JAVASCRIPT & CSS ---
 st.markdown("""
@@ -177,7 +196,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-DB_FILE = "yks_kocluk.db"
 UPLOAD_DIR = "soru_yuklemeleri"
 KARNE_DIR = "karne_yuklemeleri"
 PROGRAM_DIR = "program_dosyalari"
