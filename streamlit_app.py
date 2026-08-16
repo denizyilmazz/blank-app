@@ -947,7 +947,7 @@ else:
                     st.rerun()
 
             # --- ONAY BEKLEYEN YENİ ÖĞRENCİLER BİLDİRİM & YÖNETİMİ ---
-            cursor.execute("SELECT ad_soyad, alan, sinav_turu FROM ogrenciler WHERE koc_adi = ? AND onaylandi = 0", (st.session_state['aktif_koc'],))
+            cursor.execute("SELECT ad_soyad, alan, sinav_turu, koc_adi FROM ogrenciler WHERE onaylandi = 0")
             bekleyen_ogrenciler = cursor.fetchall()
             
             if bekleyen_ogrenciler:
@@ -959,22 +959,32 @@ else:
                 """, unsafe_allow_html=True)
 
                 for b_ogr in bekleyen_ogrenciler:
-                    col_bo1, col_bo2, col_bo3, col_bo4 = st.columns([2, 1.5, 1, 1])
+                    col_bo1, col_bo2, col_bo3, col_bo4, col_bo5 = st.columns([2, 1.5, 1.5, 1, 1])
                     with col_bo1: st.markdown(f"**{b_ogr[0]}**")
-                    with col_bo2: st.markdown(f"Alan: {b_ogr[1]}")
-                    with col_bo3:
+                    with col_bo2: st.markdown(f"İstenen Koç: {b_ogr[3]}")
+                    with col_bo3: st.markdown(f"Alan: {b_ogr[1]}")
+                    with col_bo4:
                         if st.button(f"Onayla ✅", key=f"onay_{b_ogr[0]}"):
                             cursor.execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = ?", (b_ogr[0],))
                             conn.commit()
                             st.success(f"{b_ogr[0]} onaylandı!")
                             st.rerun()
-                    with col_bo4:
+                    with col_bo5:
                         if st.button(f"Sil ❌", key=f"sil_{b_ogr[0]}"):
                             cursor.execute("DELETE FROM ogrenciler WHERE ad_soyad = ?", (b_ogr[0],))
                             conn.commit()
                             st.warning(f"{b_ogr[0]} kaydı silindi.")
                             st.rerun()
                 st.divider()
+
+            # --- VERİTABANI KONTROL / TÜM ÖĞRENCİLER DÖKÜMÜ (Zeynep Türe vb. kayıpları bulmak için) ---
+            with st.expander("🔍 Tüm Veritabanı Öğrenci Dökümü (Kayıp Arama Aracı)"):
+                st.caption("Sistemdeki tüm kayıtlı öğrencileri (onaylı/onaysız ve koç bağımsız) buradan görebilirsin.")
+                df_tum_db_ogrn = pd.read_sql_query("SELECT ad_soyad AS 'Ad Soyad', alan AS 'Alan', sinav_turu AS 'Sınav', koc_adi AS 'Seçilen Koç', CASE WHEN onaylandi=1 THEN 'Onaylı' ELSE 'Onay Bekliyor' END AS 'Durum' FROM ogrenciler", conn)
+                if not df_tum_db_ogrn.empty:
+                    st.dataframe(df_tum_db_ogrn, use_container_width=True)
+                else:
+                    st.info("Veritabanında hiç öğrenci kaydı bulunmuyor.")
 
             if st.session_state['aktif_koc'] == 'koc1':
                 cursor.execute("SELECT kullanici_adi FROM koclar WHERE onaylandi = 0")
