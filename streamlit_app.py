@@ -235,14 +235,6 @@ MOTIVASYON_SOZLERI = [
 ]
 
 HAM_DERS_KONULARI = {
-    "☕ Mola & Dinlenme Aktivitesi": [
-        "Kısa Dinlenme & Çay/Kahve Molası",
-        "Zihin Dinlendirme Mola"
-    ],
-    "🍽️ Yemek Molaları": [
-        "Öğle Yemeği Molası",
-        "Akşam Yemeği Molası"
-    ],
     "👨‍🏫 Özel Ders Türkçe": [
         "Özel Ders Türkçe - Birebir Paragraf & Dil Bilgisi",
         "Özel Ders Türkçe - Soru Çözüm Kampı",
@@ -985,9 +977,9 @@ else:
                             st.rerun()
                 st.divider()
 
-            # --- VERİTABANI KONTROL / TÜM ÖĞRENCİLER DÖKÜMÜ ---
+            # --- VERİTABANI KONTROL / TÜM ÖĞRENCİLER DÖKÜMÜ (Zeynep Türe vb. kayıpları bulmak için) ---
             with st.expander("🔍 Tüm Veritabanı Öğrenci Dökümü (Kayıp Arama Aracı)"):
-                st.caption("Sistemdeki tüm kayıtlı öğrencileri buradan görebilirsin.")
+                st.caption("Sistemdeki tüm kayıtlı öğrencileri (onaylı/onaysız ve koç bağımsız) buradan görebilirsin.")
                 df_tum_db_ogrn = pd.read_sql_query("SELECT ad_soyad AS 'Ad Soyad', alan AS 'Alan', sinav_turu AS 'Sınav', koc_adi AS 'Seçilen Koç', CASE WHEN onaylandi=1 THEN 'Onaylı' ELSE 'Onay Bekliyor' END AS 'Durum' FROM ogrenciler", conn)
                 if not df_tum_db_ogrn.empty:
                     st.dataframe(df_tum_db_ogrn, use_container_width=True)
@@ -1023,7 +1015,7 @@ else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
 
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
                 
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
@@ -1058,9 +1050,7 @@ else:
                      st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) kaydedildi!")
                      st.rerun()
 
-                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu (Sürükle, Değiştir & Geri Al)")
-                st.caption("💡 İpucu: Hücreleri doğrudan tablonun üzerine tıklayarak düzenleyebilir, yanlışlık yaparsan aşağıdaki butona basarak programı sıfırlayabilir/eski haline döndürebilirsin.")
-                
+                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
                 df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(secilen_ogr,))
                 
                 if df_matris.empty:
@@ -1068,33 +1058,27 @@ else:
 
                 edited_matris = st.data_editor(df_matris, num_rows="dynamic", use_container_width=True, height=450, key=f"excel_matris_editor_{secilen_ogr}")
 
-                col_prg_btn1, col_prg_btn2 = st.columns(2)
-                with col_prg_btn1:
-                    if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
-                        cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
-                        for _, row in edited_matris.iterrows():
-                            s_ar = str(row.get("Saat Aralığı", "")).strip()
-                            if s_ar and s_ar != "nan":
-                                cursor.execute("""
-                                    INSERT OR REPLACE INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                """, (
-                                    secilen_ogr, s_ar,
-                                    str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
-                                    str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
-                                    str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
-                                    str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
-                                    str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
-                                    str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
-                                    str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
-                                ))
-                        conn.commit()
-                        st.success("🎉 Program güncellendi!")
-                        st.rerun()
-                with col_prg_btn2:
-                    if st.button("🔄 Beğenmedim / Eski Haline Döndür", use_container_width=True):
-                        st.info("Program tablosu veritabanındaki son kayıtlı haline geri döndürüldü.")
-                        st.rerun()
+                if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
+                    cursor.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
+                    for _, row in edited_matris.iterrows():
+                        s_ar = str(row.get("Saat Aralığı", "")).strip()
+                        if s_ar and s_ar != "nan":
+                            cursor.execute("""
+                                INSERT OR REPLACE INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """, (
+                                secilen_ogr, s_ar,
+                                str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
+                                str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
+                                str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
+                                str(row.get("Perşembe", "") if pd.notna(row.get("Perşembe")) else ""),
+                                str(row.get("Cuma", "") if pd.notna(row.get("Cuma")) else ""),
+                                str(row.get("Cumartesi", "") if pd.notna(row.get("Cumartesi")) else ""),
+                                str(row.get("Pazar", "") if pd.notna(row.get("Pazar")) else "")
+                            ))
+                    conn.commit()
+                    st.success("🎉 Program güncellendi!")
+                    st.rerun()
             else:
                 st.info("ℹ️ Sizin koçluğunuz altında onaylanmış öğrenci bulunmuyor.")
 
