@@ -235,6 +235,14 @@ MOTIVASYON_SOZLERI = [
 ]
 
 HAM_DERS_KONULARI = {
+    "☕ Mola & Dinlenme Aktivitesi": [
+        "Kısa Dinlenme & Çay/Kahve Molası",
+        "Zihin Dinlendirme Mola"
+    ],
+    "🍽️ Yemek Molaları": [
+        "Öğle Yemeği Molası",
+        "Akşam Yemeği Molası"
+    ],
     "👨‍🏫 Özel Ders Türkçe": [
         "Özel Ders Türkçe - Birebir Paragraf & Dil Bilgisi",
         "Özel Ders Türkçe - Soru Çözüm Kampı",
@@ -977,15 +985,6 @@ else:
                             st.rerun()
                 st.divider()
 
-            # --- VERİTABANI KONTROL / TÜM ÖĞRENCİLER DÖKÜMÜ (Zeynep Türe vb. kayıpları bulmak için) ---
-            with st.expander("🔍 Tüm Veritabanı Öğrenci Dökümü (Kayıp Arama Aracı)"):
-                st.caption("Sistemdeki tüm kayıtlı öğrencileri (onaylı/onaysız ve koç bağımsız) buradan görebilirsin.")
-                df_tum_db_ogrn = pd.read_sql_query("SELECT ad_soyad AS 'Ad Soyad', alan AS 'Alan', sinav_turu AS 'Sınav', koc_adi AS 'Seçilen Koç', CASE WHEN onaylandi=1 THEN 'Onaylı' ELSE 'Onay Bekliyor' END AS 'Durum' FROM ogrenciler", conn)
-                if not df_tum_db_ogrn.empty:
-                    st.dataframe(df_tum_db_ogrn, use_container_width=True)
-                else:
-                    st.info("Veritabanında hiç öğrenci kaydı bulunmuyor.")
-
             if st.session_state['aktif_koc'] == 'koc1':
                 cursor.execute("SELECT kullanici_adi FROM koclar WHERE onaylandi = 0")
                 bekleyen_koclar = cursor.fetchall()
@@ -1015,7 +1014,7 @@ else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
 
                 st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Oluşturucu")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
                 
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
