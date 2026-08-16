@@ -19,7 +19,6 @@ st.set_page_config(
 # --- TELEFONUN GECE / GÜNDÜZ MODUNU OTOMATİK ALGILAYAN JAVASCRIPT & CSS ---
 st.markdown("""
 <script>
-    // Tarayıcının koyu modda olup olmadığını kontrol et ve Streamlit'e bildir
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (prefersDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -31,7 +30,6 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
-    /* Otomatik Sistem Teması Algılama (Medya Sorgusu) */
     @media (prefers-color-scheme: dark) {
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%);
@@ -948,24 +946,35 @@ else:
                     st.session_state["aktif_koc"] = None
                     st.rerun()
 
-            st.markdown("### ⏳ Onay Bekleyen Yeni Öğrenciler")
+            # --- ONAY BEKLEYEN YENİ ÖĞRENCİLER BİLDİRİM & YÖNETİMİ ---
             cursor.execute("SELECT ad_soyad, alan, sinav_turu FROM ogrenciler WHERE koc_adi = ? AND onaylandi = 0", (st.session_state['aktif_koc'],))
             bekleyen_ogrenciler = cursor.fetchall()
             
             if bekleyen_ogrenciler:
+                st.markdown(f"""
+                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 15px 20px; border-radius: 14px; margin-bottom: 20px;">
+                    <h3 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🔔 Bildirim: {len(bekleyen_ogrenciler)} Yeni Öğrenci Onay Bekliyor!</h3>
+                    <p style="margin:4px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Aşağıdaki listeden öğrencileri onaylayabilir veya silebilirsiniz (reddedebilirsiniz).</p>
+                </div>
+                """, unsafe_allow_html=True)
+
                 for b_ogr in bekleyen_ogrenciler:
-                    col_bo1, col_bo2, col_bo3 = st.columns([2, 2, 1])
-                    with col_bo1: st.markdown(f"**{b_ogr[0]}** ({b_ogr[1]})")
-                    with col_bo2: st.markdown(f"Sınav: {b_ogr[2]}")
+                    col_bo1, col_bo2, col_bo3, col_bo4 = st.columns([2, 1.5, 1, 1])
+                    with col_bo1: st.markdown(f"**{b_ogr[0]}**")
+                    with col_bo2: st.markdown(f"Alan: {b_ogr[1]}")
                     with col_bo3:
                         if st.button(f"Onayla ✅", key=f"onay_{b_ogr[0]}"):
                             cursor.execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = ?", (b_ogr[0],))
                             conn.commit()
                             st.success(f"{b_ogr[0]} onaylandı!")
                             st.rerun()
+                    with col_bo4:
+                        if st.button(f"Sil ❌", key=f"sil_{b_ogr[0]}"):
+                            cursor.execute("DELETE FROM ogrenciler WHERE ad_soyad = ?", (b_ogr[0],))
+                            conn.commit()
+                            st.warning(f"{b_ogr[0]} kaydı silindi.")
+                            st.rerun()
                 st.divider()
-            else:
-                st.info("ℹ️ Onay bekleyen yeni öğrenci bulunmuyor.")
 
             if st.session_state['aktif_koc'] == 'koc1':
                 cursor.execute("SELECT kullanici_adi FROM koclar WHERE onaylandi = 0")
