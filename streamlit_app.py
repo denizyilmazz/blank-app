@@ -264,7 +264,8 @@ HAM_DERS_KONULARI = {
         "Matematik Branş Denemesi",
         "Fen Branş Denemesi",
         "Sosyal Branş Denemesi",
-        "Türkçe Branş Denemesi"
+        "Türkçe Branş Denemesi",
+        "Geometri Branş Denemesi"
     ],
     "👨‍🏫 Özel Ders Türkçe": [
         "Özel Ders Türkçe - Birebir Paragraf & Dil Bilgisi",
@@ -1144,20 +1145,11 @@ else:
             if h_bilgi:
                 st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
 
-            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI ---
+            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI (İndirme butonu yok) ---
             st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
             df_veli_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(v_ad,))
             if not df_veli_p.empty:
                 st.dataframe(df_veli_p, use_container_width=True, height=350)
-                html_bytes_veli = html_to_pdf_bytes(df_veli_p, v_ad)
-                st.download_button(
-                    label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
-                    data=html_bytes_veli,
-                    file_name=f"{v_ad}_Haftalik_Ders_Programi.html",
-                    mime="text/html",
-                    use_container_width=True,
-                    key=f"veli_dl_{v_ad}"
-                )
             else:
                 st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
 
