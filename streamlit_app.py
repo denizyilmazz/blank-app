@@ -9,6 +9,7 @@ import os
 from urllib.parse import quote
 from PIL import Image
 import shutil
+import glob
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
@@ -17,13 +18,24 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- OTOMATİK GÜNLÜK VERİTABANI YEDEKLEME SİSTEMİ ---
+# --- OTOMATİK VERİTABANI YEDEKLEME VE KURTARMA SİSTEMİ ---
 DB_FILE = "yks_kocluk.db"
 YEDEK_DIR = "veritabani_yedekleri"
 os.makedirs(YEDEK_DIR, exist_ok=True)
 
-def otomatik_yedekle():
-    if os.path.exists(DB_FILE):
+def veritabani_kurtar_ve_yedekle():
+    # 1. Kurtarma: Eğer ana veritabanı yoksa veya boşsa, en son yedekten geri yükle
+    if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
+        yedekler = sorted(glob.glob(os.path.join(YEDEK_DIR, "yks_kocluk_yedek_*.db")))
+        if yedekler:
+            en_son_yedek = yedekler[-1]
+            try:
+                shutil.copy2(en_son_yedek, DB_FILE)
+            except Exception:
+                pass
+
+    # 2. Yedekleme: Bugüne ait yedek yoksa oluştur
+    if os.path.exists(DB_FILE) and os.path.getsize(DB_FILE) > 0:
         bugun = datetime.date.today().strftime("%Y-%m-%d")
         yedek_yolu = os.path.join(YEDEK_DIR, f"yks_kocluk_yedek_{bugun}.db")
         if not os.path.exists(yedek_yolu):
@@ -32,7 +44,7 @@ def otomatik_yedekle():
             except Exception:
                 pass
 
-otomatik_yedekle()
+veritabani_kurtar_ve_yedekle()
 
 # --- TELEFONUN GECE / GÜNDÜZ MODUNU OTOMATİK ALGILAYAN JAVASCRIPT & CSS ---
 st.markdown("""
@@ -1145,7 +1157,7 @@ else:
             if h_bilgi:
                 st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
 
-            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI (İndirme butonu yok) ---
+            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI (Sadece görünür, indirme butonu yok) ---
             st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
             df_veli_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(v_ad,))
             if not df_veli_p.empty:
