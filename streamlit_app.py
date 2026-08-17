@@ -24,7 +24,6 @@ YEDEK_DIR = "veritabani_yedekleri"
 os.makedirs(YEDEK_DIR, exist_ok=True)
 
 def veritabani_kurtar_ve_yedekle():
-    # 1. Kurtarma: Eğer ana veritabanı yoksa veya boşsa, en son yedekten geri yükle
     if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
         yedekler = sorted(glob.glob(os.path.join(YEDEK_DIR, "yks_kocluk_yedek_*.db")))
         if yedekler:
@@ -34,7 +33,6 @@ def veritabani_kurtar_ve_yedekle():
             except Exception:
                 pass
 
-    # 2. Yedekleme: Bugüne ait yedek yoksa oluştur
     if os.path.exists(DB_FILE) and os.path.getsize(DB_FILE) > 0:
         bugun = datetime.date.today().strftime("%Y-%m-%d")
         yedek_yolu = os.path.join(YEDEK_DIR, f"yks_kocluk_yedek_{bugun}.db")
@@ -231,31 +229,25 @@ def pdf_goster_html(pdf_path):
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
-def html_to_pdf_bytes(df, ogrenci_adi):
+def render_html_program(df, ogrenci_adi):
+    # Senin paylaştığın HTML şablonuna göre tabloyu doğrudan sayfada gösteriyoruz
+    table_html = df.to_html(index=False, classes='dataframe table', border=0)
     html_content = f"""
-    <!DOCTYPE html>
-    <html lang="tr">
-    <head>
-        <meta charset="UTF-8">
-        <title>{ogrenci_adi} - Haftalık Ders Programı</title>
+    <div style="background-color: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cbd5e1; overflow-x: auto; color: #0f172a;">
+        <h3 style="text-align: center; color: #0284c7; margin-bottom: 5px; font-weight: 800;">🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h3>
+        <p style="text-align: center; color: #64748b; font-size: 12px; margin-bottom: 20px;">Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
         <style>
-            body {{ font-family: 'Helvetica', Arial, sans-serif; padding: 25px; color: #0f172a; }}
-            h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
-            p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
-            th {{ background-color: #0284c7; color: white; font-weight: bold; }}
-            tr:nth-child(even) {{ background-color: #f8fafc; }}
+            .custom-prog-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+            .custom-prog-table th, .custom-prog-table td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; color: #0f172a; }}
+            .custom-prog-table th {{ background-color: #0284c7; color: white; font-weight: bold; }}
+            .custom-prog-table tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
-    </head>
-    <body>
-        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
-        <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
-        {df.to_html(index=False, classes='table', border=0)}
-    </body>
-    </html>
+        <div class="custom-prog-table">
+            {table_html}
+        </div>
+    </div>
     """
-    return html_content.encode('utf-8')
+    return html_content
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -824,18 +816,9 @@ else:
 
                 df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(aktif_ogr,))
                 if not df_p.empty:
-                    st.dataframe(df_p, use_container_width=True, height=400)
-                    
-                    st.markdown("---")
-                    st.markdown("#### 📥 Programını Cihazına İndir (PDF / Yazdırılabilir Format)")
-                    html_bytes_ogr = html_to_pdf_bytes(df_p, aktif_ogr)
-                    st.download_button(
-                        label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
-                        data=html_bytes_ogr,
-                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
-                        mime="text/html",
-                        use_container_width=True
-                    )
+                    # Doğrudan HTML Ön İzleme Olarak Gösteriyoruz
+                    html_view = render_html_program(df_p, aktif_ogr)
+                    st.markdown(html_view, unsafe_allow_html=True)
                 else:
                     st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi.")
 
@@ -1157,11 +1140,12 @@ else:
             if h_bilgi:
                 st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
 
-            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI (Sadece görünür, indirme butonu yok) ---
-            st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
+            # --- VELİ EKRANI İÇİN DOĞRUDAN HTML ÖN İZLEME FORMATINDA DERS PROGRAMI ---
+            st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı Ön İzlemesi")
             df_veli_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(v_ad,))
             if not df_veli_p.empty:
-                st.dataframe(df_veli_p, use_container_width=True, height=350)
+                html_view_veli = render_html_program(df_veli_p, v_ad)
+                st.markdown(html_view_veli, unsafe_allow_html=True)
             else:
                 st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
 
