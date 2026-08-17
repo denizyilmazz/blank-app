@@ -21,9 +21,7 @@ st.set_page_config(
 # --- OTOMATİK VERİTABANI YEDEKLEME VE KURTARMA SİSTEMİ ---
 DB_FILE = "yks_kocluk.db"
 YEDEK_DIR = "veritabani_yedekleri"
-PROGRAM_DIR = "program_dosyalari"
 os.makedirs(YEDEK_DIR, exist_ok=True)
-os.makedirs(PROGRAM_DIR, exist_ok=True)
 
 def veritabani_kurtar_ve_yedekle():
     if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
@@ -231,24 +229,31 @@ def pdf_goster_html(pdf_path):
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
-def render_html_program(df, ogrenci_adi):
-    table_html = df.to_html(index=False, classes='dataframe table', border=0)
+def html_to_pdf_bytes(df, ogrenci_adi):
     html_content = f"""
-    <div style="background-color: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cbd5e1; overflow-x: auto; color: #0f172a;">
-        <h3 style="text-align: center; color: #0284c7; margin-bottom: 5px; font-weight: 800;">🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h3>
-        <p style="text-align: center; color: #64748b; font-size: 12px; margin-bottom: 20px;">Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>{ogrenci_adi} - Haftalık Ders Programı</title>
         <style>
-            .custom-prog-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-            .custom-prog-table th, .custom-prog-table td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; color: #0f172a; }}
-            .custom-prog-table th {{ background-color: #0284c7; color: white; font-weight: bold; }}
-            .custom-prog-table tr:nth-child(even) {{ background-color: #f8fafc; }}
+            body {{ font-family: 'Helvetica', Arial, sans-serif; padding: 25px; color: #0f172a; }}
+            h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
+            p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            th {{ background-color: #0284c7; color: white; font-weight: bold; }}
+            tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
-        <div class="custom-prog-table">
-            {table_html}
-        </div>
-    </div>
+    </head>
+    <body>
+        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
+        <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
+        {df.to_html(index=False, classes='table', border=0)}
+    </body>
+    </html>
     """
-    return html_content
+    return html_content.encode('utf-8')
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -591,12 +596,6 @@ cursor.execute("CREATE TABLE IF NOT EXISTS excel_program_matris (ad_soyad TEXT, 
 cursor.execute("CREATE TABLE IF NOT EXISTS program_dosyalari (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT)")
 conn.commit()
 
-try:
-    cursor.execute("ALTER TABLE program_dosyalari ADD COLUMN html_icerik TEXT DEFAULT ''")
-    conn.commit()
-except sqlite3.OperationalError:
-    pass
-
 cursor.execute("SELECT COUNT(*) FROM koclar")
 if cursor.fetchone()[0] == 0:
     cursor.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (?, ?, ?)", ("koc1", make_hash("Koc123!"), 1))
@@ -821,19 +820,22 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Önce koçun yüklediği özel bir HTML dosyası var mı kontrol et
-                cursor.execute("SELECT html_icerik FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC LIMIT 1", (aktif_ogr,))
-                dosya_res = cursor.fetchone()
-                
-                if dosya_res and dosya_res[0]:
-                    st.markdown(dosya_res[0], unsafe_allow_html=True)
+                df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(aktif_ogr,))
+                if not df_p.empty:
+                    st.dataframe(df_p, use_container_width=True, height=400)
+                    
+                    st.markdown("---")
+                    st.markdown("#### 📥 Programını Cihazına İndir (PDF / Yazdırılabilir Format)")
+                    html_bytes_ogr = html_to_pdf_bytes(df_p, aktif_ogr)
+                    st.download_button(
+                        label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
+                        data=html_bytes_ogr,
+                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
+                        mime="text/html",
+                        use_container_width=True
+                    )
                 else:
-                    df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(aktif_ogr,))
-                    if not df_p.empty:
-                        html_view = render_html_program(df_p, aktif_ogr)
-                        st.markdown(html_view, unsafe_allow_html=True)
-                    else:
-                        st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi veya yüklemedi.")
+                    st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi.")
 
             with tab_ilerleme:
                 st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
@@ -1030,7 +1032,7 @@ else:
                         with col_bk1: st.markdown(f"Başvuran Koç: **{b_koc[0]}**")
                         with col_bk2:
                             if st.button(f"Koçu Onayla ✅", key=f"koc_onay_{b_koc[0]}"):
-                                cursor.execute("SELECT koclar SET onaylandi = 1 WHERE kullanici_adi = ?", (b_koc[0],))
+                                cursor.execute("UPDATE koclar SET onaylandi = 1 WHERE kullanici_adi = ?", (b_koc[0],))
                                 conn.commit()
                                 st.success(f"{b_koc[0]} adlı koç onaylandı!")
                                 st.rerun()
@@ -1049,25 +1051,7 @@ else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
 
                 st.divider()
-                
-                # --- YENİ EKLENEN ÖZELLİK: KOÇUN HAZIR HTML DOSYASINI YÜKLEMESİ ---
-                st.markdown(f"### 📂 {secilen_ogr} — Hazır HTML Ders Programı Dosyası Yükle")
-                st.caption("Eğer dışarıda hazırladığın bir HTML program dosyan varsa (`.html` formatında), buradan direkt yükleyerek öğrencinin ekranında doğrudan görünmesini sağlayabilirsin.")
-                
-                uploaded_html_file = st.file_uploader(f"{secilen_ogr} için HTML Program Dosyası Seç (.html)", type=["html"], key=f"html_upl_{secilen_ogr}")
-                if uploaded_html_file is not None:
-                    html_metin = uploaded_html_file.read().decode("utf-8")
-                    if st.button("📤 HTML Programı Sisteme Kaydet ve Yayınla", type="primary", key=f"btn_html_kaydet_{secilen_ogr}"):
-                        cursor.execute("""
-                            INSERT INTO program_dosyalari (ad_soyad, yukleyen, tarih, dosya_yolu, dosya_adi, html_icerik)
-                            VALUES (?, ?, ?, ?, ?, ?)
-                        """, (secilen_ogr, st.session_state['aktif_koc'], str(datetime.date.today()), "", uploaded_html_file.name, html_metin))
-                        conn.commit()
-                        st.success(f"🎉 {secilen_ogr} için hazırladığın HTML ders programı başarıyla yüklendi ve yayınlandı!")
-                        st.rerun()
-
-                st.divider()
-                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici (Alternatif Manuel Tablo)")
+                st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
                 
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
@@ -1171,20 +1155,13 @@ else:
             if h_bilgi:
                 st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
 
-            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI (HTML VEYA MATRİS) ---
+            # --- VELİ EKRANI İÇİN HAFTALIK DERS PROGRAMI (Sadece görünür) ---
             st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
-            cursor.execute("SELECT html_icerik FROM program_dosyalari WHERE ad_soyad = ? ORDER BY id DESC LIMIT 1", (v_ad,))
-            dosya_res_v = cursor.fetchone()
-            
-            if dosya_res_v and dosya_res_v[0]:
-                st.markdown(dosya_res_v[0], unsafe_allow_html=True)
+            df_veli_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(v_ad,))
+            if not df_veli_p.empty:
+                st.dataframe(df_veli_p, use_container_width=True, height=350)
             else:
-                df_veli_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn, params=(v_ad,))
-                if not df_veli_p.empty:
-                    html_view_v = render_html_program(df_veli_p, v_ad)
-                    st.markdown(html_view_v, unsafe_allow_html=True)
-                else:
-                    st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
+                st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
 
             st.markdown("### ✅ Öğrenci Konu İlerleme Durumu")
             df_v_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN '✅ Tamamlandı' ELSE '⏳ Devam Ediyor' END AS 'Durum', soru_miktari AS 'Çözülen Soru' FROM konu_ilerleme WHERE ad_soyad = ?", conn, params=(v_ad,))
