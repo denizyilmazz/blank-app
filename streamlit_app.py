@@ -216,10 +216,17 @@ def make_hash(password: str) -> str:
     salt = "YKS_PRO_SECURE_SALT_2026"
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
 
+# --- GÜÇLENDİRİLMİŞ ESNEK ŞİFRE DOĞRULAMA (ESKİ KAYITLAR ASLA HATA VERMEZ) ---
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
     if password == hashed_password: return True
-    return make_hash(password) == hashed_password
+    if make_hash(password) == hashed_password: return True
+    try:
+        if hashlib.sha256(password.encode('utf-8')).hexdigest() == hashed_password:
+            return True
+    except Exception:
+        pass
+    return False
 
 def pdf_goster_html(pdf_path):
     try:
