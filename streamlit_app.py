@@ -65,7 +65,7 @@ def tablo_olustur():
         hedef_bolum TEXT DEFAULT '',
         hedef_net FLOAT DEFAULT 80.0,
         hedef_sira TEXT DEFAULT '',
-        koc_adi TEXT DEFAULT 'Deniz Yılmaz',
+        koc_adi TEXT DEFAULT '',
         onaylandi INTEGER DEFAULT 0
     )
     """)
@@ -99,20 +99,6 @@ def tablo_olustur():
     c.close()
 
 tablo_olustur()
-
-def varsayilan_koc_kontrol():
-    c = get_db_connection()
-    cur = c.cursor()
-    cur.execute("SELECT COUNT(*) FROM koclar")
-    if cur.fetchone()[0] == 0:
-        salt = "YKS_PRO_SECURE_SALT_2026"
-        def initial_hash(p):
-            return hashlib.pbkdf2_hmac('sha256', p.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
-        cur.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (?, ?, ?)", ("koc1", initial_hash("Koc123!"), 1))
-        c.commit()
-    c.close()
-
-varsayilan_koc_kontrol()
 
 st.markdown("""
 <script>
@@ -666,8 +652,10 @@ else:
             with tab_ogr_login:
                 with st.form("ogrenci_giris_formu"):
                     login_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
+                    # Şifre alanı type="password" olarak ve Streamlit'in yerleşik göz/visibility ikonunu destekleyecek şekilde ayarlandı
                     login_sifre = st.text_input("Şifre / PIN:", type="password")
                     beni_hatirla_ogr = st.checkbox("Beni Hatırla")
+                    
                     if st.form_submit_button("Giriş Yap", type="primary", use_container_width=True):
                         if login_ad and login_sifre:
                             conn_l = get_db_connection()
@@ -681,6 +669,9 @@ else:
                                     st.session_state["aktif_ogrenci"] = login_ad
                                     if beni_hatirla_ogr:
                                         st.query_params["hatirla_ogr"] = login_ad
+                                    else:
+                                        if "hatirla_ogr" in st.query_params:
+                                            del st.query_params["hatirla_ogr"]
                                     st.rerun()
                                 else:
                                     st.warning("⏳ Hesabınız henüz koçunuz tarafından onaylanmamıştır. Lütfen koçunuzun onayını bekleyin.")
@@ -699,7 +690,8 @@ else:
                     aktif_koclar_listesi = [k[0] for k in cur_k.fetchall()]
                     conn_k.close()
 
-                    if not aktif_koclar_listesi: aktif_koclar_listesi = ["koc1"]
+                    # 'koc1' koç listesinden çıkarıldı, aktif listeye göre seçim yapılıyor
+                    if not aktif_koclar_listesi: aktif_koclar_listesi = ["Deniz Yılmaz"]
                     
                     reg_koc = st.selectbox("Çalışmak İstediğiniz Koçu Seçin:", aktif_koclar_listesi)
                     reg_alan = st.selectbox("Alanınız:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
