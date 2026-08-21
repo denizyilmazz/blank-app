@@ -66,7 +66,7 @@ def tablo_olustur():
         hedef_net FLOAT DEFAULT 80.0,
         hedef_sira TEXT DEFAULT '',
         koc_adi TEXT DEFAULT 'Deniz Yılmaz',
-        onaylandi INTEGER DEFAULT 1
+        onaylandi INTEGER DEFAULT 0
     )
     """)
     cur.execute("""
@@ -287,7 +287,7 @@ def verify_hash(password: str, hashed_password: str) -> bool:
             return True
     except Exception:
         pass
-    return True
+    return False
 
 def pdf_goster_html(pdf_path):
     try:
@@ -676,14 +676,16 @@ else:
                             usr = cur_l.fetchone()
                             conn_l.close()
 
-                            if usr:
-                                # Doğrudan giriş izni (onay beklese bile koç paneline düşüyor zaten, öğrenciyi kapıda bırakmıyoruz)
-                                st.session_state["aktif_ogrenci"] = login_ad
-                                if beni_hatirla_ogr:
-                                    st.query_params["hatirla_ogr"] = login_ad
-                                st.rerun()
+                            if usr and verify_hash(login_sifre, usr[0]):
+                                if usr[1] == 1:
+                                    st.session_state["aktif_ogrenci"] = login_ad
+                                    if beni_hatirla_ogr:
+                                        st.query_params["hatirla_ogr"] = login_ad
+                                    st.rerun()
+                                else:
+                                    st.warning("⏳ Hesabınız henüz koçunuz tarafından onaylanmamıştır. Lütfen koçunuzun onayını bekleyin.")
                             else:
-                                st.error("❌ Bu isimle kayıtlı öğrenci bulunamadı! Lütfen yeni hesap oluşturun.")
+                                st.error("❌ Hatalı ad veya şifre!")
 
             with tab_ogr_register:
                 with st.form("ogrenci_kayit_formu"):
@@ -703,20 +705,21 @@ else:
                     reg_alan = st.selectbox("Alanınız:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
                     reg_sinav = st.selectbox("Hazırlanılan Sınav:", ["YKS (TYT + AYT)", "TYT (Sadece TYT)", "LGS (8. Sınıf)"])
 
-                    if st.form_submit_button("Hesabımı Oluştur ve Giriş Yap", type="primary", use_container_width=True):
+                    if st.form_submit_button("Hesabımı Oluştur ve Koç Onayına Gönder", type="primary", use_container_width=True):
                         if reg_ad and reg_sifre:
                             conn_reg = get_db_connection()
                             cur_reg = conn_reg.cursor()
-                            # INSERT OR REPLACE ile kayıt garantileniyor
-                            cur_reg.execute("""
-                                INSERT OR REPLACE INTO ogrenciler (ad_soyad, sifre, veli_pin, alan, sinav_turu, koc_adi, onaylandi) 
-                                VALUES (?, ?, ?, ?, ?, ?, 1)
-                            """, (reg_ad, make_hash(reg_sifre), reg_veli_pin, reg_alan, reg_sinav, reg_koc))
-                            conn_reg.commit()
-                            conn_reg.close()
-                            st.session_state["aktif_ogrenci"] = reg_ad
-                            st.success("🎉 Kaydınız oluşturuldu ve doğrudan giriş yapıldı!")
-                            st.rerun()
+                            cur_reg.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = ?", (reg_ad,))
+                            var_mi = cur_reg.fetchone()
+                            if var_mi:
+                                st.error(f"⚠️ `{reg_ad}` zaten kayıtlı!")
+                                conn_reg.close()
+                            else:
+                                cur_reg.execute("INSERT INTO ogrenciler (ad_soyad, sifre, veli_pin, alan, sinav_turu, koc_adi, onaylandi) VALUES (?, ?, ?, ?, ?, ?, 0)",
+                                               (reg_ad, make_hash(reg_sifre), reg_veli_pin, reg_alan, reg_sinav, reg_koc))
+                                conn_reg.commit()
+                                conn_reg.close()
+                                st.success("🎉 Kaydınız oluşturuldu! Seçtiğiniz koç onayladıktan sonra giriş yapabileceksiniz.")
         else:
             col_o_head1, col_o_head2 = st.columns([0.8, 0.2])
             with col_o_head1:
@@ -1026,11 +1029,14 @@ else:
                         r = cur_kg.fetchone()
                         conn_kg.close()
 
-                        if r:
-                            st.session_state["aktif_koc"] = k_ad
-                            st.rerun()
+                        if r and verify_hash(k_sif, r[0]):
+                            if r[1] == 1:
+                                st.session_state["aktif_koc"] = k_ad
+                                st.rerun()
+                            else:
+                                st.warning("⏳ Koç hesabınız henüz ana koç tarafından onaylanmadı.")
                         else:
-                            st.error("Hatalı kullanıcı adı!")
+                            st.error("Hatalı kullanıcı adı veya şifre!")
                             
             with tab_koc_kayit:
                 with st.form("yeni_koc_kayit_formu"):
@@ -1039,13 +1045,17 @@ else:
                     yk_master = st.text_input("Ana Koç Onay Kodu (Güvenlik Kodu):", type="password")
                     if st.form_submit_button("Koç Kaydı Oluştur", type="primary"):
                         if yk_ad and yk_sif:
+                            onay_durum = 1 if yk_master == "Koc123!" else 0
                             conn_kk = get_db_connection()
                             cur_kk = conn_kk.cursor()
                             try:
-                                cur_kk.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (?, ?, 1)", (yk_ad, make_hash(yk_sif)))
+                                cur_kk.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (?, ?, ?)", (yk_ad, make_hash(yk_sif), onay_durum))
                                 conn_kk.commit()
                                 conn_kk.close()
-                                st.success("🎉 Koç kaydınız oluşturuldu ve onaylandı! Giriş yapabilirsiniz.")
+                                if onay_durum == 1:
+                                    st.success("🎉 Koç kaydınız oluşturuldu ve onaylandı! Giriş yapabilirsiniz.")
+                                else:
+                                    st.success("⏳ Koç başvurunuz alındı. Ana koç onayladıktan sonra giriş yapabileceksiniz.")
                             except sqlite3.IntegrityError:
                                 conn_kk.close()
                                 st.error("Bu kullanıcı adı zaten alınmış.")
@@ -1057,9 +1067,72 @@ else:
                     st.session_state["aktif_koc"] = None
                     st.rerun()
 
+            # --- ONAY BEKLEYEN YENİ ÖĞRENCİLER BİLDİRİM & YÖNETİMİ ---
+            conn_b = get_db_connection()
+            cur_b = conn_b.cursor()
+            cur_b.execute("SELECT ad_soyad, alan, sinav_turu, koc_adi FROM ogrenciler WHERE onaylandi = 0")
+            bekleyen_ogrenciler = cur_b.fetchall()
+            conn_b.close()
+            
+            if bekleyen_ogrenciler:
+                st.markdown(f"""
+                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 15px 20px; border-radius: 14px; margin-bottom: 20px;">
+                    <h3 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🔔 Bildirim: {len(bekleyen_ogrenciler)} Yeni Öğrenci Onay Bekliyor!</h3>
+                    <p style="margin:4px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Aşağıdaki listeden öğrencileri onaylayabilir veya silebilirsiniz (reddedebilirsiniz).</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+                for b_ogr in bekleyen_ogrenciler:
+                    col_bo1, col_bo2, col_bo3, col_bo4, col_bo5 = st.columns([2, 1.5, 1.5, 1, 1])
+                    with col_bo1: st.markdown(f"**{b_ogr[0]}**")
+                    with col_bo2: st.markdown(f"İstenen Koç: {b_ogr[3]}")
+                    with col_bo3: st.markdown(f"Alan: {b_ogr[1]}")
+                    with col_bo4:
+                        if st.button(f"Onayla ✅", key=f"onay_{b_ogr[0]}"):
+                            conn_on = get_db_connection()
+                            cur_on = conn_on.cursor()
+                            cur_on.execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = ?", (b_ogr[0],))
+                            conn_on.commit()
+                            conn_on.close()
+                            st.success(f"{b_ogr[0]} onaylandı!")
+                            st.rerun()
+                    with col_bo5:
+                        if st.button(f"Sil ❌", key=f"sil_{b_ogr[0]}"):
+                            conn_sl = get_db_connection()
+                            cur_sl = conn_sl.cursor()
+                            cur_sl.execute("DELETE FROM ogrenciler WHERE ad_soyad = ?", (b_ogr[0],))
+                            conn_sl.commit()
+                            conn_sl.close()
+                            st.warning(f"{b_ogr[0]} kaydı silindi.")
+                            st.rerun()
+                st.divider()
+
+            if st.session_state['aktif_koc'] == 'koc1':
+                conn_kb = get_db_connection()
+                cur_kb = conn_kb.cursor()
+                cur_kb.execute("SELECT kullanici_adi FROM koclar WHERE onaylandi = 0")
+                bekleyen_koclar = cur_kb.fetchall()
+                conn_kb.close()
+
+                if bekleyen_koclar:
+                    st.markdown("### 👑 Ana Koç Paneli: Onay Bekleyen Diğer Koçlar")
+                    for b_koc in bekleyen_koclar:
+                        col_bk1, col_bk2 = st.columns([3, 1])
+                        with col_bk1: st.markdown(f"Başvuran Koç: **{b_koc[0]}**")
+                        with col_bk2:
+                            if st.button(f"Koçu Onayla ✅", key=f"koc_onay_{b_koc[0]}"):
+                                conn_ko = get_db_connection()
+                                cur_ko = conn_ko.cursor()
+                                cur_ko.execute("UPDATE koclar SET onaylandi = 1 WHERE kullanici_adi = ?", (b_koc[0],))
+                                conn_ko.commit()
+                                conn_ko.close()
+                                st.success(f"{b_koc[0]} adlı koç onaylandı!")
+                                st.rerun()
+                    st.divider()
+
             conn_ogrs = get_db_connection()
             cur_ogrs = conn_ogrs.cursor()
-            cur_ogrs.execute("SELECT ad_soyad FROM ogrenciler WHERE koc_adi = ?", (st.session_state['aktif_koc'],))
+            cur_ogrs.execute("SELECT ad_soyad FROM ogrenciler WHERE koc_adi = ? AND onaylandi = 1", (st.session_state['aktif_koc'],))
             ogrs = [row[0] for row in cur_ogrs.fetchall()]
             conn_ogrs.close()
 
@@ -1206,9 +1279,12 @@ else:
                 conn_v.close()
 
                 if ogr_kayit and v_sifre == (ogr_kayit[0] if ogr_kayit[0] else "123456"):
-                    st.session_state[f"veli_dogrulanmis_{v_ad}"] = True
-                    st.success(f"🔓 Giriş Başarılı! **{v_ad}** adlı öğrencinin paneli açılıyor...")
-                    st.rerun()
+                    if ogr_kayit[1] == 1:
+                        st.session_state[f"veli_dogrulanmis_{v_ad}"] = True
+                        st.success(f"🔓 Giriş Başarılı! **{v_ad}** adlı öğrencinin paneli açılıyor...")
+                        st.rerun()
+                    else:
+                        st.warning("⏳ Bu öğrencinin hesabı henüz koç tarafından onaylanmamıştır.")
                 else:
                     st.error("❌ Hatalı Veli Şifresi veya Öğrenci Adı!")
 
