@@ -96,8 +96,27 @@ def tablo_olustur():
     cur.execute("CREATE TABLE IF NOT EXISTS excel_program_matris (ad_soyad TEXT, saat_araligi TEXT, pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT '', PRIMARY KEY (ad_soyad, saat_araligi))")
     cur.execute("CREATE TABLE IF NOT EXISTS program_dosyalari (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT)")
     
+    # --- HAYATİ GÜVENLİK: ESKİ VERİTABANLARINI ÇÖKMEYE KARŞI OTOMATİK GÜNCELLE ---
+    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN alan TEXT DEFAULT 'SAY (Sayısal)'")
+    except sqlite3.OperationalError: pass
+    
+    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN veli_pin TEXT DEFAULT '123456'")
+    except sqlite3.OperationalError: pass
+    
+    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN koc_adi TEXT DEFAULT ''")
+    except sqlite3.OperationalError: pass
+    
+    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN onaylandi INTEGER DEFAULT 0")
+    except sqlite3.OperationalError: pass
+    
+    try: cur.execute("ALTER TABLE koclar ADD COLUMN onaylandi INTEGER DEFAULT 1")
+    except sqlite3.OperationalError: pass
+
     # koc1 kullanıcısını sistemden tamamen siliyoruz
-    cur.execute("DELETE FROM koclar WHERE kullanici_adi = 'koc1'")
+    try:
+        cur.execute("DELETE FROM koclar WHERE kullanici_adi = 'koc1'")
+    except Exception:
+        pass
     
     c.commit()
     c.close()
@@ -115,7 +134,12 @@ st.markdown("""
 </script>
 
 <style>
+    /* CSS FONT DÜZELTMESİ: İkonları (span) bozmamak için sadece temel metin etiketlerine uygulandı */
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    html, body, p, label, input, textarea, select, h1, h2, h3, h4, h5, h6 {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
     
     @media (prefers-color-scheme: dark) {
         :root {
@@ -145,8 +169,7 @@ st.markdown("""
         }
     }
 
-    html, body, [class*="css"], .stMarkdown, p, div, label, span, input, textarea, select {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    html, body, p, label, input, textarea, select {
         color: var(--text-color, #0f172a) !important;
     }
 
@@ -656,11 +679,8 @@ else:
             with tab_ogr_login:
                 with st.form("ogrenci_giris_formu"):
                     login_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
-                    
-                    # Göz ikonlu ve temiz şifre gösterici checkbox
-                    goster_ogr = st.checkbox("👁️ Şifreyi Göster", key="goster_ogr")
-                    login_sifre = st.text_input("Şifre / PIN:", type="default" if goster_ogr else "password")
-                    
+                    # Type "password" Streamlit'in kendi göz ikonunu sağında çıkarır.
+                    login_sifre = st.text_input("Şifre / PIN:", type="password")
                     beni_hatirla_ogr = st.checkbox("Beni Hatırla")
                     
                     if st.form_submit_button("Giriş Yap", type="primary", use_container_width=True):
@@ -688,10 +708,7 @@ else:
             with tab_ogr_register:
                 with st.form("ogrenci_kayit_formu"):
                     reg_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
-                    
-                    goster_reg = st.checkbox("👁️ Şifreyi Göster", key="goster_reg")
-                    reg_sifre = st.text_input("Şifre Belirleyin:", type="default" if goster_reg else "password")
-                    
+                    reg_sifre = st.text_input("Şifre Belirleyin:", type="password")
                     reg_veli_pin = st.text_input("Veli Takip Şifresi Belirleyin:", value="123456")
                     
                     conn_k = get_db_connection()
@@ -1022,10 +1039,7 @@ else:
             with tab_koc_giris:
                 with st.form("koc_giris_formu"):
                     k_ad = st.text_input("Koç Kullanıcı Adı:")
-                    
-                    goster_koc = st.checkbox("👁️ Şifreyi Göster", key="goster_koc")
-                    k_sif = st.text_input("Şifre:", type="default" if goster_koc else "password")
-                    
+                    k_sif = st.text_input("Şifre:", type="password")
                     if st.form_submit_button("Koç Girişi Yap", type="primary"):
                         conn_kg = get_db_connection()
                         cur_kg = conn_kg.cursor()
