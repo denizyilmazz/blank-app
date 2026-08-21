@@ -27,7 +27,7 @@ KARNE_DIR = "karne_yuklemeleri"
 os.makedirs(KARNE_DIR, exist_ok=True)
 
 # --- SUPABASE BULUT VERİTABANI BAĞLANTISI ---
-SUPABASE_URI = "postgresql://postgres:DenizMelis160625.@db.ypftcgbwgcctaeljsvxf.supabase.co:5432/postgres"
+SUPABASE_URI = "postgresql://postgres.ypftcgbwgcctaeljsvxf:DenizMelis160625.@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
 
 def get_db_connection():
     conn = psycopg2.connect(SUPABASE_URI)
