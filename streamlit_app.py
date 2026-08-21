@@ -21,7 +21,9 @@ st.set_page_config(
 # --- OTOMATİK VERİTABANI YEDEKLEME VE KURTARMA SİSTEMİ ---
 DB_FILE = "yks_kocluk.db"
 YEDEK_DIR = "veritabani_yedekleri"
+KARNE_DIR = "karne_yuklemeleri"
 os.makedirs(YEDEK_DIR, exist_ok=True)
+os.makedirs(KARNE_DIR, exist_ok=True)
 
 def veritabani_kurtar_ve_yedekle():
     if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
@@ -44,13 +46,11 @@ def veritabani_kurtar_ve_yedekle():
 
 veritabani_kurtar_ve_yedekle()
 
-# Güvenli ve Kesintisiz Veritabanı Bağlantı Fonksiyonu
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=30)
     conn.execute("PRAGMA journal_mode=WAL;")
     return conn
 
-# --- TABLOLARI GÜVENCEYE AL ---
 def tablo_olustur():
     c = get_db_connection()
     cur = c.cursor()
@@ -100,7 +100,6 @@ def tablo_olustur():
 
 tablo_olustur()
 
-# Varsayılan koç kontrolü
 def varsayilan_koc_kontrol():
     c = get_db_connection()
     cur = c.cursor()
@@ -115,7 +114,6 @@ def varsayilan_koc_kontrol():
 
 varsayilan_koc_kontrol()
 
-# --- TELEFONUN GECE / GÜNDÜZ MODUNU OTOMATİK ALGILAYAN JAVASCRIPT & CSS ---
 st.markdown("""
 <script>
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -276,18 +274,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-UPLOAD_DIR = "soru_yuklemeleri"
-KARNE_DIR = "karne_yuklemeleri"
-PROGRAM_DIR = "program_dosyalari"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(KARNE_DIR, exist_ok=True)
-os.makedirs(PROGRAM_DIR, exist_ok=True)
-
 def make_hash(password: str) -> str:
     salt = "YKS_PRO_SECURE_SALT_2026"
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
 
-# --- %100 HATASIZ VE ESNEK ŞİFRE DOĞRULAMA ---
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
     if password == hashed_password: return True
@@ -969,20 +959,50 @@ else:
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
+                st.caption("📷 Deneme sınavı sonucunuzu (JPG, PNG veya PDF) buradan yükleyerek koçunuza gönderebilirsiniz.")
+                
                 with st.form("deneme_yukleme_formu"):
                     dyayin = st.text_input("Deneme Yayın Adı (Örn: 3D Yayınları TYT Deneme):")
                     dnet = st.number_input("Toplam Net:", 0.0, 120.0, 75.0)
-                    if st.form_submit_button("📤 Denemeyi Koçuma Gönder", type="primary", use_container_width=True) and dyayin:
+                    yuklenen_karne = st.file_uploader("Deneme Sonuç Belgesi (JPG, PNG, PDF):", type=["png", "jpg", "jpeg", "pdf"])
+                    
+                    if st.form_submit_button("📤 Denemeyi ve Karnemi Koçuma Gönder", type="primary", use_container_width=True) and dyayin:
+                        dosya_yolu_db = ""
+                        dosya_adi_db = ""
+                        if yuklenen_karne is not None:
+                            dosya_adi_db = yuklenen_karne.name
+                            dosya_yolu_db = os.path.join(KARNE_DIR, f"{datetime.date.today()}_{aktif_ogr}_{dosya_adi_db}")
+                            with open(dosya_yolu_db, "wb") as f:
+                                f.write(yuklenen_karne.getbuffer())
+
                         conn_dn = get_db_connection()
                         cur_dn = conn_dn.cursor()
                         cur_dn.execute("""
-                            INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, koc_notu)
-                            VALUES (?, ?, ?, ?, ?, ?)
-                        """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), "Koç değerlendirmesi bekleniyor."))
+                            INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_yolu, dosya_adi, koc_notu)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_db, dosya_adi_db, "Koç değerlendirmesi bekleniyor."))
                         conn_dn.commit()
                         conn_dn.close()
-                        st.success("🎉 Deneme başarıyla koçunuza gönderildi!")
+                        st.success("🎉 Deneme sonucu ve karne belgeniz başarıyla koçunuza gönderildi!")
                         st.rerun()
+
+                st.markdown("---")
+                st.markdown("#### 📋 Geçmiş Deneme Sonuçlarım ve Karnelerim")
+                conn_dlist = get_db_connection()
+                df_benim_denemeler = pd.read_sql_query("SELECT id, tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', dosya_yolu, dosya_adi, koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn_dlist, params=(aktif_ogr,))
+                conn_dlist.close()
+
+                if not df_benim_denemeler.empty:
+                    for _, drow in df_benim_denemeler.iterrows():
+                        st.markdown(f"**{drow['Tarih']}** | {drow['Yayın']} — **Net: {drow['Toplam Net']}** | Not: *{drow['Koç Notu']}*")
+                        if drow['dosya_yolu'] and os.path.exists(drow['dosya_yolu']):
+                            if drow['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                                st.image(drow['dosya_yolu'], width=300)
+                            elif drow['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(drow['dosya_yolu']), unsafe_allow_html=True)
+                        st.divider()
+                else:
+                    st.info("ℹ️ Henüz yüklenmiş deneme sınavınız bulunmuyor.")
 
             with tab_konular:
                 st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
@@ -1137,6 +1157,35 @@ else:
                     st.dataframe(df_koc_calisma, use_container_width=True, hide_index=True)
                 else:
                     st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
+
+                # --- KOÇUN ÖĞRENCİNİN KARNELERİNİ GÖRMESİ VE NOT YAZMASI ---
+                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Sonuçları ve Karneleri")
+                conn_kdc = get_db_connection()
+                df_koc_deneme = pd.read_sql_query("SELECT id, tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', dosya_yolu, dosya_adi, koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn_kdc, params=(secilen_ogr,))
+                conn_kdc.close()
+
+                if not df_koc_deneme.empty:
+                    for _, kd in df_koc_deneme.iterrows():
+                        st.markdown(f"**{kd['Tarih']}** | {kd['Yayın']} — **Net: {kd['Toplam Net']}**")
+                        if kd['dosya_yolu'] and os.path.exists(kd['dosya_yolu']):
+                            if kd['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                                st.image(kd['dosya_yolu'], width=300)
+                            elif kd['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(kd['dosya_yolu']), unsafe_allow_html=True)
+                        
+                        with st.form(f"koc_not_form_{kd['id']}"):
+                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'])
+                            if st.form_submit_button("Notu Güncelle"):
+                                conn_kn = get_db_connection()
+                                cur_kn = conn_kn.cursor()
+                                cur_kn.execute("UPDATE denemeler SET koc_notu = ? WHERE id = ?", (yeni_koc_notu, kd['id']))
+                                conn_kn.commit()
+                                conn_kn.close()
+                                st.success("🎉 Koç notu güncellendi!")
+                                st.rerun()
+                        st.divider()
+                else:
+                    st.info("ℹ️ Öğrenci henüz deneme sonucu veya karne yüklememiş.")
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
