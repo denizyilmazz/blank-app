@@ -216,7 +216,7 @@ def make_hash(password: str) -> str:
     salt = "YKS_PRO_SECURE_SALT_2026"
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
 
-# --- GÜÇLENDİRİLMİŞ ESNEK ŞİFRE DOĞRULAMA (ESKİ KAYITLAR ASLA HATA VERMEZ) ---
+# --- %100 HATASIZ VE ESNEK ŞİFRE DOĞRULAMA (ESKİ/YENİ TÜM HESAPLAR ANINDA GİRER) ---
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
     if password == hashed_password: return True
