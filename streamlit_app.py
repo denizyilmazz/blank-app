@@ -216,7 +216,7 @@ def make_hash(password: str) -> str:
     salt = "YKS_PRO_SECURE_SALT_2026"
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000).hex()
 
-# --- %100 HATASIZ VE ESNEK ŞİFRE DOĞRULAMA (ESKİ/YENİ TÜM HESAPLAR ANINDA GİRER) ---
+# --- %100 HATASIZ VE ESNEK ŞİFRE DOĞRULAMA ---
 def verify_hash(password: str, hashed_password: str) -> bool:
     if not hashed_password: return False
     if password == hashed_password: return True
@@ -1056,6 +1056,14 @@ else:
                     st.dataframe(df_koc_ilerleme, use_container_width=True)
                 else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
+
+                # --- KOÇUN ÖĞRENCİNİN GÜNLÜK ÇALIŞMALARINI GÖRMESİ (GERİ EKLENDİ) ---
+                st.markdown(f"### 📝 {secilen_ogr} — Öğrencinin Günlük Çalışma Kayıtları")
+                df_koc_calisma = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', soru_sayisi AS 'Soru', konu_anlatim_sure AS 'Konu Süre (dk)', soru_cozum_sure AS 'Çözüm Süre (dk)' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC LIMIT 30", conn, params=(secilen_ogr,))
+                if not df_koc_calisma.empty:
+                    st.dataframe(df_koc_calisma, use_container_width=True, hide_index=True)
+                else:
+                    st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
