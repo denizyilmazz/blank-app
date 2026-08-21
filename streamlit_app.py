@@ -1,6 +1,6 @@
 import streamlit as st
 import datetime
-import sqlite3
+import psycopg2
 import pandas as pd
 import random
 import base64
@@ -10,6 +10,10 @@ from urllib.parse import quote
 from PIL import Image
 import shutil
 import glob
+import warnings
+
+# Pandas'ın veritabanı uyarılarını gizliyoruz, sistem tıkır tıkır arka planda çalışacak
+warnings.filterwarnings('ignore', category=UserWarning)
 
 st.set_page_config(
     page_title="YKS (TYT/AYT) - LGS KOÇLUK (DENİZ YILMAZ)",
@@ -18,42 +22,21 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- OTOMATİK VERİTABANI YEDEKLEME VE KURTARMA SİSTEMİ ---
-DB_FILE = "yks_kocluk.db"
-YEDEK_DIR = "veritabani_yedekleri"
+# --- SADECE KARNE VE BELGELER İÇİN KLASÖR ---
 KARNE_DIR = "karne_yuklemeleri"
-os.makedirs(YEDEK_DIR, exist_ok=True)
 os.makedirs(KARNE_DIR, exist_ok=True)
 
-def veritabani_kurtar_ve_yedekle():
-    if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
-        yedekler = sorted(glob.glob(os.path.join(YEDEK_DIR, "yks_kocluk_yedek_*.db")))
-        if yedekler:
-            en_son_yedek = yedekler[-1]
-            try:
-                shutil.copy2(en_son_yedek, DB_FILE)
-            except Exception:
-                pass
-
-    if os.path.exists(DB_FILE) and os.path.getsize(DB_FILE) > 0:
-        bugun = datetime.date.today().strftime("%Y-%m-%d")
-        yedek_yolu = os.path.join(YEDEK_DIR, f"yks_kocluk_yedek_{bugun}.db")
-        if not os.path.exists(yedek_yolu):
-            try:
-                shutil.copy2(DB_FILE, yedek_yolu)
-            except Exception:
-                pass
-
-veritabani_kurtar_ve_yedekle()
+# --- SUPABASE BULUT VERİTABANI BAĞLANTISI ---
+SUPABASE_URI = "postgresql://postgres:DenizMelis160625.@db.ypftcgbwgcctaeljsvxf.supabase.co:5432/postgres"
 
 def get_db_connection():
-    conn = sqlite3.connect(DB_FILE, check_same_thread=False, timeout=30)
-    conn.execute("PRAGMA journal_mode=WAL;")
+    conn = psycopg2.connect(SUPABASE_URI)
     return conn
 
 def tablo_olustur():
-    c = get_db_connection()
-    cur = c.cursor()
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
     cur.execute("""
     CREATE TABLE IF NOT EXISTS ogrenciler (
         ad_soyad TEXT PRIMARY KEY,
@@ -71,7 +54,7 @@ def tablo_olustur():
     """)
     cur.execute("""
     CREATE TABLE IF NOT EXISTS ozel_universiteler (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         universite_adi TEXT,
         bolum_adi TEXT,
         kategori TEXT,
@@ -88,38 +71,57 @@ def tablo_olustur():
         onaylandi INTEGER DEFAULT 1
     )
     """)
-    cur.execute("CREATE TABLE IF NOT EXISTS gunluk_calisma (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, soru_sayisi INTEGER DEFAULT 0, konu_anlatim_sure INTEGER DEFAULT 0, soru_cozum_sure INTEGER DEFAULT 0)")
-    cur.execute("CREATE TABLE IF NOT EXISTS konu_ilerleme (ad_soyad TEXT, ders TEXT, konu_adi TEXT, tamamlandi INTEGER DEFAULT 0, soru_miktari INTEGER DEFAULT 0, PRIMARY KEY (ad_soyad, ders, konu_adi))")
-    cur.execute("CREATE TABLE IF NOT EXISTS yapilamayan_sorular (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, dosya_yolu TEXT, dosya_adi TEXT)")
-    cur.execute("CREATE TABLE IF NOT EXISTS denemeler (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, tarih TEXT, yayin TEXT, tur TEXT, toplam_net FLOAT, dosya_yolu TEXT DEFAULT '', dosya_adi TEXT DEFAULT '', koc_notu TEXT DEFAULT '')")
-    cur.execute("CREATE TABLE IF NOT EXISTS konu_puanlari (ad_soyad TEXT, konu_adi TEXT, puan INTEGER, PRIMARY KEY (ad_soyad, konu_adi))")
-    cur.execute("CREATE TABLE IF NOT EXISTS excel_program_matris (ad_soyad TEXT, saat_araligi TEXT, pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT '', PRIMARY KEY (ad_soyad, saat_araligi))")
-    cur.execute("CREATE TABLE IF NOT EXISTS program_dosyalari (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT)")
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS gunluk_calisma (
+        id SERIAL PRIMARY KEY, 
+        ad_soyad TEXT, 
+        tarih TEXT, 
+        ders TEXT, 
+        konu TEXT, 
+        soru_sayisi INTEGER DEFAULT 0, 
+        konu_anlatim_sure INTEGER DEFAULT 0, 
+        soru_cozum_sure INTEGER DEFAULT 0
+    )
+    """)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS konu_ilerleme (
+        ad_soyad TEXT, ders TEXT, konu_adi TEXT, 
+        tamamlandi INTEGER DEFAULT 0, soru_miktari INTEGER DEFAULT 0, 
+        PRIMARY KEY (ad_soyad, ders, konu_adi)
+    )
+    """)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS yapilamayan_sorular (
+        id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, dosya_yolu TEXT, dosya_adi TEXT
+    )
+    """)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS denemeler (
+        id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, yayin TEXT, tur TEXT, 
+        toplam_net FLOAT, dosya_yolu TEXT DEFAULT '', dosya_adi TEXT DEFAULT '', koc_notu TEXT DEFAULT ''
+    )
+    """)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS konu_puanlari (
+        ad_soyad TEXT, konu_adi TEXT, puan INTEGER, PRIMARY KEY (ad_soyad, konu_adi)
+    )
+    """)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS excel_program_matris (
+        ad_soyad TEXT, saat_araligi TEXT, 
+        pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', 
+        persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT '', 
+        PRIMARY KEY (ad_soyad, saat_araligi)
+    )
+    """)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS program_dosyalari (
+        id SERIAL PRIMARY KEY, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT
+    )
+    """)
     
-    # --- HAYATİ GÜVENLİK: ESKİ VERİTABANLARINI ÇÖKMEYE KARŞI OTOMATİK GÜNCELLE ---
-    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN alan TEXT DEFAULT 'SAY (Sayısal)'")
-    except sqlite3.OperationalError: pass
-    
-    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN veli_pin TEXT DEFAULT '123456'")
-    except sqlite3.OperationalError: pass
-    
-    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN koc_adi TEXT DEFAULT ''")
-    except sqlite3.OperationalError: pass
-    
-    try: cur.execute("ALTER TABLE ogrenciler ADD COLUMN onaylandi INTEGER DEFAULT 0")
-    except sqlite3.OperationalError: pass
-    
-    try: cur.execute("ALTER TABLE koclar ADD COLUMN onaylandi INTEGER DEFAULT 1")
-    except sqlite3.OperationalError: pass
-
-    # koc1 kullanıcısını sistemden tamamen siliyoruz
-    try:
-        cur.execute("DELETE FROM koclar WHERE kullanici_adi = 'koc1'")
-    except Exception:
-        pass
-    
-    c.commit()
-    c.close()
+    conn.commit()
+    conn.close()
 
 tablo_olustur()
 
@@ -134,7 +136,6 @@ st.markdown("""
 </script>
 
 <style>
-    /* CSS FONT DÜZELTMESİ: İkonları (span) bozmamak için sadece temel metin etiketlerine uygulandı */
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
     html, body, p, label, input, textarea, select, h1, h2, h3, h4, h5, h6 {
@@ -616,7 +617,7 @@ if link_ogrenci:
     """, unsafe_allow_html=True)
     
     conn_link = get_db_connection()
-    df_link_sorular = pd.read_sql_query("SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = ? ORDER BY id DESC", conn_link, params=(link_ogrenci,))
+    df_link_sorular = pd.read_sql_query('SELECT id, tarih, ders, konu, dosya_yolu, dosya_adi FROM yapilamayan_sorular WHERE ad_soyad = %s ORDER BY id DESC', conn_link, params=(link_ogrenci,))
     conn_link.close()
 
     if df_link_sorular.empty:
@@ -666,7 +667,7 @@ else:
             if hatirlanan_ogr:
                 conn_h = get_db_connection()
                 cur_h = conn_h.cursor()
-                cur_h.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = ? AND onaylandi = 1", (hatirlanan_ogr,))
+                cur_h.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = %s AND onaylandi = 1", (hatirlanan_ogr,))
                 if cur_h.fetchone():
                     st.session_state["aktif_ogrenci"] = hatirlanan_ogr
                     aktif_ogr = hatirlanan_ogr
@@ -679,7 +680,7 @@ else:
             with tab_ogr_login:
                 with st.form("ogrenci_giris_formu"):
                     login_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
-                    # Type "password" Streamlit'in kendi göz ikonunu sağında çıkarır.
+                    # Şifre alanı type="password" olarak ayarlandı, Streamlit'in kendi göz ikonu sağda belirecek.
                     login_sifre = st.text_input("Şifre / PIN:", type="password")
                     beni_hatirla_ogr = st.checkbox("Beni Hatırla")
                     
@@ -687,7 +688,7 @@ else:
                         if login_ad and login_sifre:
                             conn_l = get_db_connection()
                             cur_l = conn_l.cursor()
-                            cur_l.execute("SELECT sifre, onaylandi FROM ogrenciler WHERE ad_soyad = ?", (login_ad,))
+                            cur_l.execute("SELECT sifre, onaylandi FROM ogrenciler WHERE ad_soyad = %s", (login_ad,))
                             usr = cur_l.fetchone()
                             conn_l.close()
 
@@ -727,13 +728,13 @@ else:
                         if reg_ad and reg_sifre:
                             conn_reg = get_db_connection()
                             cur_reg = conn_reg.cursor()
-                            cur_reg.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = ?", (reg_ad,))
+                            cur_reg.execute("SELECT ad_soyad FROM ogrenciler WHERE ad_soyad = %s", (reg_ad,))
                             var_mi = cur_reg.fetchone()
                             if var_mi:
                                 st.error(f"⚠️ `{reg_ad}` zaten kayıtlı!")
                                 conn_reg.close()
                             else:
-                                cur_reg.execute("INSERT INTO ogrenciler (ad_soyad, sifre, veli_pin, alan, sinav_turu, koc_adi, onaylandi) VALUES (?, ?, ?, ?, ?, ?, 0)",
+                                cur_reg.execute("INSERT INTO ogrenciler (ad_soyad, sifre, veli_pin, alan, sinav_turu, koc_adi, onaylandi) VALUES (%s, %s, %s, %s, %s, %s, 0)",
                                                (reg_ad, make_hash(reg_sifre), reg_veli_pin, reg_alan, reg_sinav, reg_koc))
                                 conn_reg.commit()
                                 conn_reg.close()
@@ -743,7 +744,7 @@ else:
             with col_o_head1:
                 conn_inf = get_db_connection()
                 cur_inf = conn_inf.cursor()
-                cur_inf.execute("SELECT sinav_turu, alan, hedef_uni, hedef_bolum, koc_adi FROM ogrenciler WHERE ad_soyad = ?", (aktif_ogr,))
+                cur_inf.execute("SELECT sinav_turu, alan, hedef_uni, hedef_bolum, koc_adi FROM ogrenciler WHERE ad_soyad = %s", (aktif_ogr,))
                 r_info = cur_inf.fetchone()
                 conn_inf.close()
 
@@ -792,7 +793,7 @@ else:
                 
                 conn_bol = get_db_connection()
                 cur_bol = conn_bol.cursor()
-                cur_bol.execute("SELECT bolum_adi FROM ozel_universiteler WHERE universite_adi = ? AND kategori = ?", (secilen_hedef_uni, secilen_kategori))
+                cur_bol.execute("SELECT bolum_adi FROM ozel_universiteler WHERE universite_adi = %s AND kategori = %s", (secilen_hedef_uni, secilen_kategori))
                 ozel_bolumler = [r[0] for r in cur_bol.fetchall()]
                 conn_bol.close()
 
@@ -804,7 +805,7 @@ else:
 
                 conn_det = get_db_connection()
                 cur_det = conn_det.cursor()
-                cur_det.execute("SELECT taban_net, taban_sira, tyt_net, ayt_net FROM ozel_universiteler WHERE universite_adi = ? AND bolum_adi = ?", (secilen_hedef_uni, secilen_hedef_bolum))
+                cur_det.execute("SELECT taban_net, taban_sira, tyt_net, ayt_net FROM ozel_universiteler WHERE universite_adi = %s AND bolum_adi = %s", (secilen_hedef_uni, secilen_hedef_bolum))
                 ozel_kayit = cur_det.fetchone()
                 conn_det.close()
 
@@ -843,7 +844,7 @@ else:
                 if st.button("🚀 Bu Hedefi Profilime Kaydet ve Netlerimi Planla", type="primary", use_container_width=True):
                     conn_up = get_db_connection()
                     cur_up = conn_up.cursor()
-                    cur_up.execute("UPDATE ogrenciler SET hedef_uni = ?, hedef_bolum = ?, hedef_net = ? WHERE ad_soyad = ?", 
+                    cur_up.execute("UPDATE ogrenciler SET hedef_uni = %s, hedef_bolum = %s, hedef_net = %s WHERE ad_soyad = %s", 
                                    (secilen_hedef_uni, f"{secilen_hedef_bolum} ({secilen_kategori})", float(t_net), aktif_ogr))
                     conn_up.commit()
                     conn_up.close()
@@ -859,7 +860,7 @@ else:
                 """, unsafe_allow_html=True)
 
                 conn_p = get_db_connection()
-                df_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn_p, params=(aktif_ogr,))
+                df_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_p, params=(aktif_ogr,))
                 conn_p.close()
 
                 if not df_p.empty:
@@ -889,7 +890,7 @@ else:
                 cur_t = conn_t.cursor()
                 takip_verileri = []
                 for konu in konu_listesi_ogrenci:
-                    cur_t.execute("SELECT tamamlandi, soru_miktari FROM konu_ilerleme WHERE ad_soyad = ? AND ders = ? AND konu_adi = ?", (aktif_ogr, secilen_takip_ders, konu))
+                    cur_t.execute("SELECT tamamlandi, soru_miktari FROM konu_ilerleme WHERE ad_soyad = %s AND ders = %s AND konu_adi = %s", (aktif_ogr, secilen_takip_ders, konu))
                     res = cur_t.fetchone()
                     t_val = bool(res[0]) if res else False
                     s_val = int(res[1]) if res else 0
@@ -923,9 +924,9 @@ else:
                             soru_m = int(row["Çözülen Soru Miktarı"]) if pd.notna(row["Çözülen Soru Miktarı"]) else 0
                             cur_sv.execute("""
                                 INSERT INTO konu_ilerleme (ad_soyad, ders, konu_adi, tamamlandi, soru_miktari)
-                                VALUES (?, ?, ?, ?, ?)
-                                ON CONFLICT(ad_soyad, ders, konu_adi) DO UPDATE SET tamamlandi = ?, soru_miktari = ?
-                            """, (aktif_ogr, secilen_takip_ders, k_adi, tamam, soru_m, tamam, soru_m))
+                                VALUES (%s, %s, %s, %s, %s)
+                                ON CONFLICT(ad_soyad, ders, konu_adi) DO UPDATE SET tamamlandi = EXCLUDED.tamamlandi, soru_miktari = EXCLUDED.soru_miktari
+                            """, (aktif_ogr, secilen_takip_ders, k_adi, tamam, soru_m))
                         conn_sv.commit()
                         conn_sv.close()
                         st.success("🎉 İlerlemeniz başarıyla kaydedildi!")
@@ -934,7 +935,7 @@ else:
                 st.markdown("---")
                 st.markdown("#### 📥 İlerleme Tablosunu İndir (CSV / Excel ile açılabilir)")
                 conn_csv = get_db_connection()
-                df_tum_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN 'Evet' ELSE 'Hayır' END AS 'Tamamlandı', soru_miktari AS 'Soru Miktarı' FROM konu_ilerleme WHERE ad_soyad = ?", conn_csv, params=(aktif_ogr,))
+                df_tum_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'Evet\' ELSE \'Hayır\' END AS "Tamamlandı", soru_miktari AS "Soru Miktarı" FROM konu_ilerleme WHERE ad_soyad = %s', conn_csv, params=(aktif_ogr,))
                 conn_csv.close()
 
                 if not df_tum_ilerleme.empty:
@@ -969,7 +970,7 @@ else:
                         cur_g = conn_g.cursor()
                         cur_g.execute("""
                             INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
                         """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, int(girilen_soru), int(girilen_konu_sure), int(girilen_cozum_sure)))
                         conn_g.commit()
                         conn_g.close()
@@ -997,7 +998,7 @@ else:
                         cur_dn = conn_dn.cursor()
                         cur_dn.execute("""
                             INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_yolu, dosya_adi, koc_notu)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                         """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_db, dosya_adi_db, "Koç değerlendirmesi bekleniyor."))
                         conn_dn.commit()
                         conn_dn.close()
@@ -1007,7 +1008,7 @@ else:
                 st.markdown("---")
                 st.markdown("#### 📋 Geçmiş Deneme Sonuçlarım ve Karnelerim")
                 conn_dlist = get_db_connection()
-                df_benim_denemeler = pd.read_sql_query("SELECT id, tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', dosya_yolu, dosya_adi, koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn_dlist, params=(aktif_ogr,))
+                df_benim_denemeler = pd.read_sql_query('SELECT id, tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", dosya_yolu, dosya_adi, koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_dlist, params=(aktif_ogr,))
                 conn_dlist.close()
 
                 if not df_benim_denemeler.empty:
@@ -1043,7 +1044,7 @@ else:
                     if st.form_submit_button("Koç Girişi Yap", type="primary"):
                         conn_kg = get_db_connection()
                         cur_kg = conn_kg.cursor()
-                        cur_kg.execute("SELECT sifre, onaylandi FROM koclar WHERE kullanici_adi = ?", (k_ad,))
+                        cur_kg.execute("SELECT sifre, onaylandi FROM koclar WHERE kullanici_adi = %s", (k_ad,))
                         r = cur_kg.fetchone()
                         conn_kg.close()
 
@@ -1067,14 +1068,15 @@ else:
                             conn_kk = get_db_connection()
                             cur_kk = conn_kk.cursor()
                             try:
-                                cur_kk.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (?, ?, ?)", (yk_ad, make_hash(yk_sif), onay_durum))
+                                cur_kk.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (%s, %s, %s)", (yk_ad, make_hash(yk_sif), onay_durum))
                                 conn_kk.commit()
                                 conn_kk.close()
                                 if onay_durum == 1:
                                     st.success("🎉 Koç kaydınız oluşturuldu ve onaylandı! Giriş yapabilirsiniz.")
                                 else:
                                     st.success("⏳ Koç başvurunuz alındı. Ana koç onayladıktan sonra giriş yapabileceksiniz.")
-                            except sqlite3.IntegrityError:
+                            except psycopg2.IntegrityError:
+                                conn_kk.rollback()
                                 conn_kk.close()
                                 st.error("Bu kullanıcı adı zaten alınmış.")
         else:
@@ -1108,7 +1110,7 @@ else:
                         if st.button(f"Onayla ✅", key=f"onay_{b_ogr[0]}"):
                             conn_on = get_db_connection()
                             cur_on = conn_on.cursor()
-                            cur_on.execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = ?", (b_ogr[0],))
+                            cur_on.execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = %s", (b_ogr[0],))
                             conn_on.commit()
                             conn_on.close()
                             st.success(f"{b_ogr[0]} onaylandı!")
@@ -1117,7 +1119,7 @@ else:
                         if st.button(f"Sil ❌", key=f"sil_{b_ogr[0]}"):
                             conn_sl = get_db_connection()
                             cur_sl = conn_sl.cursor()
-                            cur_sl.execute("DELETE FROM ogrenciler WHERE ad_soyad = ?", (b_ogr[0],))
+                            cur_sl.execute("DELETE FROM ogrenciler WHERE ad_soyad = %s", (b_ogr[0],))
                             conn_sl.commit()
                             conn_sl.close()
                             st.warning(f"{b_ogr[0]} kaydı silindi.")
@@ -1126,7 +1128,7 @@ else:
 
             conn_ogrs = get_db_connection()
             cur_ogrs = conn_ogrs.cursor()
-            cur_ogrs.execute("SELECT ad_soyad FROM ogrenciler WHERE koc_adi = ? AND onaylandi = 1", (st.session_state['aktif_koc'],))
+            cur_ogrs.execute("SELECT ad_soyad FROM ogrenciler WHERE koc_adi = %s AND onaylandi = 1", (st.session_state['aktif_koc'],))
             ogrs = [row[0] for row in cur_ogrs.fetchall()]
             conn_ogrs.close()
 
@@ -1135,7 +1137,7 @@ else:
                 
                 st.markdown(f"### 📈 {secilen_ogr} — Öğrenci Konu İlerleme ve Soru Durumu")
                 conn_ki = get_db_connection()
-                df_koc_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN '✅ Tamamlandı' ELSE '⏳ Devam Ediyor' END AS 'Durum', soru_miktari AS 'Çözülen Soru' FROM konu_ilerleme WHERE ad_soyad = ?", conn_ki, params=(secilen_ogr,))
+                df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki, params=(secilen_ogr,))
                 conn_ki.close()
 
                 if not df_koc_ilerleme.empty:
@@ -1145,7 +1147,7 @@ else:
 
                 st.markdown(f"### 📝 {secilen_ogr} — Öğrencinin Günlük Çalışma Kayıtları")
                 conn_kc = get_db_connection()
-                df_koc_calisma = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', soru_sayisi AS 'Soru', konu_anlatim_sure AS 'Konu Süre (dk)', soru_cozum_sure AS 'Çözüm Süre (dk)' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC LIMIT 30", conn_kc, params=(secilen_ogr,))
+                df_koc_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 30', conn_kc, params=(secilen_ogr,))
                 conn_kc.close()
 
                 if not df_koc_calisma.empty:
@@ -1155,7 +1157,7 @@ else:
 
                 st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Sonuçları ve Karneleri")
                 conn_kdc = get_db_connection()
-                df_koc_deneme = pd.read_sql_query("SELECT id, tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', dosya_yolu, dosya_adi, koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn_kdc, params=(secilen_ogr,))
+                df_koc_deneme = pd.read_sql_query('SELECT id, tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", dosya_yolu, dosya_adi, koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_kdc, params=(secilen_ogr,))
                 conn_kdc.close()
 
                 if not df_koc_deneme.empty:
@@ -1168,11 +1170,11 @@ else:
                                 st.markdown(pdf_goster_html(kd['dosya_yolu']), unsafe_allow_html=True)
                         
                         with st.form(f"koc_not_form_{kd['id']}"):
-                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'])
+                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'] if kd['Koç Notu'] else "")
                             if st.form_submit_button("Notu Güncelle"):
                                 conn_kn = get_db_connection()
                                 cur_kn = conn_kn.cursor()
-                                cur_kn.execute("UPDATE denemeler SET koc_notu = ? WHERE id = ?", (yeni_koc_notu, kd['id']))
+                                cur_kn.execute("UPDATE denemeler SET koc_notu = %s WHERE id = %s", (yeni_koc_notu, kd['id']))
                                 conn_kn.commit()
                                 conn_kn.close()
                                 st.success("🎉 Koç notu güncellendi!")
@@ -1212,9 +1214,9 @@ else:
                      cur_islem = conn_islem.cursor()
                      cur_islem.execute(f"""
                          INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
-                         VALUES (?, ?, ?)
-                         ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = ?
-                     """, (secilen_ogr, yeni_saat_araligi, hucre_degeri, hucre_degeri))
+                         VALUES (%s, %s, %s)
+                         ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = EXCLUDED.{t_sutun}
+                     """, (secilen_ogr, yeni_saat_araligi, hucre_degeri))
                      conn_islem.commit()
                      conn_islem.close()
                      st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) kaydedildi!")
@@ -1222,7 +1224,7 @@ else:
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
                 conn_m = get_db_connection()
-                df_matris = pd.read_sql_query("SELECT saat_araligi AS 'Saat Aralığı', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn_m, params=(secilen_ogr,))
+                df_matris = pd.read_sql_query('SELECT saat_araligi AS "Saat Aralığı", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_m, params=(secilen_ogr,))
                 conn_m.close()
                 
                 if df_matris.empty:
@@ -1233,13 +1235,16 @@ else:
                 if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
                     conn_sv2 = get_db_connection()
                     cur_sv2 = conn_sv2.cursor()
-                    cur_sv2.execute("DELETE FROM excel_program_matris WHERE ad_soyad = ?", (secilen_ogr,))
+                    cur_sv2.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s", (secilen_ogr,))
                     for _, row in edited_matris.iterrows():
                         s_ar = str(row.get("Saat Aralığı", "")).strip()
                         if s_ar and s_ar != "nan":
                             cur_sv2.execute("""
-                                INSERT OR REPLACE INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET
+                                pazartesi = EXCLUDED.pazartesi, sali = EXCLUDED.sali, carsamba = EXCLUDED.carsamba, 
+                                persembe = EXCLUDED.persembe, cuma = EXCLUDED.cuma, cumartesi = EXCLUDED.cumartesi, pazar = EXCLUDED.pazar
                             """, (
                                 secilen_ogr, s_ar,
                                 str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
@@ -1268,7 +1273,7 @@ else:
             if v_ad and v_sifre:
                 conn_v = get_db_connection()
                 cur_v = conn_v.cursor()
-                cur_v.execute("SELECT veli_pin, onaylandi FROM ogrenciler WHERE ad_soyad = ?", (v_ad,))
+                cur_v.execute("SELECT veli_pin, onaylandi FROM ogrenciler WHERE ad_soyad = %s", (v_ad,))
                 ogr_kayit = cur_v.fetchone()
                 conn_v.close()
 
@@ -1295,7 +1300,7 @@ else:
 
             conn_vh = get_db_connection()
             cur_vh = conn_vh.cursor()
-            cur_vh.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = ?", (v_ad,))
+            cur_vh.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = %s", (v_ad,))
             h_bilgi = cur_vh.fetchone()
             conn_vh.close()
 
@@ -1304,7 +1309,7 @@ else:
 
             st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
             conn_vp = get_db_connection()
-            df_veli_p = pd.read_sql_query("SELECT saat_araligi AS 'Saat', pazartesi AS 'Pazartesi', sali AS 'Salı', carsamba AS 'Çarşamba', persembe AS 'Perşembe', cuma AS 'Cuma', cumartesi AS 'Cumartesi', pazar AS 'Pazar' FROM excel_program_matris WHERE ad_soyad = ? ORDER BY saat_araligi ASC", conn_vp, params=(v_ad,))
+            df_veli_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_vp, params=(v_ad,))
             conn_vp.close()
 
             if not df_veli_p.empty:
@@ -1314,7 +1319,7 @@ else:
 
             st.markdown(f"### ✅ Öğrenci Konu İlerleme Durumu")
             conn_vi = get_db_connection()
-            df_v_ilerleme = pd.read_sql_query("SELECT ders AS 'Ders', konu_adi AS 'Konu', CASE WHEN tamamlandi=1 THEN '✅ Tamamlandı' ELSE '⏳ Devam Ediyor' END AS 'Durum', soru_miktari AS 'Çözülen Soru' FROM konu_ilerleme WHERE ad_soyad = ?", conn_vi, params=(v_ad,))
+            df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi, params=(v_ad,))
             conn_vi.close()
 
             if not df_v_ilerleme.empty:
@@ -1324,7 +1329,7 @@ else:
 
             st.markdown(f"### 📝 Öğrencinin Günlük Çalışma Takibi")
             conn_vc = get_db_connection()
-            df_v_calisma = pd.read_sql_query("SELECT tarih AS 'Tarih', ders AS 'Ders', konu AS 'Konu', soru_sayisi AS 'Soru', konu_anlatim_sure AS 'Konu Süre (dk)', soru_cozum_sure AS 'Çözüm Süre (dk)' FROM gunluk_calisma WHERE ad_soyad = ? ORDER BY id DESC LIMIT 20", conn_vc, params=(v_ad,))
+            df_v_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 20', conn_vc, params=(v_ad,))
             conn_vc.close()
 
             if not df_v_calisma.empty:
@@ -1334,7 +1339,7 @@ else:
 
             st.markdown(f"### 📊 Deneme Sınavı Sonuçları ve Koç Notları")
             conn_vd = get_db_connection()
-            df_v_deneme = pd.read_sql_query("SELECT tarih AS 'Tarih', yayin AS 'Yayın', toplam_net AS 'Toplam Net', koc_notu AS 'Koç Notu' FROM denemeler WHERE ad_soyad = ? ORDER BY id DESC", conn_vd, params=(v_ad,))
+            df_v_deneme = pd.read_sql_query('SELECT tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_vd, params=(v_ad,))
             conn_vd.close()
 
             if not df_v_deneme.empty:
