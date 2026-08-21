@@ -1,4 +1,5 @@
 streamlit
 pandas
+openxly
 Pillow
 psycopg2-binary
