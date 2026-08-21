@@ -95,6 +95,10 @@ def tablo_olustur():
     cur.execute("CREATE TABLE IF NOT EXISTS konu_puanlari (ad_soyad TEXT, konu_adi TEXT, puan INTEGER, PRIMARY KEY (ad_soyad, konu_adi))")
     cur.execute("CREATE TABLE IF NOT EXISTS excel_program_matris (ad_soyad TEXT, saat_araligi TEXT, pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT '', PRIMARY KEY (ad_soyad, saat_araligi))")
     cur.execute("CREATE TABLE IF NOT EXISTS program_dosyalari (id INTEGER PRIMARY KEY AUTOINCREMENT, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT)")
+    
+    # koc1 kullanıcısını sistemden tamamen siliyoruz
+    cur.execute("DELETE FROM koclar WHERE kullanici_adi = 'koc1'")
+    
     c.commit()
     c.close()
 
@@ -652,8 +656,11 @@ else:
             with tab_ogr_login:
                 with st.form("ogrenci_giris_formu"):
                     login_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
-                    # Şifre alanı type="password" olarak ve Streamlit'in yerleşik göz/visibility ikonunu destekleyecek şekilde ayarlandı
-                    login_sifre = st.text_input("Şifre / PIN:", type="password")
+                    
+                    # Göz ikonlu ve temiz şifre gösterici checkbox
+                    goster_ogr = st.checkbox("👁️ Şifreyi Göster", key="goster_ogr")
+                    login_sifre = st.text_input("Şifre / PIN:", type="default" if goster_ogr else "password")
+                    
                     beni_hatirla_ogr = st.checkbox("Beni Hatırla")
                     
                     if st.form_submit_button("Giriş Yap", type="primary", use_container_width=True):
@@ -674,14 +681,17 @@ else:
                                             del st.query_params["hatirla_ogr"]
                                     st.rerun()
                                 else:
-                                    st.warning("⏳ Hesabınız henüz koçunuz tarafından onaylanmamıştır. Lütfen koçunuzun onayını bekleyin.")
+                                    st.warning("⏳ Hesabınız koçunuz tarafından henüz onaylanmamıştır. Lütfen koçunuzun onayını bekleyin.")
                             else:
                                 st.error("❌ Hatalı ad veya şifre!")
 
             with tab_ogr_register:
                 with st.form("ogrenci_kayit_formu"):
                     reg_ad = st.text_input("Adınız ve Soyadınız:").strip().title()
-                    reg_sifre = st.text_input("Şifre Belirleyin:", type="password")
+                    
+                    goster_reg = st.checkbox("👁️ Şifreyi Göster", key="goster_reg")
+                    reg_sifre = st.text_input("Şifre Belirleyin:", type="default" if goster_reg else "password")
+                    
                     reg_veli_pin = st.text_input("Veli Takip Şifresi Belirleyin:", value="123456")
                     
                     conn_k = get_db_connection()
@@ -690,7 +700,6 @@ else:
                     aktif_koclar_listesi = [k[0] for k in cur_k.fetchall()]
                     conn_k.close()
 
-                    # 'koc1' koç listesinden çıkarıldı, aktif listeye göre seçim yapılıyor
                     if not aktif_koclar_listesi: aktif_koclar_listesi = ["Deniz Yılmaz"]
                     
                     reg_koc = st.selectbox("Çalışmak İstediğiniz Koçu Seçin:", aktif_koclar_listesi)
@@ -1013,7 +1022,10 @@ else:
             with tab_koc_giris:
                 with st.form("koc_giris_formu"):
                     k_ad = st.text_input("Koç Kullanıcı Adı:")
-                    k_sif = st.text_input("Şifre:", type="password")
+                    
+                    goster_koc = st.checkbox("👁️ Şifreyi Göster", key="goster_koc")
+                    k_sif = st.text_input("Şifre:", type="default" if goster_koc else "password")
+                    
                     if st.form_submit_button("Koç Girişi Yap", type="primary"):
                         conn_kg = get_db_connection()
                         cur_kg = conn_kg.cursor()
@@ -1059,7 +1071,6 @@ else:
                     st.session_state["aktif_koc"] = None
                     st.rerun()
 
-            # --- ONAY BEKLEYEN YENİ ÖĞRENCİLER BİLDİRİM & YÖNETİMİ ---
             conn_b = get_db_connection()
             cur_b = conn_b.cursor()
             cur_b.execute("SELECT ad_soyad, alan, sinav_turu, koc_adi FROM ogrenciler WHERE onaylandi = 0")
@@ -1098,29 +1109,6 @@ else:
                             st.warning(f"{b_ogr[0]} kaydı silindi.")
                             st.rerun()
                 st.divider()
-
-            if st.session_state['aktif_koc'] == 'koc1':
-                conn_kb = get_db_connection()
-                cur_kb = conn_kb.cursor()
-                cur_kb.execute("SELECT kullanici_adi FROM koclar WHERE onaylandi = 0")
-                bekleyen_koclar = cur_kb.fetchall()
-                conn_kb.close()
-
-                if bekleyen_koclar:
-                    st.markdown("### 👑 Ana Koç Paneli: Onay Bekleyen Diğer Koçlar")
-                    for b_koc in bekleyen_koclar:
-                        col_bk1, col_bk2 = st.columns([3, 1])
-                        with col_bk1: st.markdown(f"Başvuran Koç: **{b_koc[0]}**")
-                        with col_bk2:
-                            if st.button(f"Koçu Onayla ✅", key=f"koc_onay_{b_koc[0]}"):
-                                conn_ko = get_db_connection()
-                                cur_ko = conn_ko.cursor()
-                                cur_ko.execute("UPDATE koclar SET onaylandi = 1 WHERE kullanici_adi = ?", (b_koc[0],))
-                                conn_ko.commit()
-                                conn_ko.close()
-                                st.success(f"{b_koc[0]} adlı koç onaylandı!")
-                                st.rerun()
-                    st.divider()
 
             conn_ogrs = get_db_connection()
             cur_ogrs = conn_ogrs.cursor()
