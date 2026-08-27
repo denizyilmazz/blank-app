@@ -360,114 +360,209 @@ HAM_DERS_KONULARI = {
         "Türkçe Branş Denemesi",
         "Geometri Branş Denemesi"
     ],
-    "👨‍🏫 Özel Ders Türkçe": [
-        "Özel Ders Türkçe - Birebir Paragraf & Dil Bilgisi",
-        "Özel Ders Türkçe - Soru Çözüm Kampı",
-        "Özel Ders Türkçe - Ödev Kontrolü & Tekrar"
-    ],
-    "👨‍🏫 Özel Ders Matematik": [
-        "Özel Ders Matematik - Birebir Konu Anlatımı",
-        "Özel Ders Matematik - Soru Çözüm Kampı",
-        "Özel Ders Matematik - Ödev Kontrolü & Tekrar",
-        "Özel Ders Matematik - Yeni Nesil Soru Analizi"
-    ],
-    "👨‍🏫 Özel Ders Fizik": [
-        "Özel Ders Fizik - Birebir Konu Anlatımı & Deney",
-        "Özel Ders Fizik - Soru Çözüm & Formül Pratiği",
-        "Özel Ders Fizik - Ödev Kontrolü & Zor Sorular"
-    ],
-    "👨‍🏫 Özel Ders Kimya": [
-        "Özel Ders Kimya - Birebir Konu Anlatımı",
-        "Özel Ders Kimya - Soru Çözüm & Hesaplama Pratiği"
-    ],
-    "👨‍🏫 Özel Ders Biyoloji": [
-        "Özel Ders Biyoloji - Birebir Konu Anlatımı & Şekil Analizi",
-        "Özel Ders Biyoloji - Soru Çözüm Kampı"
-    ],
-    "⚡ 📖 Paragraf + 📐 Problem Rutini": [
-        "Paragraf Hız Kampı (25 Soru) + Yeni Nesil Problemler (20 Soru)",
-        "Sözel Mantık Rutini",
-        "Sayı-Kesir Problemleri",
-        "Yaş & İşçi Havuz Problemleri",
-        "Yüzde-Kar/Zarar & Karışım",
-        "Hız & Hareket Problemleri",
-        "Grafik & Rutin Olmayan Problemler"
+    "👨‍🏫 Özel Ders": [
+        "Özel Ders - Birebir Konu Anlatımı",
+        "Özel Ders - Soru Çözüm Kampı",
+        "Özel Ders - Ödev Kontrolü & Tekrar"
     ],
     "📖 TYT Türkçe": [
-        "Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", 
-        "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", 
-        "Sözcük Türleri", "Fiiller, Ek Fiil ve Fiilimsi", "Cümlenin Ögeleri ve Cümle Çeşitleri", "Anlatım Bozuklukları"
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı",
+        "Ses Bilgisi",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Bağlaç)",
+        "Fiiller, Ek Fiil ve Fiilimsi",
+        "Cümlenin Ögeleri",
+        "Cümle Çeşitleri",
+        "Anlatım Bozuklukları"
     ],
     "📐 TYT Matematik": [
-        "Temel Kavramlar", "Sayı Basamakları", "Bölme ve Bölünebilme", 
-        "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", 
-        "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", 
-        "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", 
-        "Kümeler ve Kartezyen Çarpım", "Fonksiyonlar", "Veri, Sayma ve Olasılık"
+        "Temel Kavramlar ve Sayı Kümeleri",
+        "Sayı Basamakları",
+        "Bölme ve Bölünebilme",
+        "EBOB - EKOK",
+        "Rasyonel Sayılar",
+        "Basit Eşitsizlikler",
+        "Mutlak Değer",
+        "Üslü İfadeler",
+        "Köklü İfadeler",
+        "Çarpanlara Ayırma",
+        "Oran - Orantı",
+        "Denklem Çözme",
+        "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)",
+        "Kümeler ve Kartezyen Çarpım",
+        "Mantık",
+        "Fonksiyonlar",
+        "Polinomlar",
+        "Veri, Sayma ve Olasılık"
     ],
     "📏 TYT Geometri": [
-        "Doğruda ve Üçgende Açılar", "Özel Üçgenler", 
-        "Üçgende Açı-Kenar & Benzerlik", "Üçgende Alan", 
-        "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Kare, Dikdörtgen vb.)", 
-        "Çember ve Daire", "Katı Cisimler", "Analitik Geometri"
+        "Doğruda ve Üçgende Açılar",
+        "Özel Üçgenler (Dik, İkizkenar, Eşkenar)",
+        "Üçgende Açıortay, Kenarortay ve Benzerlik",
+        "Üçgende Alan ve Açı-Kenar Bağıntıları",
+        "Çokgenler ve Dörtgenler",
+        "Özel Dörtgenler (Paralelkenar, Eşkenar Dörtgen, Dikdörtgen, Kare, Yamuk)",
+        "Çember ve Daire",
+        "Katı Cisimler (Prizma, Piramit, Silindir, Koni, Küre)",
+        "Analitik Geometri (Nokta ve Doğru Analitiği)"
     ],
     "⚡ TYT Fizik": [
-        "Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", 
-        "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet", "Newton Yasaları", 
-        "İş, Güç ve Enerji", "Elektrik", "Manyetizma", "Dalgalar", "Optik"
+        "Fizik Bilimine Giriş",
+        "Madde ve Özellikleri",
+        "Basınç ve Kaldırma Kuvveti",
+        "Isı, Sıcaklık ve Genleşme",
+        "Hareket ve Kuvvet (Newton Yasaları)",
+        "İş, Güç ve Enerji",
+        "Elektrostatik ve Elektrik Akımı",
+        "Manyetizma",
+        "Dalgalar",
+        "Optik"
     ],
     "🧪 TYT Kimya": [
-        "Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", 
-        "Maddenin Halleri", "Kimyanın Temel Kanunları", 
-        "Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar"
+        "Kimya Bilimi",
+        "Atom ve Periyodik Sistem",
+        "Türler Arası Etkileşimler",
+        "Maddenin Halleri",
+        "Kimyanın Temel Kanunları ve Kimyasal Hesaplamalar",
+        "Karışımlar",
+        "Asitler, Bazlar ve Tuzlar",
+        "Kimya Her Yerde"
     ],
     "🧬 TYT Biyoloji": [
-        "Canlıların Ortak Özellikleri & Temel Bileşenler", "Hücre ve Organelleri", 
-        "Madde Geçişleri", "Hücre Bölünmeleri (Mitoz / Mayoz)", 
-        "Kalıtım", "Ekoloji"
+        "Canlıların Ortak Özellikleri ve Temel Bileşenler",
+        "Hücre ve Organelleri",
+        "Madde Geçişleri",
+        "Hücre Bölünmeleri (Mitoz ve Mayoz)",
+        "Kalıtım ve Evrim",
+        "Ekoloji"
     ],
     "📜 TYT Tarih": [
-        "Tarih Bilimi", "İlk Çağ Medeniyetleri", "İslamiyet Tarihi", 
-        "Osmanlı Kuruluş ve Yükselme", "Osmanlı Kültür ve Medeniyeti", 
-        "Milli Mücadele Dönemi", "Atatürk İnkılap ve İlkeleri"
+        "Tarih Bilimi",
+        "İlk Çağ Medeniyetleri",
+        "İslamiyet Tarihi ve Uygarlığı",
+        "Türklerin İslamiyet'i Kabulü ve İlk Türk Devletleri",
+        "Osmanlı Devleti Kuruluş ve Yükselme",
+        "Osmanlı Kültür ve Medeniyeti",
+        "Milli Mücadele Dönemi",
+        "Atatürk İnkılap ve İlkeleri"
     ],
     "🌍 TYT Coğrafya": [
-        "Doğa ve İnsan & Harita Bilgisi", "İklim Bilgisi", 
-        "İç ve Dış Kuvvetler", "Nüfus ve Yerleşme", "Afetler"
+        "Doğa ve İnsan & Harita Bilgisi",
+        "Dünyanın Şekli ve Hareketleri",
+        "İklim Bilgisi",
+        "İç ve Dış Kuvvetler",
+        "Nüfus ve Yerleşme",
+        "Ulaşım Yolları ve Göç",
+        "Afetler"
     ],
     "🧠 TYT Felsefe": [
-        "Felsefeyi Tanıma", "Bilgi Felsefesi", "Varlık Felsefesi", 
-        "Ahlak Felsefesi", "Din, Siyaset ve Sanat Felsefesi"
+        "Felsefeyi Tanıma",
+        "Bilgi Felsefesi (Epistemoloji)",
+        "Varlık Felsefesi (Ontoloji)",
+        "Ahlak Felsefesi",
+        "Din, Siyaset ve Sanat Felsefesi"
     ],
     "🕌 TYT Din Kültürü": [
-        "İnanç", "İbadet", "Ahlak ve Değerler", "Hz. Muhammed'in Hayatı"
+        "İnanç",
+        "İbadet",
+        "Ahlak ve Değerler",
+        "Hz. Muhammed'in Hayatı, Örnekliği ve Hz. Muhammed",
+        "Vahiy ve Akıl"
     ],
     "📐 AYT Matematik": [
-        "İkinci Dereceden Denklemler & Karmaşık Sayılar", "Parabol", 
-        "Eşitsizlikler", "Trigonometri", "Logaritma", "Diziler", 
-        "Limit ve Süreklilik", "Türev", "İntegral ve Alan"
+        "İkinci Dereceden Denklemler ve Karmaşık Sayılar",
+        "Parabol",
+        "İkinci Dereceden Eşitsizlikler",
+        "Logaritma",
+        "Diziler",
+        "Trigonometri",
+        "Limit ve Süreklilik",
+        "Türev",
+        "İntegral ve Alan"
+    ],
+    "📏 AYT Geometri": [
+        "Çemberin Analitik İncelenmesi",
+        "Dönüşüm Geometrisi",
+        "Trigonometri Geometri Uygulamaları"
     ],
     "⚡ AYT Fizik": [
-        "Vektörler & Bağıl Hareket", "Dinamik (Newton)", "Atışlar", 
-        "İş, Güç, Enerji", "İtme ve Momentum", "Tork ve Denge", 
-        "Çembersel Hareket", "Basit Harmonik Hareket", "Dalga Mekaniği", 
-        "Elektrik Alan & Potansiyel", "Manyetizma", "Modern Fizik"
+        "Vektörler ve Bağıl Hareket",
+        "Dinamik (Newton'ın Hareket Yasaları)",
+        "Bir Boyutta ve İki Boyutta Sabit İvmeli Hareket (Atışlar)",
+        "İş, Güç ve Enerji (AYT)",
+        "İtme ve Çizgisel Momentum",
+        "Tork, Denge ve Kütle Merkezi",
+        "Basit Makineler",
+        "Elektriksel Kuvvet, Elektrik Alan ve Potansiyel",
+        "Sığalar (Kondansatörler)",
+        "Manyetik Alan ve Manyetik Kuvvet",
+        "İndüksiyon, Özindüksiyon ve Alternatif Akım",
+        "Çembersel Hareket ve Kepler Yasaları",
+        "Basit Harmonik Hareket",
+        "Dalga Mekaniği (Girişim, Kırınım) ve Elektromanyetik Dalgalar",
+        "Atom Fiziği, Radyoaktivite ve Modern Fizik"
     ],
     "🧪 AYT Kimya": [
-        "Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler", 
-        "Kimyasal Tepkimelerde Enerji", "Hız ve Denge", 
-        "Sulu Çözeltilerde Dengeler (Asit-Baz / KÇ)", "Elektrokimya", 
-        "Organik Kimya (Hidrokarbonlar ve Fonksiyonel Gruplar)"
+        "Modern Atom Teorisi",
+        "Gazlar",
+        "Sıvı Çözeltiler ve Koligatif Özellikler",
+        "Kimyasal Tepkimelerde Enerji",
+        "Kimyasal Tepkimelerde Hız",
+        "Kimyasal Denge",
+        "Sulu Çözeltilerde Denge (Asit-Baz ve KÇ)",
+        "Elektrokimya (Piller ve Elektroliz)",
+        "Organik Kimyaya Giriş",
+        "Hidrokarbonlar",
+        "Fonksiyonel Gruplar ve Organik Bileşikler"
     ],
     "🧬 AYT Biyoloji": [
-        "Sinir ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket / Sindirim / Dolaşım", 
-        "Solunum ve Boşaltım / Üreme Sistemi", "Nükleik Asitler ve Protein Sentezi", 
-        "Fotosentez ve Solunum", "Bitki Biyolojisi"
+        "Sinir Sistemi ve Endokrin Sistem",
+        "Duyu Organları",
+        "Destek ve Hareket Sistemi",
+        "Sindirim, Dolaşım ve Solunum Sistemi",
+        "Boşaltım Sistemi ve Üreme Sistemi",
+        "Nükleik Asitler ve Protein Sentezi",
+        "Fotosentez ve Kemosentez",
+        "Hücresel Solunum",
+        "Bitki Biyolojisi",
+        "Canlılar ve Çevre (Ekoloji AYT)"
     ],
-    "📖 AYT Edebiyat": [
-        "İslamiyet Öncesi ve Halk Edebiyatı", "Divan Edebiyatı", 
-        "Tanzimat ve Servet-i Fünun", "Milli Edebiyat ve Cumhuriyet Dönemi Şiir", 
-        "Cumhuriyet Dönemi Roman ve Hikaye"
+    "📖 AYT Türk Dili ve Edebiyatı": [
+        "İslamiyet Öncesi Türk Edebiyatı ve Geçiş Dönemi",
+        "Halk Edebiyatı",
+        "Divan Edebiyatı",
+        "Tanzimat Dönemi Edebiyatı",
+        "Servet-i Fünun ve Fecr-i Âti Edebiyatı",
+        "Milli Edebiyat Dönemi",
+        "Cumhuriyet Dönemi Şiir",
+        "Cumhuriyet Dönemi Roman ve Hikaye",
+        "Tiyatro, Mektup, Anı, Makale ve Söyleşi"
+    ],
+    "📜 AYT Tarih": [
+        "Dünya Gücü Osmanlı (1453-1600)",
+        "Arayış Yılları (17. Yüzyıl)",
+        "18. Yüzyılda Değişim ve Diplomasi",
+        "En Uzun Yüzyıl (19. Yüzyıl)",
+        "20. Yüzyılda Osmanlı Devleti",
+        "I. Dünya Savaşı ve Mondros",
+        "Kurtuluş Savaşı Hazırlık Dönemi",
+        "I. TBMM Dönemi ve Kurtuluş Savaşı Muharebeleri",
+        "Atatürkçülük ve Türk İnkılabı",
+        "İki Savaş Arası Dönem (1929 Krizi vb.)",
+        "II. Dünya Savaşı Dönemi ve Soğuk Savaş"
+    ],
+    "🌍 AYT Coğrafya": [
+        "Ekosistem ve Madde Döngüleri",
+        "Biyomlar",
+        "Türkiye'nin Su ve Toprak Varlığı",
+        "Geçmişten Geleceğe Şehir ve Ekonomi",
+        "Türkiye Ekonomisi (Tarım, Maden, Sanayi, Ulaşım)",
+        "Türkiye'nin Jeopolitik Konumu",
+        "Küresel ve Bölgesel Örgütler",
+        "Çevre Sorunları ve Küresel İklim Değişikliği"
     ]
 }
 
@@ -478,12 +573,7 @@ OSYM_SORU_DAGILIMLARI = {
     "Ses Bilgisi": "Ort. 1 Soru",
     "Yazım Kuralları": "Ort. 2 Soru",
     "Noktalama İşaretleri": "Ort. 2 Soru",
-    "Sözcük Türleri": "Ort. 1-2 Soru",
-    "Fiiller, Ek Fiil ve Fiilimsi": "Ort. 1 Soru",
-    "Cümlenin Ögeleri ve Cümle Çeşitleri": "Ort. 1-2 Soru",
-    "Anlatım Bozuklukları": "Ort. 1 Soru",
-    
-    "Temel Kavramlar": "Ort. 3-4 Soru",
+    "Temel Kavramlar ve Sayı Kümeleri": "Ort. 3-4 Soru",
     "Sayı Basamakları": "Ort. 1 Soru",
     "Bölme ve Bölünebilme": "Ort. 1 Soru",
     "EBOB - EKOK": "Ort. 1 Soru",
@@ -492,16 +582,7 @@ OSYM_SORU_DAGILIMLARI = {
     "Mutlak Değer": "Ort. 1 Soru",
     "Üslü İfadeler": "Ort. 1-2 Soru",
     "Köklü İfadeler": "Ort. 1 Soru",
-    "Çarpanlara Ayırma": "Ort. 1 Soru",
-    "Oran - Orantı": "Ort. 1 Soru",
-    "Denklem Çözme": "Ort. 1 Soru",
-    "Kümeler ve Kartezyen Çarpım": "Ort. 1 Soru",
     "Fonksiyonlar": "Ort. 2-3 Soru",
-    "Veri, Sayma ve Olasılık": "Ort. 3-4 Soru",
-    
-    "İkinci Dereceden Denklemler & Karmaşık Sayılar": "Ort. 2 Soru",
-    "Parabol": "Ort. 1 Soru",
-    "Eşitsizlikler": "Ort. 1 Soru",
     "Trigonometri": "Ort. 4 Soru",
     "Logaritma": "Ort. 2 Soru",
     "Diziler": "Ort. 2 Soru",
@@ -524,75 +605,27 @@ for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
 UNIVERSITE_LISTESI = [
     "Acıbadem Mehmet Ali Aydınlar Üniversitesi (İstanbul)", "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi", 
     "Adıyaman Üniversitesi", "Afyon Kocatepe Üniversitesi", "Afyonkarahisar Sağlık Bilimleri Üniversitesi", 
-    "Ağrı İbrahim Çeçen Üniversitesi", "Akdeniz Üniversitesi (Antalya)", "Aksaray Üniversitesi", 
-    "Alanya Alaaddin Keykubat Üniversitesi (Antalya)", "Altınbaş Üniversitesi (İstanbul)", "Amasya Üniversitesi", 
-    "Anadolu Üniversitesi (Eskişehir)", "Ankara Üniversitesi", "Ankara Hacı Bayram Veli Üniversitesi", 
-    "Ankara Medipol Üniversitesi", "Ankara Müzik ve Güzel Sanatlar Üniversitesi", "Ankara Sosyal Bilimler Üniversitesi", 
-    "Ankara Yıldırım Beyazıt Üniversitesi", "Antalya Bilim Üniversitesi", "Ardahan Üniversitesi", 
-    "Artvin Çoruh Üniversitesi", "Atatürk Üniversitesi (Erzurum)", "Atılım Üniversitesi (Ankara)", 
-    "Aydın Adnan Menderes Üniversitesi", "Bahçeşehir Üniversitesi (İstanbul)", "Balıkesir Üniversitesi", 
-    "Bandırma Onyedi Eylül Üniversitesi (Balıkesir)", "Bartın Üniversitesi", "Batman Üniversitesi", 
-    "Bayburt Üniversitesi", "Beykent Üniversitesi (İstanbul)", "Bezm-i Âlem Vakıf Üniversitesi (İstanbul)", 
-    "Bilecik Şeyh Edebali Üniversitesi", "Bingöl Üniversitesi", "Bitlis Eren Üniversitesi", 
-    "Boğaziçi Üniversitesi (İstanbul)", "Bolu Abant İzzet Baysal Üniversitesi", "Burdur Mehmet Akif Ersoy Üniversitesi", 
-    "Bursa Teknik Üniversitesi", "Bursa Uludağ Üniversitesi", "Çağ Üniversitesi (Mersin)", 
-    "Çankaya Üniversitesi (Ankara)", "Çanakkale Onsekiz Mart Üniversitesi", "Çankırı Karatekin Üniversitesi", 
-    "Çukurova Üniversitesi (Adana)", "Dicle Üniversitesi (Diyarbakır)", "Doğuş Üniversitesi (İstanbul)", 
-    "Dokuz Eylül Üniversitesi (İzmir)", "Düzce Üniversitesi", "Ege Üniversitesi (İzmir)", 
-    "Erciyes Üniversitesi (Kayseri)", "Erzincan Binali Yıldırım Üniversitesi", "Erzurum Teknik Üniversitesi", 
-    "Eskişehir Osmangazi Üniversitesi", "Eskişehir Teknik Üniversitesi", "Fatih Sultan Mehmet Vakıf Üniversitesi (İstanbul)", 
-    "Fırat Üniversitesi (Elazığ)", "Galatasaray Üniversitesi (İstanbul)", "Gazi Üniversitesi (Ankara)", 
-    "Gaziantep Üniversitesi", "Giresun Üniversitesi", "Gümüşhane Üniversitesi", "Hacettepe Üniversitesi (Ankara)", 
-    "Hakkari Üniversitesi", "Haliç Üniversitesi (İstanbul)", "Harran Üniversitesi (Şanlıurfa)", 
-    "Hatay Mustafa Kemal Üniversitesi", "Iğdır Üniversitesi", "Isparta Uygulamalı Bilimler Üniversitesi", 
-    "İbn Haldun Üniversitesi (İstanbul)", "İhsan Doğramacı Bilkent Üniversitesi (Ankara)", "İnönü Üniversitesi (Malatya)", 
-    "İstanbul Üniversitesi", "İstanbul Üniversitesi-Cerrahpaşa", "İstanbul Arel Üniversitesi", 
-    "İstanbul Aydın Üniversitesi", "İstanbul Bilgi Üniversitesi", "İstanbul Esenyurt Üniversitesi", 
-    "İstanbul Gedik Üniversitesi", "İstanbul Gelişim Üniversitesi", "İstanbul Kültür Üniversitesi", 
-    "İstanbul Medeniyet Üniversitesi", "İstanbul Medipol Üniversitesi", "İstanbul Okan Üniversitesi", 
-    "İstanbul Rumeli Üniversitesi", "İstanbul Sabahattin Zaim Üniversitesi", "İstanbul Ticaret Üniversitesi", 
-    "İstinye Üniversitesi (İstanbul)", "İzmir Bakırçay Üniversitesi", "İzmir Demokrasi Üniversitesi", 
-    "İzmir Ekonomi Üniversitesi", "İzmir Katip Çelebi Üniversitesi", "İzmir Yüksek Teknoloji Enstitüsü", 
-    "Kadir Has Üniversitesi (İstanbul)", "Kafkas Üniversitesi (Kars)", "Kahramanmaraş Sütçü İmam Üniversitesi", 
-    "Karabük Üniversitesi", "Karadeniz Teknik Üniversitesi (Trabzon)", "Karamanoğlu Mehmetbey Üniversitesi (Karaman)", 
-    "Kastamonu Üniversitesi", "Kayseri Üniversitesi", "Kırıkkale Üniversitesi", "Kırklareli Üniversitesi", 
-    "Kırşehir Ahi Evran Üniversitesi", "Kilis 7 Aralık Üniversitesi", "Kocaeli Üniversitesi", 
-    "Kocaeli Sağlık ve Teknoloji Üniversitesi", "Konya Gıda ve Tarım Üniversitesi", "Konya Teknik Üniversitesi", 
-    "KTO Karatay Üniversitesi (Konya)", "Kütahya Dumlupınar Üniversitesi", "Kütahya Sağlık Bilimleri Üniversitesi", 
-    "Malatya Turgut Özal Üniversitesi", "Manisa Celal Bayar Üniversitesi", "Mardin Artuklu Üniversitesi", 
-    "Marmara Üniversitesi (İstanbul)", "Mersin Üniversitesi", "Mimar Sinan Güzel Sanatlar Üniversitesi (İstanbul)", 
-    "Muğla Sıtkı Koçman Üniversitesi", "Munzur Üniversitesi (Tunceli)", "Muş Alparslan Üniversitesi", 
-    "Necmettin Erbakan Üniversitesi (Konya)", "Nevşehir Hacı Bektaş Veli Üniversitesi", "Niğde Ömer Halisdemir Üniversitesi", 
-    "Nuh Naci Yazgan Üniversitesi (Kayseri)", "Ondokuz Mayıs Üniversitesi (Samsun)", "Ordu Üniversitesi", 
-    "Orta Doğu Teknik Üniversitesi (ODTÜ - Ankara)", "Osmaniye Korkut Ata Üniversitesi", "Özyeğin Üniversitesi (İstanbul)", 
-    "Pamukkale Üniversitesi (Denizli)", "Piri Reis Üniversitesi (İstanbul)", "Recep Tayyip Erdoğan Üniversitesi (Rize)", 
-    "Sabancı Üniversitesi (İstanbul)", "Sağlık Bilimleri Üniversitesi (İstanbul)", "Sakarya Üniversitesi", 
-    "Sakarya Uygulamalı Bilimler Üniversitesi", "Samsun Üniversitesi", "Sanko Üniversitesi (Gaziantep)", 
-    "Selçuk Üniversitesi (Konya)", "Siirt Üniversitesi", "Sinop Üniversitesi", "Sivas Cumhuriyet Üniversitesi", 
-    "Süleyman Demirel Üniversitesi (Isparta)", "Şırnak Üniversitesi", "Tarsus Üniversitesi (Mersin)", 
-    "TED Üniversitesi (Ankara)", "Tekirdağ Namık Kemal Üniversitesi", "TOBB Ekonomi ve Teknoloji Üniversitesi (Ankara)", 
-    "Tokat Gaziosmanpaşa Üniversitesi", "Toros Üniversitesi (Mersin)", "Trabzon Üniversitesi", "Trakya Üniversitesi (Edirne)", 
-    "Türk-Alman Üniversitesi (İstanbul)", "Türk Hava Kurumu Üniversitesi (Ankara)", "Ufuk Üniversitesi (Ankara)", 
-    "Uşak Üniversitesi", "Üsküdar Üniversitesi (İstanbul)", "Van Yüzüncü Yıl Üniversitesi", 
-    "Yalova Üniversitesi", "Yaşar Üniversitesi (İzmir)", "Yeditepe Üniversitesi (İstanbul)", 
-    "Yıldız Teknik Üniversitesi (İstanbul)", "Yozgat Bozok Üniversitesi", "Zonguldak Bülent Ecevit Üniversitesi"
+    "Akdeniz Üniversitesi (Antalya)", "Ankara Üniversitesi", "Atatürk Üniversitesi (Erzurum)", 
+    "Boğaziçi Üniversitesi (İstanbul)", "Bursa Uludağ Üniversitesi", "Çukurova Üniversitesi (Adana)", 
+    "Dokuz Eylül Üniversitesi (İzmir)", "Ege Üniversitesi (İzmir)", "Fırat Üniversitesi (Elazığ)", 
+    "Galatasaray Üniversitesi (İstanbul)", "Gazi Üniversitesi (Ankara)", "Giresun Üniversitesi", 
+    "Hacettepe Üniversitesi (Ankara)", "İhsan Doğramacı Bilkent Üniversitesi (Ankara)", "İstanbul Üniversitesi", 
+    "İstanbul Üniversitesi-Cerrahpaşa", "İstanbul Teknik Üniversitesi (İTÜ)", "Koç Üniversitesi (İstanbul)", 
+    "Marmara Üniversitesi (İstanbul)", "Orta Doğu Teknik Üniversitesi (ODTÜ - Ankara)", "Yıldız Teknik Üniversitesi (İstanbul)"
 ]
 
 BOLUM_KATEGORILERI = {
     "SAY (Sayısal)": [
-        "Matematik", "Fen Edebiyat Fakültesi Matematik", "Tıp Fakültesi", "Bilgisayar Mühendisliği", "Yapay Zeka ve Veri Mühendisliği", 
-        "Elektrik-Elektronik Mühendisliği", "Endüstri Mühendisliği", "Makine Mühendisliği", 
-        "İnşaat Mühendisliği", "Yazılım Mühendisliği", "Mimarlık", "Diş Hekimliği Fakültesi", 
-        "Eczacılık Fakültesi", "Moleküler Biyoloji ve Genetik", "Fizyoterapi ve Rehabilitasyon", "Hemşirelik"
+        "Matematik", "Tıp Fakültesi", "Bilgisayar Mühendisliği", "Elektrik-Elektronik Mühendisliği", 
+        "Endüstri Mühendisliği", "Makine Mühendisliği", "Yazılım Mühendisliği", "Mimarlık", 
+        "Diş Hekimliği Fakültesi", "Eczacılık Fakültesi", "Hemşirelik"
     ],
     "EA (Eşit Ağırlık)": [
         "Hukuk Fakültesi", "Psikoloji", "İşletme", "İktisat", 
-        "Siyaset Bilimi ve Uluslararası İlişkiler", "Yönetim Bilişim Sistemleri", 
-        "Rehberlik ve Psikolojik Danışmanlık (PDR)", "Sınıf Öğretmenliği"
+        "Yönetim Bilişim Sistemleri", "Rehberlik ve Psikolojik Danışmanlık (PDR)", "Sınıf Öğretmenliği"
     ],
     "SÖZ (Sözel)": [
-        "Türk Dili ve Edebiyatı", "Tarih", "Coğrafya", "Gastronomi ve Mutfak Sanatları", 
-        "İlahiyat Fakültesi", "Özel Eğitim Öğretmenliği", "Türkçe Öğretmenliği"
+        "Türk Dili ve Edebiyatı", "Tarih", "Gastronomi ve Mutfak Sanatları", "İlahiyat Fakültesi", "Türkçe Öğretmenliği"
     ],
     "DİL (Yabancı Dil)": [
         "İngilizce Öğretmenliği", "Tercümanlık ve Çeviribilim", "İngiliz Dili ve Edebiyatı"
@@ -702,7 +735,7 @@ else:
                                             del st.query_params["hatirla_ogr"]
                                     st.rerun()
                                 else:
-                                    st.warning("⏳ Hesabınız koçunuz tarafından henüz onaylanmamıştır. Lütfen koçunuzun onayını bekleyin.")
+                                    st.warning("⏳ Hesabınız koçunuz tarafından henüz onaylanmamıştır.")
                             else:
                                 st.error("❌ Hatalı ad veya şifre!")
 
@@ -773,7 +806,7 @@ else:
 
             with tab_hedef:
                 st.markdown(f"<h3 style='font-weight:700; font-size:18px;'>🎯 YÖK Atlas Hedef & Net Analiz Merkezi — {aktif_ogr}</h3>", unsafe_allow_html=True)
-                st.caption("🏛️ Üniversitenizi ve bölümünüzü seçerek ÖSYM / YÖK Atlas verilerine göre gereken taban netleri ve başarı sırasını anında görüntüleyin.")
+                st.caption("🏛️ Üniversitenizi ve bölümünüzü seçerek ÖSYM / YÖK Atlas verilerine göre gereken taban netleri ve başarı sırasını görüntüleyin.")
 
                 conn_uni = get_db_connection()
                 cur_uni = conn_uni.cursor()
@@ -812,10 +845,7 @@ else:
                 if ozel_kayit:
                     t_net, t_sira, tyt_gerekli, ayt_gerekli = ozel_kayit[0], ozel_kayit[1], ozel_kayit[2], ozel_kayit[3]
                 else:
-                    if "Matematik" in secilen_hedef_bolum or "Fen Edebiyat" in secilen_hedef_bolum:
-                        t_net, t_sira, tyt_gerekli, ayt_gerekli = 75.5, "95.000", 72.0, 45.0
-                    else:
-                        t_net, t_sira, tyt_gerekli, ayt_gerekli = 85.0, "50.000", 80.0, 52.0
+                    t_net, t_sira, tyt_gerekli, ayt_gerekli = 85.0, "50.000", 80.0, 52.0
 
                 st.markdown(f"""
                 <div class="yok-net-box">
@@ -855,7 +885,7 @@ else:
                 st.markdown(f"""
                 <div class="program-header-box">
                     <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
-                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Koçunuz tarafından özel olarak hazırlanan haftalık çalışma planınız aşağıdadır.</p>
+                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Koçunuz tarafından hazırlanan haftalık çalışma planınız aşağıdadır.</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -867,7 +897,7 @@ else:
                     st.dataframe(df_p, use_container_width=True, height=400)
                     
                     st.markdown("---")
-                    st.markdown("#### 📥 Programını Cihazına İndir (PDF / Yazdırılabilir Format)")
+                    st.markdown("#### 📥 Programını Cihazına İndir")
                     html_bytes_ogr = html_to_pdf_bytes(df_p, aktif_ogr)
                     st.download_button(
                         label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
@@ -881,8 +911,6 @@ else:
 
             with tab_ilerleme:
                 st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
-                st.caption("📚 Her ders için konuların ÖSYM'de kaç soru getirdiğini görerek çalışmanı planlayabilir, tamamlandığında tik atabilirsin.")
-
                 secilen_takip_ders = st.selectbox("İlerlemesini Görmek / Düzenlemek İstediğiniz Dersi Seçin:", list(HAM_DERS_KONULARI.keys()), key="takip_ders_secim")
                 konu_listesi_ogrenci = HAM_DERS_KONULARI[secilen_takip_ders]
 
@@ -932,27 +960,10 @@ else:
                         st.success("🎉 İlerlemeniz başarıyla kaydedildi!")
                         st.rerun()
 
-                st.markdown("---")
-                st.markdown("#### 📥 İlerleme Tablosunu İndir (CSV / Excel ile açılabilir)")
-                conn_csv = get_db_connection()
-                df_tum_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'Evet\' ELSE \'Hayır\' END AS "Tamamlandı", soru_miktari AS "Soru Miktarı" FROM konu_ilerleme WHERE ad_soyad = %s', conn_csv.conn, params=(aktif_ogr,))
-                conn_csv.close()
-
-                if not df_tum_ilerleme.empty:
-                    csv_data = df_tum_ilerleme.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="📥 Tüm İlerleme Tablosunu İndir",
-                        data=csv_data,
-                        file_name=f"{aktif_ogr}_Ders_Ilerleme_Tablosu.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-
             with tab_gunluk:
-                st.markdown(f"### 📝 Günlük Çalışma Girişi (Konu & Dakika Süre Takibi) — {aktif_ogr}")
+                st.markdown(f"### 📝 Günlük Çalışma Girişi — {aktif_ogr}")
                 s_tarih = st.date_input("Çalışma Tarihi:", datetime.date.today())
                 
-                sec_alan_giris = st.selectbox("Çalışma Alanınızı Seçiniz:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
                 aktif_giris_dersleri = list(EVRENSEL_DERS_KONULARI.keys())
 
                 with st.form("gunluk_detayli_calisma_formu"):
@@ -978,10 +989,8 @@ else:
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
-                st.caption("📷 Deneme sınavı sonucunuzu (JPG, PNG veya PDF) buradan yükleyerek koçunuza gönderebilirsiniz.")
-                
                 with st.form("deneme_yukleme_formu"):
-                    dyayin = st.text_input("Deneme Yayın Adı (Örn: 3D Yayınları TYT Deneme):")
+                    dyayin = st.text_input("Deneme Yayın Adı:")
                     dnet = st.number_input("Toplam Net:", 0.0, 120.0, 75.0)
                     yuklenen_karne = st.file_uploader("Deneme Sonuç Belgesi (JPG, PNG, PDF):", type=["png", "jpg", "jpeg", "pdf"])
                     
@@ -1002,32 +1011,14 @@ else:
                         """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_db, dosya_adi_db, "Koç değerlendirmesi bekleniyor."))
                         conn_dn.commit()
                         conn_dn.close()
-                        st.success("🎉 Deneme sonucu ve karne belgeniz başarıyla koçunuza gönderildi!")
+                        st.success("🎉 Deneme sonucu ve karne belgeniz koçunuza gönderildi!")
                         st.rerun()
-
-                st.markdown("---")
-                st.markdown("#### 📋 Geçmiş Deneme Sonuçlarım ve Karnelerim")
-                conn_dlist = get_db_connection()
-                df_benim_denemeler = pd.read_sql_query('SELECT id, tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", dosya_yolu, dosya_adi, koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_dlist.conn, params=(aktif_ogr,))
-                conn_dlist.close()
-
-                if not df_benim_denemeler.empty:
-                    for _, drow in df_benim_denemeler.iterrows():
-                        st.markdown(f"**{drow['Tarih']}** | {drow['Yayın']} — **Net: {drow['Toplam Net']}** | Not: *{drow['Koç Notu']}*")
-                        if drow['dosya_yolu'] and os.path.exists(drow['dosya_yolu']):
-                            if drow['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                                st.image(drow['dosya_yolu'], width=300)
-                            elif drow['dosya_yolu'].lower().endswith('.pdf'):
-                                st.markdown(pdf_goster_html(drow['dosya_yolu']), unsafe_allow_html=True)
-                        st.divider()
-                else:
-                    st.info("ℹ️ Henüz yüklenmiş deneme sınavınız bulunmuyor.")
 
             with tab_konular:
                 st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
-                for d_adi, k_list in EVRENSEL_DERS_KONULARI.items():
+                for d_adi, k_list in HAM_DERS_KONULARI.items():
                     st.markdown(f"**{d_adi}**")
-                    for kn in k_list[:3]:
+                    for kn in k_list[:2]:
                         st.select_slider(kn, options=[1, 2, 3, 4, 5], value=3, key=f"kp_{aktif_ogr}_{kn}")
 
     with main_tab2:
@@ -1035,50 +1026,21 @@ else:
         if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
         
         if not st.session_state["aktif_koc"]:
-            tab_koc_giris, tab_koc_kayit = st.tabs(["🔑 KOÇ GİRİŞİ", "➕ YENİ KOÇ BAŞVURUSU"])
-            
-            with tab_koc_giris:
-                with st.form("koc_giris_formu"):
-                    k_ad = st.text_input("Koç Kullanıcı Adı:")
-                    k_sif = st.text_input("Şifre:", type="password")
-                    if st.form_submit_button("Koç Girişi Yap", type="primary"):
-                        conn_kg = get_db_connection()
-                        cur_kg = conn_kg.cursor()
-                        cur_kg.execute("SELECT sifre, onaylandi FROM koclar WHERE kullanici_adi = %s", (k_ad,))
-                        r = cur_kg.fetchone()
-                        conn_kg.close()
+            with st.form("koc_giris_formu"):
+                k_ad = st.text_input("Koç Kullanıcı Adı:")
+                k_sif = st.text_input("Şifre:", type="password")
+                if st.form_submit_button("Koç Girişi Yap", type="primary"):
+                    conn_kg = get_db_connection()
+                    cur_kg = conn_kg.cursor()
+                    cur_kg.execute("SELECT sifre, onaylandi FROM koclar WHERE kullanici_adi = %s", (k_ad,))
+                    r = cur_kg.fetchone()
+                    conn_kg.close()
 
-                        if r and verify_hash(k_sif, r[0]):
-                            if r[1] == 1:
-                                st.session_state["aktif_koc"] = k_ad
-                                st.rerun()
-                            else:
-                                st.warning("⏳ Koç hesabınız henüz ana koç tarafından onaylanmadı.")
-                        else:
-                            st.error("Hatalı kullanıcı adı veya şifre!")
-                            
-            with tab_koc_kayit:
-                with st.form("yeni_koc_kayit_formu"):
-                    yk_ad = st.text_input("Yeni Koç Kullanıcı Adı Belirle:")
-                    yk_sif = st.text_input("Şifre Belirle:", type="password")
-                    yk_master = st.text_input("Ana Koç Onay Kodu (Güvenlik Kodu):", type="password")
-                    if st.form_submit_button("Koç Kaydı Oluştur", type="primary"):
-                        if yk_ad and yk_sif:
-                            onay_durum = 1 if yk_master == "Koc123!" else 0
-                            conn_kk = get_db_connection()
-                            cur_kk = conn_kk.cursor()
-                            try:
-                                cur_kk.execute("INSERT INTO koclar (kullanici_adi, sifre, onaylandi) VALUES (%s, %s, %s)", (yk_ad, make_hash(yk_sif), onay_durum))
-                                conn_kk.commit()
-                                conn_kk.close()
-                                if onay_durum == 1:
-                                    st.success("🎉 Koç kaydınız oluşturuldu ve onaylandı! Giriş yapabilirsiniz.")
-                                else:
-                                    st.success("⏳ Koç başvurunuz alındı. Ana koç onayladıktan sonra giriş yapabileceksiniz.")
-                            except psycopg2.IntegrityError:
-                                conn_kk.rollback()
-                                conn_kk.close()
-                                st.error("Bu kullanıcı adı zaten alınmış.")
+                    if r and verify_hash(k_sif, r[0]):
+                        st.session_state["aktif_koc"] = k_ad
+                        st.rerun()
+                    else:
+                        st.error("Hatalı kullanıcı adı veya şifre!")
         else:
             col_k_head1, col_k_head2 = st.columns([0.8, 0.2])
             with col_k_head1: st.success(f"👨‍🏫 Aktif Koç: **{st.session_state['aktif_koc']}**")
@@ -1094,35 +1056,24 @@ else:
             conn_b.close()
             
             if bekleyen_ogrenciler:
-                st.markdown(f"""
-                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 15px 20px; border-radius: 14px; margin-bottom: 20px;">
-                    <h3 style="margin:0; font-size:18px; font-weight:800; color:white !important;">🔔 Bildirim: {len(bekleyen_ogrenciler)} Yeni Öğrenci Onay Bekliyor!</h3>
-                    <p style="margin:4px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Aşağıdaki listeden öğrencileri onaylayabilir veya silebilirsiniz (reddedebilirsiniz).</p>
-                </div>
-                """, unsafe_allow_html=True)
-
+                st.warning(f"🔔 {len(bekleyen_ogrenciler)} Yeni Öğrenci Onay Bekliyor!")
                 for b_ogr in bekleyen_ogrenciler:
-                    col_bo1, col_bo2, col_bo3, col_bo4, col_bo5 = st.columns([2, 1.5, 1.5, 1, 1])
+                    col_bo1, col_bo2, col_bo3, col_bo4 = st.columns([2, 1, 1, 1])
                     with col_bo1: st.markdown(f"**{b_ogr[0]}**")
-                    with col_bo2: st.markdown(f"İstenen Koç: {b_ogr[3]}")
-                    with col_bo3: st.markdown(f"Alan: {b_ogr[1]}")
-                    with col_bo4:
+                    with col_bo2: st.markdown(f"Alan: {b_ogr[1]}")
+                    with col_bo3:
                         if st.button(f"Onayla ✅", key=f"onay_{b_ogr[0]}"):
                             conn_on = get_db_connection()
-                            cur_on = conn_on.cursor()
-                            cur_on.execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = %s", (b_ogr[0],))
+                            conn_on.cursor().execute("UPDATE ogrenciler SET onaylandi = 1 WHERE ad_soyad = %s", (b_ogr[0],))
                             conn_on.commit()
                             conn_on.close()
-                            st.success(f"{b_ogr[0]} onaylandı!")
                             st.rerun()
-                    with col_bo5:
+                    with col_bo4:
                         if st.button(f"Sil ❌", key=f"sil_{b_ogr[0]}"):
                             conn_sl = get_db_connection()
-                            cur_sl = conn_sl.cursor()
-                            cur_sl.execute("DELETE FROM ogrenciler WHERE ad_soyad = %s", (b_ogr[0],))
+                            conn_sl.cursor().execute("DELETE FROM ogrenciler WHERE ad_soyad = %s", (b_ogr[0],))
                             conn_sl.commit()
                             conn_sl.close()
-                            st.warning(f"{b_ogr[0]} kaydı silindi.")
                             st.rerun()
                 st.divider()
 
@@ -1135,57 +1086,7 @@ else:
             if ogrs:
                 secilen_ogr = st.selectbox("Yönetilecek Öğrenci:", ogrs)
                 
-                st.markdown(f"### 📈 {secilen_ogr} — Öğrenci Konu İlerleme ve Soru Durumu")
-                conn_ki = get_db_connection()
-                df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
-                conn_ki.close()
-
-                if not df_koc_ilerleme.empty:
-                    st.dataframe(df_koc_ilerleme, use_container_width=True)
-                else:
-                    st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
-
-                st.markdown(f"### 📝 {secilen_ogr} — Öğrencinin Günlük Çalışma Kayıtları")
-                conn_kc = get_db_connection()
-                df_koc_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 30', conn_kc.conn, params=(secilen_ogr,))
-                conn_kc.close()
-
-                if not df_koc_calisma.empty:
-                    st.dataframe(df_koc_calisma, use_container_width=True, hide_index=True)
-                else:
-                    st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
-
-                st.markdown(f"### 📊 {secilen_ogr} — Öğrenci Deneme Sonuçları ve Karneleri")
-                conn_kdc = get_db_connection()
-                df_koc_deneme = pd.read_sql_query('SELECT id, tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", dosya_yolu, dosya_adi, koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_kdc.conn, params=(secilen_ogr,))
-                conn_kdc.close()
-
-                if not df_koc_deneme.empty:
-                    for _, kd in df_koc_deneme.iterrows():
-                        st.markdown(f"**{kd['Tarih']}** | {kd['Yayın']} — **Net: {kd['Toplam Net']}**")
-                        if kd['dosya_yolu'] and os.path.exists(kd['dosya_yolu']):
-                            if kd['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
-                                st.image(kd['dosya_yolu'], width=300)
-                            elif kd['dosya_yolu'].lower().endswith('.pdf'):
-                                st.markdown(pdf_goster_html(kd['dosya_yolu']), unsafe_allow_html=True)
-                        
-                        with st.form(f"koc_not_form_{kd['id']}"):
-                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'] if kd['Koç Notu'] else "")
-                            if st.form_submit_button("Notu Güncelle"):
-                                conn_kn = get_db_connection()
-                                cur_kn = conn_kn.cursor()
-                                cur_kn.execute("UPDATE denemeler SET koc_notu = %s WHERE id = %s", (yeni_koc_notu, kd['id']))
-                                conn_kn.commit()
-                                conn_kn.close()
-                                st.success("🎉 Koç notu güncellendi!")
-                                st.rerun()
-                        st.divider()
-                else:
-                    st.info("ℹ️ Öğrenci henüz deneme sonucu veya karne yüklememiş.")
-
-                st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
-                
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
                 dakika_secenekleri = [f"{d:02d}" for d in range(0, 60, 5)]
@@ -1219,7 +1120,7 @@ else:
                      """, (secilen_ogr, yeni_saat_araligi, hucre_degeri))
                      conn_islem.commit()
                      conn_islem.close()
-                     st.success(f"🎉 {secilen_ogr} için {hedef_gun_sec} günü ({yeni_saat_araligi}) kaydedildi!")
+                     st.success(f"🎉 Hücre eklendi!")
                      st.rerun()
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
@@ -1259,8 +1160,6 @@ else:
                     conn_sv2.close()
                     st.success("🎉 Program güncellendi!")
                     st.rerun()
-            else:
-                st.info("ℹ️ Sizin koçluğunuz altında onaylanmış öğrenci bulunmuyor.")
 
     with main_tab3:
         st.markdown("## 👨‍👩‍👧‍👦 Veli Takip Ekranı")
@@ -1316,33 +1215,3 @@ else:
                 st.dataframe(df_veli_p, use_container_width=True, height=350)
             else:
                 st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
-
-            st.markdown(f"### ✅ Öğrenci Konu İlerleme Durumu")
-            conn_vi = get_db_connection()
-            df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
-            conn_vi.close()
-
-            if not df_v_ilerleme.empty:
-                st.dataframe(df_v_ilerleme, use_container_width=True)
-            else:
-                st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işlem yapmamış.")
-
-            st.markdown(f"### 📝 Öğrencinin Günlük Çalışma Takibi")
-            conn_vc = get_db_connection()
-            df_v_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 20', conn_vc.conn, params=(v_ad,))
-            conn_vc.close()
-
-            if not df_v_calisma.empty:
-                st.dataframe(df_v_calisma, use_container_width=True, hide_index=True)
-            else:
-                st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
-
-            st.markdown(f"### 📊 Deneme Sınavı Sonuçları ve Koç Notları")
-            conn_vd = get_db_connection()
-            df_v_deneme = pd.read_sql_query('SELECT tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_vd.conn, params=(v_ad,))
-            conn_vd.close()
-
-            if not df_v_deneme.empty:
-                st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
-            else:
-                st.info("ℹ️ Henüz deneme sınavı sonucu yüklenmemiş.")
