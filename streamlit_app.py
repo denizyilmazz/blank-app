@@ -751,7 +751,7 @@ else:
                     if not aktif_koclar_listesi: aktif_koclar_listesi = ["Deniz Yılmaz"]
                     
                     reg_koc = st.selectbox("Çalışmak İstediğiniz Koçu Seçin:", aktif_koclar_listesi)
-                    reg_alan = st.selectbox("Alanınız:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
+                    reg_alan = st.selectbox("Alanınız:", ["SAY (Sayısal)", "EA (Sözel/EA)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
                     reg_sinav = st.selectbox("Hazırlanılan Sınav:", ["YKS (TYT + AYT)", "TYT (Sadece TYT)", "LGS (8. Sınıf)"])
 
                     if st.form_submit_button("Hesabımı Oluştur ve Koç Onayına Gönder", type="primary", use_container_width=True):
@@ -963,7 +963,6 @@ else:
                 
                 aktif_giris_dersleri = list(EVRENSEL_DERS_KONULARI.keys())
 
-                # st.form kaldırıldı ki ders seçildiğinde alt konular anında güncellensin!
                 secilen_ders = st.selectbox("Ders Seçin:", aktif_giris_dersleri, key="gunluk_ders_secim")
                 konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
                 secilen_konu = st.selectbox("Konu Seçin:", konu_listesi_secim, key="gunluk_konu_secim")
@@ -1083,6 +1082,55 @@ else:
             if ogrs:
                 secilen_ogr = st.selectbox("Yönetilecek Öğrenci:", ogrs)
                 
+                st.markdown(f"### 📈 {secilen_ogr} — Öğrenci İlerleme ve Çalışma Takibi")
+                conn_ki = get_db_connection()
+                df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
+                conn_ki.close()
+
+                if not df_koc_ilerleme.empty:
+                    st.dataframe(df_koc_ilerleme, use_container_width=True)
+                else:
+                    st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
+
+                st.markdown(f"### 📝 {secilen_ogr} — Günlük Çalışma Kayıtları")
+                conn_kc = get_db_connection()
+                df_koc_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 30', conn_kc.conn, params=(secilen_ogr,))
+                conn_kc.close()
+
+                if not df_koc_calisma.empty:
+                    st.dataframe(df_koc_calisma, use_container_width=True, hide_index=True)
+                else:
+                    st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
+
+                st.markdown(f"### 📊 {secilen_ogr} — Deneme Sınavları ve Koç Notları")
+                conn_kdc = get_db_connection()
+                df_koc_deneme = pd.read_sql_query('SELECT id, tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", dosya_yolu, dosya_adi, koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_kdc.conn, params=(secilen_ogr,))
+                conn_kdc.close()
+
+                if not df_koc_deneme.empty:
+                    for _, kd in df_koc_deneme.iterrows():
+                        st.markdown(f"**{kd['Tarih']}** | {kd['Yayın']} — **Net: {kd['Toplam Net']}**")
+                        if kd['dosya_yolu'] and os.path.exists(kd['dosya_yolu']):
+                            if kd['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')):
+                                st.image(kd['dosya_yolu'], width=300)
+                            elif kd['dosya_yolu'].lower().endswith('.pdf'):
+                                st.markdown(pdf_goster_html(kd['dosya_yolu']), unsafe_allow_html=True)
+                        
+                        with st.form(f"koc_not_form_{kd['id']}"):
+                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'] if kd['Koç Notu'] else "")
+                            if st.form_submit_button("Notu Güncelle"):
+                                conn_kn = get_db_connection()
+                                cur_kn = conn_kn.cursor()
+                                cur_kn.execute("UPDATE denemeler SET koc_notu = %s WHERE id = %s", (yeni_koc_notu, kd['id']))
+                                conn_kn.commit()
+                                conn_kn.close()
+                                st.success("🎉 Koç notu güncellendi!")
+                                st.rerun()
+                        st.divider()
+                else:
+                    st.info("ℹ️ Öğrenci henüz deneme sonucu veya karne yüklememiş.")
+
+                st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
