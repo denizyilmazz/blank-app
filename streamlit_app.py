@@ -7,9 +7,6 @@ import random
 import base64
 import hashlib
 import os
-from urllib.parse import quote
-from PIL import Image
-import shutil
 import warnings
 
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -962,30 +959,30 @@ else:
 
             with tab_gunluk:
                 st.markdown(f"### 📝 Günlük Çalışma Girişi — {aktif_ogr}")
-                s_tarih = st.date_input("Çalışma Tarihi:", datetime.date.today())
+                s_tarih = st.date_input("Çalışma Tarihi:", datetime.date.today(), key="gunluk_tarih_inp")
                 
                 aktif_giris_dersleri = list(EVRENSEL_DERS_KONULARI.keys())
 
-                with st.form("gunluk_detayli_calisma_formu"):
-                    secilen_ders = st.selectbox("Ders Seçin:", aktif_giris_dersleri)
-                    konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
-                    secilen_konu = st.selectbox("Konu Seçin:", konu_listesi_secim)
+                # st.form kaldırıldı ki ders seçildiğinde alt konular anında güncellensin!
+                secilen_ders = st.selectbox("Ders Seçin:", aktif_giris_dersleri, key="gunluk_ders_secim")
+                konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
+                secilen_konu = st.selectbox("Konu Seçin:", konu_listesi_secim, key="gunluk_konu_secim")
 
-                    col_gc1, col_gc2, col_gc3 = st.columns(3)
-                    with col_gc1: girilen_soru = st.number_input("Çözülen Soru Sayısı:", 0, 500, 20, step=1)
-                    with col_gc2: girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Dakika):", 0, 1440, 45, step=1)
-                    with col_gc3: girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Dakika):", 0, 1440, 45, step=1)
+                col_gc1, col_gc2, col_gc3 = st.columns(3)
+                with col_gc1: girilen_soru = st.number_input("Çözülen Soru Sayısı:", 0, 500, 20, step=1, key="gunluk_soru_inp")
+                with col_gc2: girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Dakika):", 0, 1440, 45, step=1, key="gunluk_konu_sure_inp")
+                with col_gc3: girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Dakika):", 0, 1440, 45, step=1, key="gunluk_cozum_sure_inp")
 
-                    if st.form_submit_button("🚀 Çalışmayı Kaydet", type="primary", use_container_width=True):
-                        conn_g = get_db_connection()
-                        cur_g = conn_g.cursor()
-                        cur_g.execute("""
-                            INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, int(girilen_soru), int(girilen_konu_sure), int(girilen_cozum_sure)))
-                        conn_g.commit()
-                        conn_g.close()
-                        st.success(f"🎉 Başarıyla kaydedildi! ({secilen_ders} — {secilen_konu})")
+                if st.button("🚀 Çalışmayı Kaydet", type="primary", use_container_width=True, key="gunluk_kaydet_btn"):
+                    conn_g = get_db_connection()
+                    cur_g = conn_g.cursor()
+                    cur_g.execute("""
+                        INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, int(girilen_soru), int(girilen_konu_sure), int(girilen_cozum_sure)))
+                    conn_g.commit()
+                    conn_g.close()
+                    st.success(f"🎉 Başarıyla kaydedildi! ({secilen_ders} — {secilen_konu})")
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
