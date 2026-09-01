@@ -8,6 +8,7 @@ import base64
 import hashlib
 import os
 import warnings
+import plotly.express as px
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
@@ -1161,7 +1162,25 @@ else:
                         st.markdown("---")
                         st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                         ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
-                        st.bar_chart(ders_soru_df, x="Ders", y="Soru", use_container_width=True)
+                        
+                        # Plotly ile Profesyonel ve Şık Grafik
+                        fig = px.bar(
+                            ders_soru_df, 
+                            x="Ders", 
+                            y="Soru", 
+                            text="Soru",
+                            color="Ders",
+                            color_discrete_sequence=px.colors.qualitative.Bold
+                        )
+                        fig.update_traces(textposition='outside', marker_cornerRadius=8)
+                        fig.update_layout(
+                            xaxis_title="Dersler",
+                            yaxis_title="Çözülen Soru Sayısı",
+                            showlegend=False,
+                            margin=dict(l=20, r=20, t=30, b=20),
+                            height=380
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
 
                         st.markdown("#### 📋 Çalışma Listesi")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
@@ -1392,7 +1411,25 @@ else:
                     st.markdown("---")
                     st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                     ders_soru_df_v = gosterilecek_df_v.groupby("Ders")["Soru"].sum().reset_index()
-                    st.bar_chart(ders_soru_df_v, x="Ders", y="Soru", use_container_width=True)
+                    
+                    # Veli Paneli için de Profesyonel Plotly Grafiği
+                    fig_v = px.bar(
+                        ders_soru_df_v, 
+                        x="Ders", 
+                        y="Soru", 
+                        text="Soru",
+                        color="Ders",
+                        color_discrete_sequence=px.colors.qualitative.Bold
+                    )
+                    fig_v.update_traces(textposition='outside', marker_cornerRadius=8)
+                    fig_v.update_layout(
+                        xaxis_title="Dersler",
+                        yaxis_title="Çözülen Soru Sayısı",
+                        showlegend=False,
+                        margin=dict(l=20, r=20, t=30, b=20),
+                        height=380
+                    )
+                    st.plotly_chart(fig_v, use_container_width=True)
 
                     st.markdown("#### 📋 Çalışma Listesi")
                     st.dataframe(gosterilecek_df_v, use_container_width=True, hide_index=True)
