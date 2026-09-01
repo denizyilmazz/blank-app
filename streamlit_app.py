@@ -8,6 +8,7 @@ import base64
 import hashlib
 import os
 import warnings
+import plotly.express as px
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
@@ -178,7 +179,7 @@ st.markdown("""
             --input-text: #0f172a;
             --tab-bg: #ffffff;
             --yok-box-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            --hero-bg: linear-gradient(135deg, #0284c7 0%, #4f46e5 50%, #7c3aed 100%);
+            --hero-bg: linear-gradient(135deg, #0284c7 0%, #6366f1 50%, #8b5cf6 100%);
         }
     }
 
@@ -204,7 +205,7 @@ st.markdown("""
         background: var(--tab-bg, #ffffff) !important;
         padding: 10px;
         border-radius: 20px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
         border: 1.5px solid var(--border-color, #cbd5e1) !important;
     }
 
@@ -217,7 +218,6 @@ st.markdown("""
         font-size: 13.5px !important;
         color: var(--text-color, #0f172a) !important;
         border: 1px solid var(--border-color, #cbd5e1) !important;
-        transition: all 0.3s ease;
     }
 
     .stTabs [aria-selected="true"] {
@@ -1156,9 +1156,10 @@ else:
                         st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                         ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
                         
-                        # Yerleşik st.bar_chart kullanımı (harici kütüphane gerektirmez, hatasız çalışır)
+                        # Yatay barchart (bar_chart x ekseni metinleri için dersleri index yapar)
                         if not ders_soru_df.empty:
-                            st.bar_chart(ders_soru_df.set_index("Ders")["Soru"], use_container_width=True)
+                            chart_data = ders_soru_df.set_index("Ders")["Soru"]
+                            st.bar_chart(chart_data, use_container_width=True)
 
                         st.markdown("#### 📋 Çalışma Listesi")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
