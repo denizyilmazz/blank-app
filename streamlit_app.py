@@ -385,6 +385,10 @@ MOTIVASYON_SOZLERI = [
 ]
 
 HAM_DERS_KONULARI = {
+    "🌅 Günlük Rutinler": [
+        "Her Sabah 25 Soru Paragraf",
+        "20 Soru Problemler"
+    ],
     "☕ Mola & Dinlenme Aktivitesi": [
         "Kısa Dinlenme & Çay/Kahve Molası",
         "Zihin Dinlendirme Mola"
@@ -607,6 +611,8 @@ HAM_DERS_KONULARI = {
 }
 
 OSYM_SORU_DAGILIMLARI = {
+    "Her Sabah 25 Soru Paragraf": "Günlük Alışkanlık",
+    "20 Soru Problemler": "Günlük Alışkanlık",
     "Sözcükte Anlam": "Ort. 2-3 Soru",
     "Cümlede Anlam": "Ort. 2 Soru",
     "Paragrafta Anlam ve Yapı": "Ort. 14-16 Soru",
@@ -635,7 +641,7 @@ EVRENSEL_DERS_KONULARI = {}
 for ders_adi, konu_listesi in HAM_DERS_KONULARI.items():
     genisletilmis = []
     for k in konu_listesi:
-        if "Mola" in ders_adi or "Yemek" in ders_adi or "Branş Denemeleri" in ders_adi:
+        if "Mola" in ders_adi or "Yemek" in ders_adi or "Branş Denemeleri" in ders_adi or "Günlük Rutinler" in ders_adi:
             genisletilmis.append(k)
         else:
             genisletilmis.append(f"{k} — Konu Çalışması")
@@ -929,7 +935,6 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Öğrenci için Bugünün Programı ve Haftalık Program Sekmeleri
                 ogr_prog_alt_secim = st.radio("Program Görünümü:", ["☀️ Bugünün Programı", "📅 Tüm Haftalık Program"], horizontal=True, key="ogr_prog_alt_secim_key")
 
                 gun_indexleri = {0: "pazartesi", 1: "sali", 2: "carsamba", 3: "persembe", 4: "cuma", 5: "cumartesi", 6: "pazar"}
@@ -1421,7 +1426,7 @@ else:
                     periyot_etiket_v = "Son 7 Günlük Haftalık"
                 elif rapor_periyodu_v == "Aylık":
                     ay_basi_v = bugun_v - pd.Timedelta(days=30)
-                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["taihi_dt"] >= ay_basi_v].copy() if "taihi_dt" in df_v_calisma.columns else df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
                     periyot_etiket_v = "Son 30 Günlük Aylık"
                 else:
                     df_filtrelenmis_v = df_v_calisma.copy()
