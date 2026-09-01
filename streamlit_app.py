@@ -943,7 +943,7 @@ else:
                 st.markdown(f"""
                 <div class="program-header-box">
                     <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — DERS PROGRAMI MERKEZİ</h2>
-                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bugünün programını tablo halinde inceleyebilir veya PDF olarak indirebilirsiniz.</p>
+                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bugünün programını veya her günü kendi içinde düzenli listeleyen haftalık planı inceleyebilirsiniz.</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -978,25 +978,51 @@ else:
                     else:
                         st.info(f"ℹ️ Bugün ({bugun_adi_str}) için planlanmış ders bulunmuyor.")
                 else:
+                    st.markdown("#### 📅 Haftalık Program (Gün Bazlı Düzenli Görünüm)")
                     conn_p = get_db_connection()
-                    df_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_p.conn, params=(aktif_ogr,))
+                    df_p_full = pd.read_sql_query('SELECT saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_p.conn, params=(aktif_ogr,))
                     conn_p.close()
 
-                    if not df_p.empty:
-                        st.dataframe(df_p, use_container_width=True, height=400)
+                    if not df_p_full.empty:
+                        haftanin_gunleri = [
+                            ("Pazartesi", "pazartesi"),
+                            ("Salı", "sali"),
+                            ("Çarşamba", "carsamba"),
+                            ("Perşembe", "persembe"),
+                            ("Cuma", "cuma"),
+                            ("Cumartesi", "cumartesi"),
+                            ("Pazar", "pazar")
+                        ]
                         
-                        st.markdown("---")
-                        st.markdown("#### 📥 Programını Cihazına İndir")
-                        html_bytes_ogr = html_to_pdf_bytes(df_p, aktif_ogr)
-                        st.download_button(
-                            label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
-                            data=html_bytes_ogr,
-                            file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
-                            mime="text/html",
-                            use_container_width=True
-                        )
+                        temiz_haftalik_tablolar = {}
+                        for g_adi, g_col in haftanin_gunleri:
+                            df_g = df_p_full[["saat_araligi", g_col]].copy()
+                            df_g = df_g[df_g[g_col].notna() & (df_g[g_col].astype(str).str.strip() != "")]
+                            if not df_g.empty:
+                                df_g.columns = ["Saat Aralığı", "Ders / Aktivite"]
+                                temiz_haftalik_tablolar[g_adi] = df_g
+
+                        if temiz_haftalik_tablolar:
+                            for g_adi, df_g in temiz_haftalik_tablolar.items():
+                                st.markdown(f"##### 📌 {g_adi}")
+                                st.dataframe(df_g, use_container_width=True, hide_index=True)
+                                st.markdown("")
+                            
+                            # Tüm haftayı birleştirilmiş tablo olarak da PDF indirebilmek için hazırlayalım
+                            df_pdf_export = df_p_full.rename(columns={"saat_araligi": "Saat", "pazartesi": "Pazartesi", "sali": "Salı", "carsamba": "Çarşamba", "persembe": "Perşembe", "cuma": "Cuma", "cumartesi": "Cumartesi", "pazar": "Pazar"})
+                            st.markdown("---")
+                            html_bytes_ogr = html_to_pdf_bytes(df_pdf_export, aktif_ogr)
+                            st.download_button(
+                                label="📥 Tüm Haftalık Programı PDF Olarak İndir / Yazdır",
+                                data=html_bytes_ogr,
+                                file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
+                                mime="text/html",
+                                use_container_width=True
+                            )
+                        else:
+                            st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programına ders eklemedi.")
                     else:
-                        st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi.")
+                        st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık program kaydetmedi.")
 
             with tab_ilerleme:
                 st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
