@@ -335,11 +335,15 @@ def html_to_pdf_bytes(df, ogrenci_adi):
         <meta charset="UTF-8">
         <title>{ogrenci_adi} - Haftalık Ders Programı</title>
         <style>
+            @media print {{
+                body {{ padding: 0; }}
+                button {{ display: none; }}
+            }}
             body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
             h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
             p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 12px; overflow: hidden; }}
-            th, td {{ border: 1px solid #e2e8f0; padding: 12px 14px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 8px; overflow: hidden; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
             th {{ background-color: #0284c7; color: white; font-weight: bold; }}
             tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
@@ -348,6 +352,9 @@ def html_to_pdf_bytes(df, ogrenci_adi):
         <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
         <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
         {df.to_html(index=False, classes='table', border=0)}
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="window.print()" style="background: #0284c7; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer;">🖨️ PDF Olarak Kaydet / Yazdır</button>
+        </div>
     </body>
     </html>
     """
@@ -361,11 +368,15 @@ def calisma_raporu_html(df, ogrenci_adi, periyot_adi):
         <meta charset="UTF-8">
         <title>{ogrenci_adi} - Çalışma Raporu</title>
         <style>
+            @media print {{
+                body {{ padding: 0; }}
+                button {{ display: none; }}
+            }}
             body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
             h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
             p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 12px; overflow: hidden; }}
-            th, td {{ border: 1px solid #e2e8f0; padding: 12px 14px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 8px; overflow: hidden; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
             th {{ background-color: #0284c7; color: white; font-weight: bold; }}
             tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
@@ -374,6 +385,9 @@ def calisma_raporu_html(df, ogrenci_adi, periyot_adi):
         <h2>📊 {ogrenci_adi.upper()} — {periyot_adi.upper()} ÇALIŞMA RAPORU</h2>
         <p>Deniz Yılmaz Gelişim Platformu | Rapor Tarihi: {datetime.date.today().strftime('%d.%m.%Y')}</p>
         {df.to_html(index=False, classes='table', border=0)}
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="window.print()" style="background: #0284c7; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer;">🖨️ PDF Olarak Kaydet / Yazdır</button>
+        </div>
     </body>
     </html>
     """.encode('utf-8')
@@ -1274,12 +1288,12 @@ else:
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
 
                 # ==========================================
-                # GÜN BAZLI ÖZEL SAAT VE DERS GİRİŞİ (YENİ)
+                # GÜN BAZLI ÖZEL SAAT VE DERS GİRİŞİ & DOSYA YÜKLEME
                 # ==========================================
-                with st.expander("✨ Gün Bazlı Özel Saat & Ders Ekleme (Farklı Saatler İçin)", expanded=True):
-                    st.caption("💡 Her günün saat aralığı birbirinden farklı olabilir. Buradan gün seçerek o güne özel saat dilimi ekleyebilirsiniz.")
+                with st.expander("✨ Gün Bazlı Özel Saat & Hazır Tablo (Excel/CSV) Yükleme", expanded=True):
+                    st.markdown("#### 1️⃣ Güne Özel Saat & Ders Ekleme")
                     gb_gun = st.selectbox("Gün Seçin:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="gb_gun_secim")
-                    gb_saat = st.text_input("Bu Güne Özel Saat Aralığı (Örn: 09:30 - 11:00 veya 13:00 - 15:00):", value="09:30 - 11:00", key="gb_saat_inp")
+                    gb_saat = st.text_input("Bu Güne Özel Saat Aralığı (Örn: 09:30 - 11:00):", value="09:30 - 11:00", key="gb_saat_inp")
                     
                     tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                     gb_ders = st.selectbox("Ders / Aktivite:", tum_dersler_listesi, key="gb_ders_inp")
@@ -1301,6 +1315,48 @@ else:
                         conn_gb.close()
                         st.success(f"🎉 {gb_gun} günü için {gb_saat} saatine ders başarıyla eklendi!")
                         st.rerun()
+
+                    st.markdown("---")
+                    st.markdown("#### 2️⃣ Hazır Excel / CSV Tablosu Yükle")
+                    st.caption("💡 Elinde hazır haftalık program tablosu varsa (.xlsx veya .csv), buraya yükleyerek tüm matrisi tek seferde güncelleyebilirsin.")
+                    yuklenen_prog_dosya = st.file_uploader("Ders programı dosyası seçin:", type=["xlsx", "csv"], key=f"prog_upl_{secilen_ogr}")
+                    if yuklenen_prog_dosya is not None:
+                        try:
+                            if yuklenen_prog_dosya.name.endswith('.csv'):
+                                df_yuklenen = pd.read_csv(yuklenen_prog_dosya)
+                            else:
+                                df_yuklenen = pd.read_excel(yuklenen_prog_dosya)
+                            
+                            df_yuklenen.columns = [str(c).strip() for c in df_yuklenen.columns]
+                            if "Saat Aralığı" in df_yuklenen.columns or "Saat" in df_yuklenen.columns:
+                                saat_kolonu = "Saat Aralığı" if "Saat Aralığı" in df_yuklenen.columns else "Saat"
+                                conn_upl = get_db_connection()
+                                cur_upl = conn_upl.cursor()
+                                cur_upl.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s", (secilen_ogr,))
+                                for _, r_u in df_yuklenen.iterrows():
+                                    s_ar_u = str(r_u.get(saat_kolonu, "")).strip()
+                                    if s_ar_u and s_ar_u != "nan":
+                                        cur_upl.execute("""
+                                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        """, (
+                                            secilen_ogr, s_ar_u,
+                                            str(r_u.get("Pazartesi", "") if pd.notna(r_u.get("Pazartesi")) else ""),
+                                            str(r_u.get("Salı", "") if pd.notna(r_u.get("Salı")) else ""),
+                                            str(r_u.get("Çarşamba", "") if pd.notna(r_u.get("Çarşamba")) else ""),
+                                            str(r_u.get("Perşembe", "") if pd.notna(r_u.get("Perşembe")) else ""),
+                                            str(r_u.get("Cuma", "") if pd.notna(r_u.get("Cuma")) else ""),
+                                            str(r_u.get("Cumartesi", "") if pd.notna(r_u.get("Cumartesi")) else ""),
+                                            str(r_u.get("Pazar", "") if pd.notna(r_u.get("Pazar")) else "")
+                                        ))
+                                conn_upl.commit()
+                                conn_upl.close()
+                                st.success("🎉 Hazır program tablosu başarıyla yüklendi!")
+                                st.rerun()
+                            else:
+                                st.error("❌ Yüklenen dosyada 'Saat Aralığı' veya 'Saat' sütunu bulunamadı!")
+                        except Exception as e:
+                            st.error(f"❌ Dosya okunurken hata oluştu: {e}")
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
                 conn_m = get_db_connection()
@@ -1426,7 +1482,7 @@ else:
                     periyot_etiket_v = "Son 7 Günlük Haftalık"
                 elif rapor_periyodu_v == "Aylık":
                     ay_basi_v = bugun_v - pd.Timedelta(days=30)
-                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["taihi_dt"] >= ay_basi_v].copy() if "taihi_dt" in df_v_calisma.columns else df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
                     periyot_etiket_v = "Son 30 Günlük Aylık"
                 else:
                     df_filtrelenmis_v = df_v_calisma.copy()
