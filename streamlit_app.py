@@ -199,6 +199,7 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
+    /* Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background: var(--tab-bg, #ffffff) !important;
@@ -217,6 +218,7 @@ st.markdown("""
         font-size: 13.5px !important;
         color: var(--text-color, #0f172a) !important;
         border: 1px solid var(--border-color, #cbd5e1) !important;
+        transition: all 0.3s ease;
     }
 
     .stTabs [aria-selected="true"] {
@@ -238,13 +240,13 @@ st.markdown("""
     }
 
     .hero-motivation-card {
-        background: var(--hero-bg, linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%)) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%) !important;
         color: #ffffff !important;
-        padding: 24px 28px;
+        padding: 26px 30px;
         border-radius: 24px;
         font-weight: 700;
         margin-bottom: 24px;
-        box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.4);
+        box-shadow: 0 15px 35px -10px rgba(124, 58, 237, 0.5);
     }
 
     .hero-motivation-card * {
@@ -275,6 +277,32 @@ st.markdown("""
     
     .program-header-box * {
         color: #ffffff !important;
+    }
+
+    /* Renkli Performans Kartları */
+    .renkli-kart-1 {
+        background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
+        text-align: center;
+    }
+    .renkli-kart-2 {
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
+        text-align: center;
+    }
+    .renkli-kart-3 {
+        background: linear-gradient(135deg, #059669 100%, #10b981 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
+        text-align: center;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1146,19 +1174,31 @@ else:
                         toplam_cozum_sure = gosterilecek_df["Çözüm Süre (dk)"].sum()
                         toplam_saat = round((toplam_konu_sure + toplam_cozum_sure) / 60, 1)
 
-                        m1, m2, m3 = st.columns(3)
-                        with m1: st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru):,}")
-                        with m2: st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat} Saat")
-                        with m3: st.metric(label="📝 Kayıt Adedi", value=len(gosterilecek_df))
+                        # Renkli Şık Metrik Kartları
+                        cm1, cm2, cm3 = st.columns(3)
+                        with cm1:
+                            st.markdown(f'<div class="renkli-kart-1"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM ÇÖZÜLEN SORU</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{int(toplam_soru):,}</div></div>', unsafe_allow_html=True)
+                        with cm2:
+                            st.markdown(f'<div class="renkli-kart-2"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM ÇALIŞMA SÜRESİ</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{toplam_saat} Saat</div></div>', unsafe_allow_html=True)
+                        with cm3:
+                            st.markdown(f'<div class="renkli-kart-3"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM KAYIT ADEDİ</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{len(gosterilecek_df)}</div></div>', unsafe_allow_html=True)
 
-                        st.markdown("---")
-                        st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
-                        ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        st.markdown("#### 📋 Ders Bazlı Özet ve Çalışma Listesi")
                         
-                        if not ders_soru_df.empty:
-                            st.bar_chart(ders_soru_df.set_index("Ders")["Soru"], use_container_width=True)
+                        # Ders bazlı soru dağılımını şık bir ilerleme çubuğu formatında gösterelim
+                        ders_ozet = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
+                        for _, drow in ders_ozet.iterrows():
+                            d_adi = drow["Ders"]
+                            d_soru = int(drow["Soru"])
+                            max_s = int(ders_ozet["Soru"].max()) if not ders_ozet.empty else 1
+                            yuzde = float(d_soru / max_s) if max_s > 0 else 0.0
+                            
+                            st.markdown(f"**{d_adi}** — `{d_soru} Soru`")
+                            st.progress(yuzde)
 
-                        st.markdown("#### 📋 Çalışma Listesi")
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        st.markdown("#### 🔍 Ayrıntılı Kayıtlar")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
 
                         rapor_bytes = calisma_raporu_html(gosterilecek_df, secilen_ogr, periyot_etiket)
@@ -1380,17 +1420,27 @@ else:
                     toplam_saat_v = round((toplam_konu_sure_v + toplam_cozum_sure_v) / 60, 1)
 
                     vm1, vm2, vm3 = st.columns(3)
-                    with vm1: st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru_v):,}")
-                    with vm2: st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat_v} Saat")
-                    with vm3: st.metric(label="📝 Kayıt Adedi", value=len(gosterilecek_df_v))
+                    with vm1:
+                        st.markdown(f'<div class="renkli-kart-1"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM ÇÖZÜLEN SORU</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{int(toplam_soru_v):,}</div></div>', unsafe_allow_html=True)
+                    with vm2:
+                        st.markdown(f'<div class="renkli-kart-2"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM ÇALIŞMA SÜRESİ</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{toplam_saat_v} Saat</div></div>', unsafe_allow_html=True)
+                    with vm3:
+                        st.markdown(f'<div class="renkli-kart-3"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM KAYIT ADEDİ</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{len(gosterilecek_df_v)}</div></div>', unsafe_allow_html=True)
 
-                    st.markdown("---")
+                    st.markdown("<br>", unsafe_allow_html=True)
                     st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                     ders_soru_df_v = gosterilecek_df_v.groupby("Ders")["Soru"].sum().reset_index()
                     
-                    if not ders_soru_df_v.empty:
-                        st.bar_chart(ders_soru_df_v.set_index("Ders")["Soru"], use_container_width=True)
+                    for _, vdrow in ders_soru_df_v.iterrows():
+                        vd_adi = vdrow["Ders"]
+                        vd_soru = int(vdrow["Soru"])
+                        vmax_s = int(ders_soru_df_v["Soru"].max()) if not ders_soru_df_v.empty else 1
+                        vyuzde = float(vd_soru / vmax_s) if vmax_s > 0 else 0.0
+                        
+                        st.markdown(f"**{vd_adi}** — `{vd_soru} Soru`")
+                        st.progress(vyuzde)
 
+                    st.markdown("<br>", unsafe_allow_html=True)
                     st.markdown("#### 📋 Çalışma Listesi")
                     st.dataframe(gosterilecek_df_v, use_container_width=True, hide_index=True)
 
