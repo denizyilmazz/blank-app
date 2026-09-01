@@ -400,8 +400,7 @@ MOTIVASYON_SOZLERI = [
 
 HAM_DERS_KONULARI = {
     "🌅 Günlük Rutinler": [
-        "Her Sabah 25 Soru Paragraf",
-        "20 Soru Problemler"
+        "Paragraf 25 Soru + Problem 20 Soru"
     ],
     "☕ Mola & Dinlenme Aktivitesi": [
         "Kısa Dinlenme & Çay/Kahve Molası",
@@ -625,8 +624,7 @@ HAM_DERS_KONULARI = {
 }
 
 OSYM_SORU_DAGILIMLARI = {
-    "Her Sabah 25 Soru Paragraf": "Günlük Alışkanlık",
-    "20 Soru Problemler": "Günlük Alışkanlık",
+    "Paragraf 25 Soru + Problem 20 Soru": "Günlük Alışkanlık",
     "Sözcükte Anlam": "Ort. 2-3 Soru",
     "Cümlede Anlam": "Ort. 2 Soru",
     "Paragrafta Anlam ve Yapı": "Ort. 14-16 Soru",
