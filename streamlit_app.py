@@ -751,7 +751,7 @@ else:
                     if not aktif_koclar_listesi: aktif_koclar_listesi = ["Deniz Yılmaz"]
                     
                     reg_koc = st.selectbox("Çalışmak İstediğiniz Koçu Seçin:", aktif_koclar_listesi)
-                    reg_alan = st.selectbox("Alanınız:", ["SAY (Sayısal)", "EA (Sözel/EA)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
+                    reg_alan = st.selectbox("Alanınız:", ["SAY (Sayısal)", "EA (Eşit Ağırlık)", "SÖZ (Sözel)", "DİL (Yabancı Dil)"])
                     reg_sinav = st.selectbox("Hazırlanılan Sınav:", ["YKS (TYT + AYT)", "TYT (Sadece TYT)", "LGS (8. Sınıf)"])
 
                     if st.form_submit_button("Hesabımı Oluştur ve Koç Onayına Gönder", type="primary", use_container_width=True):
@@ -1260,3 +1260,33 @@ else:
                 st.dataframe(df_veli_p, use_container_width=True, height=350)
             else:
                 st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
+
+            st.markdown(f"### ✅ Konu İlerleme Durumu")
+            conn_vi = get_db_connection()
+            df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
+            conn_vi.close()
+
+            if not df_v_ilerleme.empty:
+                st.dataframe(df_v_ilerleme, use_container_width=True)
+            else:
+                st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işlem yapmamış.")
+
+            st.markdown(f"### 📝 Günlük Çalışma Takibi")
+            conn_vc = get_db_connection()
+            df_v_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 20', conn_vc.conn, params=(v_ad,))
+            conn_vc.close()
+
+            if not df_v_calisma.empty:
+                st.dataframe(df_v_calisma, use_container_width=True, hide_index=True)
+            else:
+                st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
+
+            st.markdown(f"### 📊 Deneme Sınavı Sonuçları ve Koç Notları")
+            conn_vd = get_db_connection()
+            df_v_deneme = pd.read_sql_query('SELECT tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_vd.conn, params=(v_ad,))
+            conn_vd.close()
+
+            if not df_v_deneme.empty:
+                st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
+            else:
+                st.info("ℹ️ Henüz deneme sınavı sonucu yüklenmemiş.")
