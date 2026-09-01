@@ -8,7 +8,6 @@ import base64
 import hashlib
 import os
 import warnings
-import plotly.express as px
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
@@ -200,7 +199,6 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
-    /* Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background: var(--tab-bg, #ffffff) !important;
@@ -222,11 +220,6 @@ st.markdown("""
         transition: all 0.3s ease;
     }
 
-    .stTabs [data-baseweb="tab"]:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
-    }
-
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         border: none !important;
@@ -237,31 +230,14 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Giriş ve Form Alanları */
     input, textarea, select, div[data-baseweb="select"] {
         background-color: var(--input-bg, #ffffff) !important;
         color: var(--input-text, #0f172a) !important;
         border: 1.8px solid var(--border-color, #cbd5e1) !important;
         border-radius: 12px !important;
         font-weight: 600 !important;
-        transition: border-color 0.2s ease;
     }
 
-    input:focus, textarea:focus, select:focus {
-        border-color: #0284c7 !important;
-        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-    }
-
-    div[data-baseweb="select"] > div {
-        background-color: var(--input-bg, #ffffff) !important;
-        color: var(--input-text, #0f172a) !important;
-    }
-    
-    div[data-baseweb="select"] span {
-        color: var(--input-text, #0f172a) !important;
-    }
-
-    /* Kartlar ve Konteynerler */
     .hero-motivation-card {
         background: var(--hero-bg, linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%)) !important;
         color: #ffffff !important;
@@ -270,7 +246,6 @@ st.markdown("""
         font-weight: 700;
         margin-bottom: 24px;
         box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.4);
-        animation: fadeIn 0.6s ease-out;
     }
 
     .hero-motivation-card * {
@@ -283,7 +258,6 @@ st.markdown("""
         border-radius: 20px;
         padding: 22px 26px;
         margin-bottom: 20px;
-        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.12);
     }
     
     .yok-net-box * {
@@ -302,24 +276,6 @@ st.markdown("""
     
     .program-header-box * {
         color: #ffffff !important;
-    }
-
-    /* Buton Tasarımları */
-    .stButton > button {
-        border-radius: 12px !important;
-        font-weight: 700 !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1200,23 +1156,9 @@ else:
                         st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                         ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
                         
-                        fig = px.bar(
-                            ders_soru_df, 
-                            x="Ders", 
-                            y="Soru", 
-                            text="Soru",
-                            color="Ders",
-                            color_discrete_sequence=px.colors.qualitative.Bold
-                        )
-                        fig.update_traces(textposition='outside', marker_cornerRadius=8)
-                        fig.update_layout(
-                            xaxis_title="Dersler",
-                            yaxis_title="Çözülen Soru Sayısı",
-                            showlegend=False,
-                            margin=dict(l=20, r=20, t=30, b=20),
-                            height=380
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
+                        # Yerleşik st.bar_chart kullanımı (harici kütüphane gerektirmez, hatasız çalışır)
+                        if not ders_soru_df.empty:
+                            st.bar_chart(ders_soru_df.set_index("Ders")["Soru"], use_container_width=True)
 
                         st.markdown("#### 📋 Çalışma Listesi")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
@@ -1448,23 +1390,8 @@ else:
                     st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                     ders_soru_df_v = gosterilecek_df_v.groupby("Ders")["Soru"].sum().reset_index()
                     
-                    fig_v = px.bar(
-                        ders_soru_df_v, 
-                        x="Ders", 
-                        y="Soru", 
-                        text="Soru",
-                        color="Ders",
-                        color_discrete_sequence=px.colors.qualitative.Bold
-                    )
-                    fig_v.update_traces(textposition='outside', marker_cornerRadius=8)
-                    fig_v.update_layout(
-                        xaxis_title="Dersler",
-                        yaxis_title="Çözülen Soru Sayısı",
-                        showlegend=False,
-                        margin=dict(l=20, r=20, t=30, b=20),
-                        height=380
-                    )
-                    st.plotly_chart(fig_v, use_container_width=True)
+                    if not ders_soru_df_v.empty:
+                        st.bar_chart(ders_soru_df_v.set_index("Ders")["Soru"], use_container_width=True)
 
                     st.markdown("#### 📋 Çalışma Listesi")
                     st.dataframe(gosterilecek_df_v, use_container_width=True, hide_index=True)
