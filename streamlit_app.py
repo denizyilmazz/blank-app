@@ -1610,9 +1610,3 @@ else:
                 st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
             else:
                 st.info("ℹ️ Henüz deneme sınavı sonucu yüklenmemiş.")
-
-**Git Terminal Komutları**
-```bash
-git add .
-git commit -m "Haftalik program her gunu kendi icinde bagimsiz ve bosluksuz listeleyen duzenli gorunume kavusturuldu"
-git push origin main
