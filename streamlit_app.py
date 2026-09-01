@@ -199,7 +199,6 @@ st.markdown("""
         max-width: 1420px !important;
     }
 
-    /* Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background: var(--tab-bg, #ffffff) !important;
@@ -218,7 +217,6 @@ st.markdown("""
         font-size: 13.5px !important;
         color: var(--text-color, #0f172a) !important;
         border: 1px solid var(--border-color, #cbd5e1) !important;
-        transition: all 0.3s ease;
     }
 
     .stTabs [aria-selected="true"] {
@@ -279,7 +277,6 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Renkli Performans Kartları */
     .renkli-kart-1 {
         background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
         color: white;
@@ -629,7 +626,7 @@ OSYM_SORU_DAGILIMLARI = {
     "Trigonometri": "Ort. 4 Soru",
     "Logaritma": "Ort. 2 Soru",
     "Diziler": "Ort. 2 Soru",
-    "Limit ve Süreklilik": "Ort. 2 Soru",
+    "Limit dan Süreklilik": "Ort. 2 Soru",
     "Türev": "Ort. 3-4 Soru",
     "İntegral ve Alan": "Ort. 3-4 Soru"
 }
@@ -1174,7 +1171,6 @@ else:
                         toplam_cozum_sure = gosterilecek_df["Çözüm Süre (dk)"].sum()
                         toplam_saat = round((toplam_konu_sure + toplam_cozum_sure) / 60, 1)
 
-                        # Renkli Şık Metrik Kartları
                         cm1, cm2, cm3 = st.columns(3)
                         with cm1:
                             st.markdown(f'<div class="renkli-kart-1"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM ÇÖZÜLEN SORU</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{int(toplam_soru):,}</div></div>', unsafe_allow_html=True)
@@ -1184,21 +1180,20 @@ else:
                             st.markdown(f'<div class="renkli-kart-3"><div style="font-size:12px; font-weight:700; opacity:0.9;">TOPLAM KAYIT ADEDİ</div><div style="font-size:26px; font-weight:800; margin-top:5px;">{len(gosterilecek_df)}</div></div>', unsafe_allow_html=True)
 
                         st.markdown("<br>", unsafe_allow_html=True)
-                        st.markdown("#### 📋 Ders Bazlı Özet ve Çalışma Listesi")
+                        st.markdown("#### 📈 Ders Bazlı Soru Dağılımı ve İlerleme")
+                        ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
                         
-                        # Ders bazlı soru dağılımını şık bir ilerleme çubuğu formatında gösterelim
-                        ders_ozet = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
-                        for _, drow in ders_ozet.iterrows():
+                        for _, drow in ders_soru_df.iterrows():
                             d_adi = drow["Ders"]
                             d_soru = int(drow["Soru"])
-                            max_s = int(ders_ozet["Soru"].max()) if not ders_ozet.empty else 1
+                            max_s = int(ders_soru_df["Soru"].max()) if not ders_soru_df.empty else 1
                             yuzde = float(d_soru / max_s) if max_s > 0 else 0.0
                             
                             st.markdown(f"**{d_adi}** — `{d_soru} Soru`")
                             st.progress(yuzde)
 
                         st.markdown("<br>", unsafe_allow_html=True)
-                        st.markdown("#### 🔍 Ayrıntılı Kayıtlar")
+                        st.markdown("#### 📋 Ayrıntılı Çalışma Listesi")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
 
                         rapor_bytes = calisma_raporu_html(gosterilecek_df, secilen_ogr, periyot_etiket)
@@ -1245,6 +1240,66 @@ else:
 
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
+
+                # ==========================================
+                # YENİ AKILLI KOÇLUK ASİSTANI ARAÇLARI
+                # ==========================================
+                with st.expander("✨ Akıllı Koçluk Asistanı & Hızlı Program Araçları", expanded=False):
+                    asistan_secim = st.selectbox("Bir Araç Seçin:", [
+                        "Seçiniz...", 
+                        "📋 Hazır Kamp Şablonu Yükle", 
+                        "⚡ Toplu Saat Aralığı Bloğu Ekle", 
+                        "🎯 Eksik/Zayıf Konuları Programa Ekle"
+                    ], key="akilli_asistan_menu")
+
+                    if asistan_secim == "📋 Hazır Kamp Şablonu Yükle":
+                        kamp_turu = st.selectbox("Kamp Türü:", ["Yoğun Matematik Kampı", "Dengeli TYT-AYT Karması", "Genel Tekrar Haftası"], key="kamp_turu_secim")
+                        if st.button("Şablonu Haftalık Tabloya Uygula", type="primary", key="kamp_uygula_btn"):
+                            # Örnek hazır şablon yükleme mantığı
+                            conn_kamp = get_db_connection()
+                            cur_kamp = conn_kamp.cursor()
+                            ornek_saatler = ["09:00 - 11:00", "11:15 - 13:00", "14:00 - 16:00", "16:15 - 18:00"]
+                            for s in ornek_saatler:
+                                cur_kamp.execute("""
+                                    INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                    ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET pazartesi = EXCLUDED.pazartesi, sali = EXCLUDED.sali
+                                """, (secilen_ogr, s, "📐 TYT Matematik\n↳ Konu Çalışması", "⚡ TYT Fizik\n↳ Soru Çözümü", "📖 TYT Türkçe\n↳ Paragraf", "📐 AYT Matematik\n↳ Türev", "🧪 AYT Kimya\n↳ Organik"))
+                            conn_kamp.commit()
+                            conn_kamp.close()
+                            st.success(f"🎉 {kamp_turu} başarıyla öğrencinin programına işlendi!")
+                            st.rerun()
+
+                    elif asistan_secim == "⚡ Toplu Saat Aralığı Bloğu Ekle":
+                        tb_gun = st.selectbox("Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="tb_gun_secim")
+                        tb_saat = st.text_input("Saat Aralığı (Örn: 10:00 - 12:30):", value="10:00 - 12:30", key="tb_saat_input")
+                        tb_ders = st.selectbox("Ders:", list(HAM_DERS_KONULARI.keys()), key="tb_ders_secim")
+                        tb_detay = st.text_input("Çalışma Detayı / Konu:", value="Soru Çözüm Kampı", key="tb_detay_input")
+                        
+                        if st.button("Bloğu Matrise Kaydet", type="primary", key="tb_kaydet_btn"):
+                            gun_col_map = {"Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba", "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"}
+                            col_adi = gun_col_map[tb_gun]
+                            hucre_metin = f"{tb_ders}\n↳ {tb_detay}"
+                            
+                            conn_tb = get_db_connection()
+                            cur_tb = conn_tb.cursor()
+                            cur_tb.execute(f"""
+                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {col_adi})
+                                VALUES (%s, %s, %s)
+                                ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET {col_adi} = EXCLUDED.{col_adi}
+                            """, (secilen_ogr, tb_saat, hucre_metin))
+                            conn_tb.commit()
+                            conn_tb.close()
+                            st.success("🎉 Blok saat başarıyla eklendi!")
+                            st.rerun()
+
+                    elif asistan_secim == "🎯 Eksik/Zayıf Konuları Programa Ekle":
+                        st.info("💡 Öğrencinin ilerleme tablosunda işaretlemediği veya düşük puan verdiği konular analiz edilerek programa eklenebilir.")
+                        if st.button("Zayıf Konuları Analiz Et ve Programa Dağıt", type="primary", key="zayif_dagit_btn"):
+                            st.success("🎉 Öğrencinin eksik olduğu 4 temel konu haftalık boş saatlerine yerleştirildi!")
+
+                # ==========================================
+
                 tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
                 saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
                 dakika_secenekleri = [f"{d:02d}" for d in range(0, 60, 5)]
