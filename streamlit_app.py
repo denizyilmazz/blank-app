@@ -1092,12 +1092,32 @@ else:
                 else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
 
-                st.markdown(f"### 📝 {secilen_ogr} — Günlük Çalışma Kayıtları")
+                st.markdown(f"### 📝 {secilen_ogr} — Günlük Çalışma Performans Özeti ve Kayıtları")
                 conn_kc = get_db_connection()
-                df_koc_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 30', conn_kc.conn, params=(secilen_ogr,))
+                df_koc_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 50', conn_kc.conn, params=(secilen_ogr,))
                 conn_kc.close()
 
                 if not df_koc_calisma.empty:
+                    toplam_soru = df_koc_calisma["Soru"].sum() if "Soru" in df_koc_calisma.columns else 0
+                    toplam_konu_sure = df_koc_calisma["Konu Süre (dk)"].sum() if "Konu Süre (dk)" in df_koc_calisma.columns else 0
+                    toplam_cozum_sure = df_koc_calisma["Çözüm Süre (dk)"].sum() if "Çözüm Süre (dk)" in df_koc_calisma.columns else 0
+                    toplam_saat = round((toplam_konu_sure + toplam_cozum_sure) / 60, 1)
+
+                    m1, m2, m3 = st.columns(3)
+                    with m1:
+                        st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru):,}")
+                    with m2:
+                        st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat} Saat")
+                    with m3:
+                        st.metric(label="📝 Kayıtlı Çalışma Adedi", value=len(df_koc_calisma))
+
+                    st.markdown("---")
+                    if "Ders" in df_koc_calisma.columns and "Soru" in df_koc_calisma.columns:
+                        st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
+                        ders_soru_df = df_koc_calisma.groupby("Ders")["Soru"].sum().reset_index()
+                        st.bar_chart(ders_soru_df, x="Ders", y="Soru", use_container_width=True)
+
+                    st.markdown("#### 📋 Ayrıntılı Çalışma Günlüğü Tablosu")
                     st.dataframe(df_koc_calisma, use_container_width=True, hide_index=True)
                 else:
                     st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
@@ -1271,12 +1291,32 @@ else:
             else:
                 st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işlem yapmamış.")
 
-            st.markdown(f"### 📝 Günlük Çalışma Takibi")
+            st.markdown(f"### 📝 Günlük Çalışma Performans Özeti ve Takibi")
             conn_vc = get_db_connection()
-            df_v_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 20', conn_vc.conn, params=(v_ad,))
+            df_v_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 30', conn_vc.conn, params=(v_ad,))
             conn_vc.close()
 
             if not df_v_calisma.empty:
+                toplam_soru_v = df_v_calisma["Soru"].sum() if "Soru" in df_v_calisma.columns else 0
+                toplam_konu_sure_v = df_v_calisma["Konu Süre (dk)"].sum() if "Konu Süre (dk)" in df_v_calisma.columns else 0
+                toplam_cozum_sure_v = df_v_calisma["Çözüm Süre (dk)"].sum() if "Çözüm Süre (dk)" in df_v_calisma.columns else 0
+                toplam_saat_v = round((toplam_konu_sure_v + toplam_cozum_sure_v) / 60, 1)
+
+                vm1, vm2, vm3 = st.columns(3)
+                with vm1:
+                    st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru_v):,}")
+                with vm2:
+                    st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat_v} Saat")
+                with vm3:
+                    st.metric(label="📝 Kayıtlı Çalışma Adedi", value=len(df_v_calisma))
+
+                st.markdown("---")
+                if "Ders" in df_v_calisma.columns and "Soru" in df_v_calisma.columns:
+                    st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
+                    ders_soru_df_v = df_v_calisma.groupby("Ders")["Soru"].sum().reset_index()
+                    st.bar_chart(ders_soru_df_v, x="Ders", y="Soru", use_container_width=True)
+
+                st.markdown("#### 📋 Ayrıntılı Çalışma Günlüğü Tablosu")
                 st.dataframe(df_v_calisma, use_container_width=True, hide_index=True)
             else:
                 st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
