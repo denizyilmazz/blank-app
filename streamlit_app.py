@@ -327,13 +327,37 @@ def pdf_goster_html(pdf_path):
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
-def html_to_pdf_bytes(df, ogrenci_adi):
+def haftalik_program_toplu_pdf_bytes(df_full, ogrenci_adi):
+    gunler = [
+        ("Pazartesi", "pazartesi"),
+        ("Salı", "sali"),
+        ("Çarşamba", "carsamba"),
+        ("Perşembe", "persembe"),
+        ("Cuma", "cuma"),
+        ("Cumartesi", "cumartesi"),
+        ("Pazar", "pazar")
+    ]
+    
+    gun_htmls = ""
+    for g_adi, g_col in gunler:
+        df_g = df_full[["saat_araligi", g_col]].copy()
+        df_g = df_g[df_g[g_col].notna() & (df_g[g_col].astype(str).str.strip() != "")]
+        if not df_g.empty:
+            df_g.columns = ["Saat Aralığı", "Ders / Aktivite"]
+            table_html = df_g.to_html(index=False, classes='table', border=0)
+            gun_htmls += f"""
+            <div style="margin-bottom: 25px;">
+                <h3 style="color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; margin-bottom: 10px;">📌 {g_adi}</h3>
+                {table_html}
+            </div>
+            """
+
     html_content = f"""
     <!DOCTYPE html>
     <html lang="tr">
     <head>
         <meta charset="UTF-8">
-        <title>{ogrenci_adi} - Ders Programı</title>
+        <title>{ogrenci_adi} - Toplu Haftalık Ders Programı</title>
         <style>
             @media print {{
                 body {{ padding: 0; }}
@@ -341,17 +365,18 @@ def html_to_pdf_bytes(df, ogrenci_adi):
             }}
             body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
             h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
+            h3 {{ font-size: 14px; margin-top: 20px; }}
             p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 8px; overflow: hidden; }}
-            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 5px; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 8px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
             th {{ background-color: #0284c7; color: white; font-weight: bold; }}
             tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
     </head>
     <body>
-        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} DERS PROGRAMI</h2>
-        <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
-        {df.to_html(index=False, classes='table', border=0)}
+        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} TOPLU HAFTALIK DERS PROGRAMI</h2>
+        <p>Deniz Yılmaz Gelişim Sistemleri | {datetime.date.today().strftime('%d.%m.%Y')}</p>
+        {gun_htmls}
         <div style="text-align: center; margin-top: 30px;">
             <button onclick="window.print()" style="background: #0284c7; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer;">🖨️ PDF Olarak Kaydet / Yazdır</button>
         </div>
@@ -1008,12 +1033,10 @@ else:
                                 st.dataframe(df_g, use_container_width=True, hide_index=True)
                                 st.markdown("")
                             
-                            # Tüm haftayı birleştirilmiş tablo olarak da PDF indirebilmek için hazırlayalım
-                            df_pdf_export = df_p_full.rename(columns={"saat_araligi": "Saat", "pazartesi": "Pazartesi", "sali": "Salı", "carsamba": "Çarşamba", "persembe": "Perşembe", "cuma": "Cuma", "cumartesi": "Cumartesi", "pazar": "Pazar"})
                             st.markdown("---")
-                            html_bytes_ogr = html_to_pdf_bytes(df_pdf_export, aktif_ogr)
+                            html_bytes_ogr = haftalik_program_toplu_pdf_bytes(df_p_full, aktif_ogr)
                             st.download_button(
-                                label="📥 Tüm Haftalık Programı PDF Olarak İndir / Yazdır",
+                                label="📥 Tüm Haftalık Programı Toplu PDF Olarak İndir / Yazdır",
                                 data=html_bytes_ogr,
                                 file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
                                 mime="text/html",
@@ -1323,9 +1346,9 @@ else:
                     conn_kpdf.close()
 
                     if not df_kpdf.empty:
-                        koc_pdf_bytes = html_to_pdf_bytes(df_kpdf, secilen_ogr)
+                        koc_pdf_bytes = haftalik_program_toplu_pdf_bytes(df_kpdf, secilen_ogr)
                         st.download_button(
-                            label=f"📥 {secilen_ogr} Öğrencisinin Haftalık Programını PDF / Yazdır Olarak İndir",
+                            label=f"📥 {secilen_ogr} Öğrencisinin Haftalık Programını Toplu PDF Olarak İndir",
                             data=koc_pdf_bytes,
                             file_name=f"{secilen_ogr}_Haftalik_Ders_Programi.html",
                             mime="text/html",
@@ -1587,3 +1610,9 @@ else:
                 st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
             else:
                 st.info("ℹ️ Henüz deneme sınavı sonucu yüklenmemiş.")
+
+**Git Terminal Komutları**
+```bash
+git add .
+git commit -m "Haftalik program her gunu kendi icinde bagimsiz ve bosluksuz listeleyen duzenli gorunume kavusturuldu"
+git push origin main
