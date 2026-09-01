@@ -8,7 +8,6 @@ import base64
 import hashlib
 import os
 import warnings
-import plotly.express as px
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
@@ -1156,10 +1155,8 @@ else:
                         st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                         ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
                         
-                        # Yatay barchart (bar_chart x ekseni metinleri için dersleri index yapar)
                         if not ders_soru_df.empty:
-                            chart_data = ders_soru_df.set_index("Ders")["Soru"]
-                            st.bar_chart(chart_data, use_container_width=True)
+                            st.bar_chart(ders_soru_df.set_index("Ders")["Soru"], use_container_width=True)
 
                         st.markdown("#### 📋 Çalışma Listesi")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
