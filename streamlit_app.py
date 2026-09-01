@@ -157,7 +157,7 @@ st.markdown("""
     
     @media (prefers-color-scheme: dark) {
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%);
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #030712 100%);
             --text-color: #f8fafc;
             --container-bg: #1e293b;
             --border-color: #334155;
@@ -171,15 +171,15 @@ st.markdown("""
 
     @media (prefers-color-scheme: light) {
         :root {
-            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%);
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
             --text-color: #0f172a;
             --container-bg: #ffffff;
-            --border-color: #cbd5e1;
+            --border-color: #e2e8f0;
             --input-bg: #ffffff;
             --input-text: #0f172a;
             --tab-bg: #ffffff;
-            --yok-box-bg: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            --hero-bg: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+            --yok-box-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            --hero-bg: linear-gradient(135deg, #0284c7 0%, #4f46e5 50%, #7c3aed 100%);
         }
     }
 
@@ -190,51 +190,66 @@ st.markdown("""
     #MainMenu, footer, header, .stDeployButton {display: none !important;}
 
     .stApp {
-        background: var(--bg-gradient, linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f3e8ff 100%)) !important;
+        background: var(--bg-gradient) !important;
         background-attachment: fixed !important;
     }
 
     .main .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 3rem !important;
+        padding-top: 1.5rem !important;
+        padding-bottom: 4rem !important;
         max-width: 1420px !important;
     }
 
+    /* Sekme Tasarımı */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 6px;
+        gap: 8px;
         background: var(--tab-bg, #ffffff) !important;
-        padding: 8px;
-        border-radius: 16px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-color, #cbd5e1) !important;
+        padding: 10px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+        border: 1.5px solid var(--border-color, #cbd5e1) !important;
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 48px;
+        height: 52px;
         background-color: var(--container-bg, #ffffff) !important;
-        border-radius: 10px;
-        padding: 8px 16px;
+        border-radius: 14px;
+        padding: 10px 20px;
         font-weight: 700 !important;
-        font-size: 13px !important;
+        font-size: 13.5px !important;
         color: var(--text-color, #0f172a) !important;
         border: 1px solid var(--border-color, #cbd5e1) !important;
+        transition: all 0.3s ease;
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
     }
 
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         border: none !important;
+        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
     }
 
     .stTabs [aria-selected="true"] span, .stTabs [aria-selected="true"] div {
         color: #ffffff !important;
     }
 
+    /* Giriş ve Form Alanları */
     input, textarea, select, div[data-baseweb="select"] {
         background-color: var(--input-bg, #ffffff) !important;
         color: var(--input-text, #0f172a) !important;
-        border: 1.5px solid var(--border-color, #94a3b8) !important;
-        border-radius: 10px !important;
+        border: 1.8px solid var(--border-color, #cbd5e1) !important;
+        border-radius: 12px !important;
         font-weight: 600 !important;
+        transition: border-color 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
     }
 
     div[data-baseweb="select"] > div {
@@ -246,13 +261,16 @@ st.markdown("""
         color: var(--input-text, #0f172a) !important;
     }
 
+    /* Kartlar ve Konteynerler */
     .hero-motivation-card {
         background: var(--hero-bg, linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%)) !important;
         color: #ffffff !important;
-        padding: 20px 24px;
-        border-radius: 20px;
+        padding: 24px 28px;
+        border-radius: 24px;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.4);
+        animation: fadeIn 0.6s ease-out;
     }
 
     .hero-motivation-card * {
@@ -260,11 +278,12 @@ st.markdown("""
     }
 
     .yok-net-box {
-        background: var(--yok-box-bg, linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)) !important;
-        border: 2px solid #3b82f6;
-        border-radius: 16px;
-        padding: 18px 22px;
-        margin-bottom: 15px;
+        background: var(--yok-box-bg) !important;
+        border: 2.5px solid #3b82f6;
+        border-radius: 20px;
+        padding: 22px 26px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.12);
     }
     
     .yok-net-box * {
@@ -274,15 +293,33 @@ st.markdown("""
     .program-header-box {
         background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
         color: white !important;
-        padding: 20px;
-        border-radius: 16px;
-        margin-bottom: 20px;
+        padding: 24px;
+        border-radius: 20px;
+        margin-bottom: 24px;
         text-align: center;
-        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
     }
     
     .program-header-box * {
         color: #ffffff !important;
+    }
+
+    /* Buton Tasarımları */
+    .stButton > button {
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -306,7 +343,7 @@ def pdf_goster_html(pdf_path):
     try:
         with open(pdf_path, "rb") as f:
             base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-        return f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="550" type="application/pdf" style="border-radius:12px; border:1px solid #cbd5e1;"></iframe>'
+        return f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="550" type="application/pdf" style="border-radius:16px; border:1px solid #cbd5e1;"></iframe>'
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
@@ -318,11 +355,11 @@ def html_to_pdf_bytes(df, ogrenci_adi):
         <meta charset="UTF-8">
         <title>{ogrenci_adi} - Haftalık Ders Programı</title>
         <style>
-            body {{ font-family: 'Helvetica', Arial, sans-serif; padding: 25px; color: #0f172a; }}
+            body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
             h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
             p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 12px; overflow: hidden; }}
+            th, td {{ border: 1px solid #e2e8f0; padding: 12px 14px; text-align: center; font-size: 11px; vertical-align: middle; }}
             th {{ background-color: #0284c7; color: white; font-weight: bold; }}
             tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
@@ -344,11 +381,11 @@ def calisma_raporu_html(df, ogrenci_adi, periyot_adi):
         <meta charset="UTF-8">
         <title>{ogrenci_adi} - Çalışma Raporu</title>
         <style>
-            body {{ font-family: 'Helvetica', Arial, sans-serif; padding: 25px; color: #0f172a; }}
+            body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
             h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
             p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 12px; overflow: hidden; }}
+            th, td {{ border: 1px solid #e2e8f0; padding: 12px 14px; text-align: center; font-size: 11px; vertical-align: middle; }}
             th {{ background-color: #0284c7; color: white; font-weight: bold; }}
             tr:nth-child(even) {{ background-color: #f8fafc; }}
         </style>
@@ -656,10 +693,10 @@ BOLUM_KATEGORILERI = {
 }
 
 st.markdown("""
-<div style="text-align: center; padding: 10px 0 15px 0;">
-    <span style="font-size: 42px;">🎓</span>
-    <h1 style="margin: 0; font-weight: 800; font-size: 26px;">YKS (TYT/AYT) - LGS KOÇLUK</h1>
-    <p style="margin: 0; font-size: 14px; color: #0284c7; font-weight: 700;">DENİZ YILMAZ GELİŞİM PLATFORMU</p>
+<div style="text-align: center; padding: 15px 0 20px 0;">
+    <span style="font-size: 48px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">🎓</span>
+    <h1 style="margin: 5px 0 0 0; font-weight: 800; font-size: 28px; background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">YKS (TYT/AYT) & LGS KOÇLUK PLATFORMU</h1>
+    <p style="margin: 5px 0 0 0; font-size: 14px; color: #0284c7; font-weight: 700; letter-spacing: 1px;">DENİZ YILMAZ GELİŞİM SİSTEMİ</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -667,9 +704,9 @@ link_ogrenci = st.query_params.get("ogrenci", None)
 
 if link_ogrenci:
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 16px; margin-bottom: 20px;">
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px 26px; border-radius: 20px; margin-bottom: 24px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);">
         <h3 style="margin:0; font-size:20px; font-weight:800; color:white !important;">👨‍🏫 Öğretmen Soru İnceleme Ekranı</h3>
-        <p style="margin:4px 0 0 0; opacity:0.9; color:white !important;"><strong>{link_ogrenci}</strong> öğrencisinin çözemediği sorular listelenmektedir.</p>
+        <p style="margin:6px 0 0 0; opacity:0.95; color:white !important;"><strong>{link_ogrenci}</strong> öğrencisinin çözemediği sorular listelenmektedir.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -709,8 +746,8 @@ else:
             with m_col1:
                 st.markdown(f'''
                 <div class="hero-motivation-card">
-                    <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:4px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
-                    <div style="font-size:16px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
+                    <div style="font-size:11px; letter-spacing:2px; font-weight:800; color:rgba(255,255,255,0.85); margin-bottom:6px;">⚡ GÜNÜN MOTİVASYON MESAJI</div>
+                    <div style="font-size:17px; font-weight:800;">"{st.session_state['motivasyon_sozu']}"</div>
                 </div>
                 ''', unsafe_allow_html=True)
             with m_col2:
@@ -874,19 +911,19 @@ else:
                 <div class="yok-net-box">
                     <div style="font-size:16px; font-weight:800; margin-bottom:8px;">🏛️ {secilen_hedef_uni} — {secilen_hedef_bolum}</div>
                     <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
-                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">YÖK ATLAS TABAN NET</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #0284c7;">{t_net} Net</span>
                         </div>
-                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">YÖK ATLAS BAŞARI SIRASI</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #16a34a;">İlk {t_sira}</span>
                         </div>
-                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">GEREKLİ ORTALAMA TYT</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #9333ea;">~{tyt_gerekli} Net</span>
                         </div>
-                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
+                        <div style="background: var(--container-bg); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color); flex: 1; min-width: 140px;">
                             <span style="font-size: 11px; font-weight: 700;">GEREKLİ ORTALAMA AYT</span><br>
                             <span style="font-size: 18px; font-weight: 800; color: #ea580c;">~{ayt_gerekli} Net</span>
                         </div>
@@ -1163,7 +1200,6 @@ else:
                         st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                         ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
                         
-                        # Plotly ile Profesyonel ve Şık Grafik
                         fig = px.bar(
                             ders_soru_df, 
                             x="Ders", 
@@ -1412,7 +1448,6 @@ else:
                     st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
                     ders_soru_df_v = gosterilecek_df_v.groupby("Ders")["Soru"].sum().reset_index()
                     
-                    # Veli Paneli için de Profesyonel Plotly Grafiği
                     fig_v = px.bar(
                         ders_soru_df_v, 
                         x="Ders", 
