@@ -333,7 +333,7 @@ def html_to_pdf_bytes(df, ogrenci_adi):
     <html lang="tr">
     <head>
         <meta charset="UTF-8">
-        <title>{ogrenci_adi} - Haftalık Ders Programı</title>
+        <title>{ogrenci_adi} - Ders Programı</title>
         <style>
             @media print {{
                 body {{ padding: 0; }}
@@ -349,7 +349,7 @@ def html_to_pdf_bytes(df, ogrenci_adi):
         </style>
     </head>
     <body>
-        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
+        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} DERS PROGRAMI</h2>
         <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
         {df.to_html(index=False, classes='table', border=0)}
         <div style="text-align: center; margin-top: 30px;">
@@ -943,7 +943,7 @@ else:
                 st.markdown(f"""
                 <div class="program-header-box">
                     <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — DERS PROGRAMI MERKEZİ</h2>
-                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bugünün programını veya tüm haftalık planınızı aşağıdan inceleyebilirsiniz.</p>
+                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bugünün programını tablo halinde inceleyebilir veya PDF olarak indirebilirsiniz.</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -956,27 +956,25 @@ else:
                 bugun_adi_str = gun_isimleri_tr[bugun_idx]
 
                 if ogr_prog_alt_secim == "☀️ Bugünün Programı":
-                    st.markdown(f"#### ☀️ Bugün ({bugun_adi_str} - {datetime.date.today().strftime('%d.%m.%Y')}) Planınız")
-                    
-                    # Otomatik senkronizasyon için excel_program_matris tablosunu güvenli okuma
+                    st.markdown(f"#### ☀️ Bugün ({bugun_adi_str} - {datetime.date.today().strftime('%d.%m.%Y')}) Programı")
                     conn_bugun = get_db_connection()
-                    df_full_prog = pd.read_sql_query('SELECT saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_bugun.conn, params=(aktif_ogr,))
+                    query_bugun = f'SELECT saat_araligi AS "Saat Aralığı", {bugun_kolun} AS "Ders / Aktivite" FROM excel_program_matris WHERE ad_soyad = %s AND {bugun_kolun} IS NOT NULL AND {bugun_kolun} != \'\' ORDER BY saat_araligi ASC'
+                    df_bugun = pd.read_sql_query(query_bugun, conn_bugun.conn, params=(aktif_ogr,))
                     conn_bugun.close()
 
-                    if not df_full_prog.empty and bugun_kolun in df_full_prog.columns:
-                        df_bugun = df_full_prog[['saat_araligi', bugun_kolun]].copy()
-                        df_bugun = df_bugun[df_bugun[bugun_kolun].notna() & (df_bugun[bugun_kolun].str.strip() != '')]
+                    if not df_bugun.empty:
+                        st.dataframe(df_bugun, use_container_width=True, hide_index=True)
                         
-                        if not df_bugun.empty:
-                            for _, row in df_bugun.iterrows():
-                                st.markdown(f"""
-                                <div style="background: var(--container-bg); border-left: 5px solid #0284c7; padding: 16px; border-radius: 14px; margin-bottom: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                    <strong style="color: #0284c7; font-size: 14px;">⏰ {row['saat_araligi']}</strong><br>
-                                    <div style="margin-top: 6px; font-weight: 700; font-size: 15px; white-space: pre-wrap;">{row[bugun_kolun]}</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-                        else:
-                            st.info(f"ℹ️ Bugün ({bugun_adi_str}) için planlanmış ders bulunmuyor.")
+                        st.markdown("---")
+                        st.markdown("#### 📥 Bugünün Programını İndir")
+                        html_bytes_bugun = html_to_pdf_bytes(df_bugun, f"{aktif_ogr} - {bugun_adi_str}")
+                        st.download_button(
+                            label="📥 Bugünün Programını PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
+                            data=html_bytes_bugun,
+                            file_name=f"{aktif_ogr}_{bugun_adi_str}_Bugunun_Programi.html",
+                            mime="text/html",
+                            use_container_width=True
+                        )
                     else:
                         st.info(f"ℹ️ Bugün ({bugun_adi_str}) için planlanmış ders bulunmuyor.")
                 else:
@@ -1105,7 +1103,7 @@ else:
                         st.rerun()
 
             with tab_konular:
-                st.markdown("### 🗺️ Konu Hakimiyeti Puanlama (1-5)")
+                st.markdown(f"### 🗺️ Konu Hakimiyeti Puanlama (1-5) — {aktif_ogr}")
                 for d_adi, k_list in HAM_DERS_KONULARI.items():
                     st.markdown(f"**{d_adi}**")
                     for kn in k_list[:2]:
@@ -1292,12 +1290,8 @@ else:
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
 
-                # ==========================================
-                # GÜN BAZLI ÖZEL SAAT VE DERS GİRİŞİ & DOSYA YÜKLEME & PDF İNDİRME
-                # ==========================================
                 with st.expander("✨ Gün Bazlı Özel Saat & Hazır Tablo (Excel/CSV) Yükleme ve PDF İndir", expanded=True):
                     
-                    # Koç için PDF İndirme Butonu
                     conn_kpdf = get_db_connection()
                     df_kpdf = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_kpdf.conn, params=(secilen_ogr,))
                     conn_kpdf.close()
