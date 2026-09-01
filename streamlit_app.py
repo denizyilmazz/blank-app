@@ -626,7 +626,7 @@ OSYM_SORU_DAGILIMLARI = {
     "Trigonometri": "Ort. 4 Soru",
     "Logaritma": "Ort. 2 Soru",
     "Diziler": "Ort. 2 Soru",
-    "Limit dan Süreklilik": "Ort. 2 Soru",
+    "Limit ve Süreklilik": "Ort. 2 Soru",
     "Türev": "Ort. 3-4 Soru",
     "İntegral ve Alan": "Ort. 3-4 Soru"
 }
@@ -924,30 +924,57 @@ else:
             with tab_program:
                 st.markdown(f"""
                 <div class="program-header-box">
-                    <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — KİŞİSEL HAFTALIK DERS PROGRAMI</h2>
-                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Koçunuz tarafından hazırlanan haftalık çalışma planınız aşağıdadır.</p>
+                    <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — DERS PROGRAMI MERKEZİ</h2>
+                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bugünün programını veya tüm haftalık planınızı aşağıdan inceleyebilirsiniz.</p>
                 </div>
                 """, unsafe_allow_html=True)
 
-                conn_p = get_db_connection()
-                df_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_p.conn, params=(aktif_ogr,))
-                conn_p.close()
+                # Öğrenci için Bugünün Programı ve Haftalık Program Sekmeleri
+                ogr_prog_alt_secim = st.radio("Program Görünümü:", ["☀️ Bugünün Programı", "📅 Tüm Haftalık Program"], horizontal=True, key="ogr_prog_alt_secim_key")
 
-                if not df_p.empty:
-                    st.dataframe(df_p, use_container_width=True, height=400)
-                    
-                    st.markdown("---")
-                    st.markdown("#### 📥 Programını Cihazına İndir")
-                    html_bytes_ogr = html_to_pdf_bytes(df_p, aktif_ogr)
-                    st.download_button(
-                        label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
-                        data=html_bytes_ogr,
-                        file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
-                        mime="text/html",
-                        use_container_width=True
-                    )
+                gun_indexleri = {0: "pazartesi", 1: "sali", 2: "carsamba", 3: "persembe", 4: "cuma", 5: "cumartesi", 6: "pazar"}
+                gun_isimleri_tr = {0: "Pazartesi", 1: "Salı", 2: "Çarşamba", 3: "Perşembe", 4: "Cuma", 5: "Cumartesi", 6: "Pazar"}
+                bugun_idx = datetime.date.today().weekday()
+                bugun_kolun = gun_indexleri[bugun_idx]
+                bugun_adi_str = gun_isimleri_tr[bugun_idx]
+
+                if ogr_prog_alt_secim == "☀️ Bugünün Programı":
+                    st.markdown(f"#### ☀️ Bugün ({bugun_adi_str} - {datetime.date.today().strftime('%d.%m.%Y')}) Planınız")
+                    conn_bugun = get_db_connection()
+                    query_bugun = f'SELECT saat_araligi AS "Saat", {bugun_kolun} AS "Ders" FROM excel_program_matris WHERE ad_soyad = %s AND {bugun_kolun} IS NOT NULL AND {bugun_kolun} != \'\' ORDER BY saat_araligi ASC'
+                    df_bugun = pd.read_sql_query(query_bugun, conn_bugun.conn, params=(aktif_ogr,))
+                    conn_bugun.close()
+
+                    if not df_bugun.empty:
+                        for _, row in df_bugun.iterrows():
+                            st.markdown(f"""
+                            <div style="background: var(--container-bg); border-left: 5px solid #0284c7; padding: 16px; border-radius: 14px; margin-bottom: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <strong style="color: #0284c7; font-size: 14px;">⏰ {row['Saat']}</strong><br>
+                                <div style="margin-top: 6px; font-weight: 700; font-size: 15px; white-space: pre-wrap;">{row['Ders']}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.info(f"ℹ️ Bugün ({bugun_adi_str}) için planlanmış bir ders bulunmuyor. Harika bir dinlenme veya tekrar günü geçirebilirsin!")
                 else:
-                    st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi.")
+                    conn_p = get_db_connection()
+                    df_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_p.conn, params=(aktif_ogr,))
+                    conn_p.close()
+
+                    if not df_p.empty:
+                        st.dataframe(df_p, use_container_width=True, height=400)
+                        
+                        st.markdown("---")
+                        st.markdown("#### 📥 Programını Cihazına İndir")
+                        html_bytes_ogr = html_to_pdf_bytes(df_p, aktif_ogr)
+                        st.download_button(
+                            label="📥 Programı PDF İndir (.html / Tarayıcıda Aç & Yazdır)",
+                            data=html_bytes_ogr,
+                            file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
+                            mime="text/html",
+                            use_container_width=True
+                        )
+                    else:
+                        st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programını kaydetmedi.")
 
             with tab_ilerleme:
                 st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
@@ -1242,99 +1269,33 @@ else:
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
 
                 # ==========================================
-                # YENİ AKILLI KOÇLUK ASİSTANI ARAÇLARI
+                # GÜN BAZLI ÖZEL SAAT VE DERS GİRİŞİ (YENİ)
                 # ==========================================
-                with st.expander("✨ Akıllı Koçluk Asistanı & Hızlı Program Araçları", expanded=False):
-                    asistan_secim = st.selectbox("Bir Araç Seçin:", [
-                        "Seçiniz...", 
-                        "📋 Hazır Kamp Şablonu Yükle", 
-                        "⚡ Toplu Saat Aralığı Bloğu Ekle", 
-                        "🎯 Eksik/Zayıf Konuları Programa Ekle"
-                    ], key="akilli_asistan_menu")
+                with st.expander("✨ Gün Bazlı Özel Saat & Ders Ekleme (Farklı Saatler İçin)", expanded=True):
+                    st.caption("💡 Her günün saat aralığı birbirinden farklı olabilir. Buradan gün seçerek o güne özel saat dilimi ekleyebilirsiniz.")
+                    gb_gun = st.selectbox("Gün Seçin:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="gb_gun_secim")
+                    gb_saat = st.text_input("Bu Güne Özel Saat Aralığı (Örn: 09:30 - 11:00 veya 13:00 - 15:00):", value="09:30 - 11:00", key="gb_saat_inp")
+                    
+                    tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
+                    gb_ders = st.selectbox("Ders / Aktivite:", tum_dersler_listesi, key="gb_ders_inp")
+                    gb_konu = st.selectbox("Alt Konu / Detay:", EVRENSEL_DERS_KONULARI.get(gb_ders, ["Genel Soru"]), key="gb_konu_inp")
 
-                    if asistan_secim == "📋 Hazır Kamp Şablonu Yükle":
-                        kamp_turu = st.selectbox("Kamp Türü:", ["Yoğun Matematik Kampı", "Dengeli TYT-AYT Karması", "Genel Tekrar Haftası"], key="kamp_turu_secim")
-                        if st.button("Şablonu Haftalık Tabloya Uygula", type="primary", key="kamp_uygula_btn"):
-                            # Örnek hazır şablon yükleme mantığı
-                            conn_kamp = get_db_connection()
-                            cur_kamp = conn_kamp.cursor()
-                            ornek_saatler = ["09:00 - 11:00", "11:15 - 13:00", "14:00 - 16:00", "16:15 - 18:00"]
-                            for s in ornek_saatler:
-                                cur_kamp.execute("""
-                                    INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma)
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                                    ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET pazartesi = EXCLUDED.pazartesi, sali = EXCLUDED.sali
-                                """, (secilen_ogr, s, "📐 TYT Matematik\n↳ Konu Çalışması", "⚡ TYT Fizik\n↳ Soru Çözümü", "📖 TYT Türkçe\n↳ Paragraf", "📐 AYT Matematik\n↳ Türev", "🧪 AYT Kimya\n↳ Organik"))
-                            conn_kamp.commit()
-                            conn_kamp.close()
-                            st.success(f"🎉 {kamp_turu} başarıyla öğrencinin programına işlendi!")
-                            st.rerun()
-
-                    elif asistan_secim == "⚡ Toplu Saat Aralığı Bloğu Ekle":
-                        tb_gun = st.selectbox("Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="tb_gun_secim")
-                        tb_saat = st.text_input("Saat Aralığı (Örn: 10:00 - 12:30):", value="10:00 - 12:30", key="tb_saat_input")
-                        tb_ders = st.selectbox("Ders:", list(HAM_DERS_KONULARI.keys()), key="tb_ders_secim")
-                        tb_detay = st.text_input("Çalışma Detayı / Konu:", value="Soru Çözüm Kampı", key="tb_detay_input")
+                    if st.button("Seçilen Güne Bu Saati ve Dersi İşle", type="primary", key="gb_kaydet_btn"):
+                        gun_col_map = {"Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba", "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"}
+                        col_adi = gun_col_map[gb_gun]
+                        hucre_metin = f"{gb_ders}\n↳ {gb_konu}"
                         
-                        if st.button("Bloğu Matrise Kaydet", type="primary", key="tb_kaydet_btn"):
-                            gun_col_map = {"Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba", "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"}
-                            col_adi = gun_col_map[tb_gun]
-                            hucre_metin = f"{tb_ders}\n↳ {tb_detay}"
-                            
-                            conn_tb = get_db_connection()
-                            cur_tb = conn_tb.cursor()
-                            cur_tb.execute(f"""
-                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {col_adi})
-                                VALUES (%s, %s, %s)
-                                ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET {col_adi} = EXCLUDED.{col_adi}
-                            """, (secilen_ogr, tb_saat, hucre_metin))
-                            conn_tb.commit()
-                            conn_tb.close()
-                            st.success("🎉 Blok saat başarıyla eklendi!")
-                            st.rerun()
-
-                    elif asistan_secim == "🎯 Eksik/Zayıf Konuları Programa Ekle":
-                        st.info("💡 Öğrencinin ilerleme tablosunda işaretlemediği veya düşük puan verdiği konular analiz edilerek programa eklenebilir.")
-                        if st.button("Zayıf Konuları Analiz Et ve Programa Dağıt", type="primary", key="zayif_dagit_btn"):
-                            st.success("🎉 Öğrencinin eksik olduğu 4 temel konu haftalık boş saatlerine yerleştirildi!")
-
-                # ==========================================
-
-                tum_dersler_listesi = list(EVRENSEL_DERS_KONULARI.keys())
-                saat_secenekleri = [f"{s:02d}" for s in range(7, 24)]
-                dakika_secenekleri = [f"{d:02d}" for d in range(0, 60, 5)]
-                
-                c_saat1, c_dak1, c_saat2, c_dak2, c_gun = st.columns([1.1, 1.1, 1.1, 1.1, 1.6])
-                with c_saat1: bas_saat = st.selectbox("Başlangıç Saat:", saat_secenekleri, index=1, key="koc_bas_saat")
-                with c_dak1: bas_dakika = st.selectbox("Başlangıç Dakika:", dakika_secenekleri, index=0, key="koc_bas_dakika")
-                with c_saat2: bit_saat = st.selectbox("Bitiş Saat:", saat_secenekleri, index=2, key="koc_bit_saat")
-                with c_dak2: bit_dakika = st.selectbox("Bitiş Dakika:", dakika_secenekleri, index=0, key="koc_bit_dakika")
-                with c_gun: hedef_gun_sec = st.selectbox("Uygulanacak Gün:", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"], key="dinamik_gun")
-
-                yeni_saat_araligi = f"{bas_saat}:{bas_dakika} - {bit_saat}:{bit_dakika}"
-
-                c_s3, c_s4 = st.columns(2)
-                with c_s3: sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
-                with c_s4: sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", EVRENSEL_DERS_KONULARI.get(sec_ders_matris, ["Genel Soru"]), key="dinamik_konu_secim")
-
-                if st.button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True, key="koc_matris_ekle_btn"):
-                     hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
-                     gun_sutun_map = {
-                        "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
-                        "Perşembe": "persembe", "Cuma": "cuma", "Cumartesi": "cumartesi", "Pazar": "pazar"
-                     }
-                     t_sutun = gun_sutun_map[hedef_gun_sec]
-                     conn_islem = get_db_connection()
-                     cur_islem = conn_islem.cursor()
-                     cur_islem.execute(f"""
-                         INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {t_sutun})
-                         VALUES (%s, %s, %s)
-                         ON CONFLICT(ad_soyad, saat_araligi) DO UPDATE SET {t_sutun} = EXCLUDED.{t_sutun}
-                     """, (secilen_ogr, yeni_saat_araligi, hucre_degeri))
-                     conn_islem.commit()
-                     conn_islem.close()
-                     st.success(f"🎉 Hücre eklendi!")
-                     st.rerun()
+                        conn_gb = get_db_connection()
+                        cur_gb = conn_gb.cursor()
+                        cur_gb.execute(f"""
+                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {col_adi})
+                            VALUES (%s, %s, %s)
+                            ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET {col_adi} = EXCLUDED.{col_adi}
+                        """, (secilen_ogr, gb_saat, hucre_metin))
+                        conn_gb.commit()
+                        conn_gb.close()
+                        st.success(f"🎉 {gb_gun} günü için {gb_saat} saatine ders başarıyla eklendi!")
+                        st.rerun()
 
                 st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
                 conn_m = get_db_connection()
