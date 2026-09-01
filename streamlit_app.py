@@ -1119,8 +1119,7 @@ else:
 
                 st.markdown(f"### 📝 {secilen_ogr} — Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
                 
-                # Periyot Seçimi
-                rapor_periyodu = st.radio("Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="koc_rapor_periyot")
+                rapor_periyodu = st.radio("Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="koc_rapor_periyot_unique")
 
                 conn_kc = get_db_connection()
                 df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
@@ -1131,7 +1130,7 @@ else:
                     bugun = pd.Timestamp(datetime.date.today())
 
                     if rapor_periyodu == "Günlük (Tarih Bazlı)":
-                        secilen_gun = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="koc_gun_secim")
+                        secilen_gun = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="koc_gun_secim_unique")
                         df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"].dt.date == secilen_gun].copy()
                         periyot_etiket = f"{secilen_gun} Tarihli Günlük"
                     elif rapor_periyodu == "Haftalık":
@@ -1167,13 +1166,13 @@ else:
                         st.markdown("#### 📋 Çalışma Listesi")
                         st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
 
-                        # PDF / HTML Rapor İndir
                         rapor_bytes = calisma_raporu_html(gosterilecek_df, secilen_ogr, periyot_etiket)
                         st.download_button(
                             label=f"📥 Bu {periyot_etiket} Raporu PDF / HTML Olarak İndir",
                             data=rapor_bytes,
                             file_name=f"{secilen_ogr}_{periyot_etiket.replace(' ', '_')}_Calisma_Raporu.html",
                             mime="text/html",
+                            key="koc_indir_button_unique",
                             use_container_width=True
                         )
                     else:
@@ -1196,7 +1195,7 @@ else:
                                 st.markdown(pdf_goster_html(kd['dosya_yolu']), unsafe_allow_html=True)
                         
                         with st.form(f"koc_not_form_{kd['id']}"):
-                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'] if kd['Koç Notu'] else "")
+                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'] if kd['Koç Notu'] else "", key=f"koc_not_inp_{kd['id']}")
                             if st.form_submit_button("Notu Güncelle"):
                                 conn_kn = get_db_connection()
                                 cur_kn = conn_kn.cursor()
@@ -1228,7 +1227,7 @@ else:
                 with c_s3: sec_ders_matris = st.selectbox("Ders / Aktivite Seçin:", tum_dersler_listesi, key="dinamik_ders_secim")
                 with c_s4: sec_konu_matris = st.selectbox("Alt Konu / Detay Seçin:", EVRENSEL_DERS_KONULARI.get(sec_ders_matris, ["Genel Soru"]), key="dinamik_konu_secim")
 
-                if st.button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True):
+                if st.button("📥 Bu Hücreyi Tabloya İşle", type="primary", use_container_width=True, key="koc_matris_ekle_btn"):
                      hucre_degeri = f"{sec_ders_matris}\n↳ {sec_konu_matris}"
                      gun_sutun_map = {
                         "Pazartesi": "pazartesi", "Salı": "sali", "Çarşamba": "carsamba",
@@ -1257,7 +1256,7 @@ else:
 
                 edited_matris = st.data_editor(df_matris, num_rows="dynamic", use_container_width=True, height=450, key=f"excel_matris_editor_{secilen_ogr}")
 
-                if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True):
+                if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True, key="koc_matris_kaydet_btn"):
                     conn_sv2 = get_db_connection()
                     cur_sv2 = conn_sv2.cursor()
                     cur_sv2.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s", (secilen_ogr,))
@@ -1351,7 +1350,7 @@ else:
                 st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işlem yapmamış.")
 
             st.markdown(f"### 📝 Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
-            rapor_periyodu_v = st.radio("Veli Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="veli_rapor_periyot")
+            rapor_periyodu_v = st.radio("Veli Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="veli_rapor_periyot_unique")
 
             conn_vc = get_db_connection()
             df_v_calisma = pd.read_sql_query('SELECT tarih, ders, konu, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_vc.conn, params=(v_ad,))
@@ -1362,7 +1361,7 @@ else:
                 bugun_v = pd.Timestamp(datetime.date.today())
 
                 if rapor_periyodu_v == "Günlük (Tarih Bazlı)":
-                    secilen_gun_v = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="veli_gun_secim")
+                    secilen_gun_v = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="veli_gun_secim_unique")
                     df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"].dt.date == secilen_gun_v].copy()
                     periyot_etiket_v = f"{secilen_gun_v} Tarihli Günlük"
                 elif rapor_periyodu_v == "Haftalık":
@@ -1404,6 +1403,7 @@ else:
                         data=rapor_bytes_v,
                         file_name=f"{v_ad}_{periyot_etiket_v.replace(' ', '_')}_Calisma_Raporu.html",
                         mime="text/html",
+                        key="veli_indir_button_unique",
                         use_container_width=True
                     )
                 else:
