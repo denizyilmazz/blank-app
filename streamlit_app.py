@@ -335,6 +335,31 @@ def html_to_pdf_bytes(df, ogrenci_adi):
     """
     return html_content.encode('utf-8')
 
+def calisma_raporu_html(df, ogrenci_adi, periyot_adi):
+    return f"""
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>{ogrenci_adi} - Çalışma Raporu</title>
+        <style>
+            body {{ font-family: 'Helvetica', Arial, sans-serif; padding: 25px; color: #0f172a; }}
+            h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
+            p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            th {{ background-color: #0284c7; color: white; font-weight: bold; }}
+            tr:nth-child(even) {{ background-color: #f8fafc; }}
+        </style>
+    </head>
+    <body>
+        <h2>📊 {ogrenci_adi.upper()} — {periyot_adi.upper()} ÇALIŞMA RAPORU</h2>
+        <p>Deniz Yılmaz Gelişim Platformu | Rapor Tarihi: {datetime.date.today().strftime('%d.%m.%Y')}</p>
+        {df.to_html(index=False, classes='table', border=0)}
+    </body>
+    </html>
+    """.encode('utf-8')
+
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
     "🚀 Başarı, her gün ertelemeden tekrarlanan küçük çabaların birikimidir!",
@@ -1092,33 +1117,67 @@ else:
                 else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
 
-                st.markdown(f"### 📝 {secilen_ogr} — Günlük Çalışma Performans Özeti ve Kayıtları")
+                st.markdown(f"### 📝 {secilen_ogr} — Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
+                
+                # Periyot Seçimi
+                rapor_periyodu = st.radio("Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="koc_rapor_periyot")
+
                 conn_kc = get_db_connection()
-                df_koc_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 50', conn_kc.conn, params=(secilen_ogr,))
+                df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
                 conn_kc.close()
 
                 if not df_koc_calisma.empty:
-                    toplam_soru = df_koc_calisma["Soru"].sum() if "Soru" in df_koc_calisma.columns else 0
-                    toplam_konu_sure = df_koc_calisma["Konu Süre (dk)"].sum() if "Konu Süre (dk)" in df_koc_calisma.columns else 0
-                    toplam_cozum_sure = df_koc_calisma["Çözüm Süre (dk)"].sum() if "Çözüm Süre (dk)" in df_koc_calisma.columns else 0
-                    toplam_saat = round((toplam_konu_sure + toplam_cozum_sure) / 60, 1)
+                    df_koc_calisma["tarih_dt"] = pd.to_datetime(df_koc_calisma["tarih"], errors="coerce")
+                    bugun = pd.Timestamp(datetime.date.today())
 
-                    m1, m2, m3 = st.columns(3)
-                    with m1:
-                        st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru):,}")
-                    with m2:
-                        st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat} Saat")
-                    with m3:
-                        st.metric(label="📝 Kayıtlı Çalışma Adedi", value=len(df_koc_calisma))
+                    if rapor_periyodu == "Günlük (Tarih Bazlı)":
+                        secilen_gun = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="koc_gun_secim")
+                        df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"].dt.date == secilen_gun].copy()
+                        periyot_etiket = f"{secilen_gun} Tarihli Günlük"
+                    elif rapor_periyodu == "Haftalık":
+                        hafta_basi = bugun - pd.Timedelta(days=7)
+                        df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"] >= hafta_basi].copy()
+                        periyot_etiket = "Son 7 Günlük Haftalık"
+                    elif rapor_periyodu == "Aylık":
+                        ay_basi = bugun - pd.Timedelta(days=30)
+                        df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"] >= ay_basi].copy()
+                        periyot_etiket = "Son 30 Günlük Aylık"
+                    else:
+                        df_filtrelenmis = df_koc_calisma.copy()
+                        periyot_etiket = "Tüm Zamanlar"
 
-                    st.markdown("---")
-                    if "Ders" in df_koc_calisma.columns and "Soru" in df_koc_calisma.columns:
+                    if not df_filtrelenmis.empty:
+                        gosterilecek_df = df_filtrelenmis[["tarih", "ders", "konu", "Soru", "Konu Süre (dk)", "Çözüm Süre (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"})
+                        
+                        toplam_soru = gosterilecek_df["Soru"].sum()
+                        toplam_konu_sure = gosterilecek_df["Konu Süre (dk)"].sum()
+                        toplam_cozum_sure = gosterilecek_df["Çözüm Süre (dk)"].sum()
+                        toplam_saat = round((toplam_konu_sure + toplam_cozum_sure) / 60, 1)
+
+                        m1, m2, m3 = st.columns(3)
+                        with m1: st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru):,}")
+                        with m2: st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat} Saat")
+                        with m3: st.metric(label="📝 Kayıt Adedi", value=len(gosterilecek_df))
+
+                        st.markdown("---")
                         st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
-                        ders_soru_df = df_koc_calisma.groupby("Ders")["Soru"].sum().reset_index()
+                        ders_soru_df = gosterilecek_df.groupby("Ders")["Soru"].sum().reset_index()
                         st.bar_chart(ders_soru_df, x="Ders", y="Soru", use_container_width=True)
 
-                    st.markdown("#### 📋 Ayrıntılı Çalışma Günlüğü Tablosu")
-                    st.dataframe(df_koc_calisma, use_container_width=True, hide_index=True)
+                        st.markdown("#### 📋 Çalışma Listesi")
+                        st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
+
+                        # PDF / HTML Rapor İndir
+                        rapor_bytes = calisma_raporu_html(gosterilecek_df, secilen_ogr, periyot_etiket)
+                        st.download_button(
+                            label=f"📥 Bu {periyot_etiket} Raporu PDF / HTML Olarak İndir",
+                            data=rapor_bytes,
+                            file_name=f"{secilen_ogr}_{periyot_etiket.replace(' ', '_')}_Calisma_Raporu.html",
+                            mime="text/html",
+                            use_container_width=True
+                        )
+                    else:
+                        st.warning(f"⚠️ Seçilen {rapor_periyodu.lower()} aralığında kayıt bulunamadı.")
                 else:
                     st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
 
@@ -1291,33 +1350,64 @@ else:
             else:
                 st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işlem yapmamış.")
 
-            st.markdown(f"### 📝 Günlük Çalışma Performans Özeti ve Takibi")
+            st.markdown(f"### 📝 Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
+            rapor_periyodu_v = st.radio("Veli Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="veli_rapor_periyot")
+
             conn_vc = get_db_connection()
-            df_v_calisma = pd.read_sql_query('SELECT tarih AS "Tarih", ders AS "Ders", konu AS "Konu", soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 30', conn_vc.conn, params=(v_ad,))
+            df_v_calisma = pd.read_sql_query('SELECT tarih, ders, konu, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_vc.conn, params=(v_ad,))
             conn_vc.close()
 
             if not df_v_calisma.empty:
-                toplam_soru_v = df_v_calisma["Soru"].sum() if "Soru" in df_v_calisma.columns else 0
-                toplam_konu_sure_v = df_v_calisma["Konu Süre (dk)"].sum() if "Konu Süre (dk)" in df_v_calisma.columns else 0
-                toplam_cozum_sure_v = df_v_calisma["Çözüm Süre (dk)"].sum() if "Çözüm Süre (dk)" in df_v_calisma.columns else 0
-                toplam_saat_v = round((toplam_konu_sure_v + toplam_cozum_sure_v) / 60, 1)
+                df_v_calisma["tarih_dt"] = pd.to_datetime(df_v_calisma["tarih"], errors="coerce")
+                bugun_v = pd.Timestamp(datetime.date.today())
 
-                vm1, vm2, vm3 = st.columns(3)
-                with vm1:
-                    st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru_v):,}")
-                with vm2:
-                    st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat_v} Saat")
-                with vm3:
-                    st.metric(label="📝 Kayıtlı Çalışma Adedi", value=len(df_v_calisma))
+                if rapor_periyodu_v == "Günlük (Tarih Bazlı)":
+                    secilen_gun_v = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="veli_gun_secim")
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"].dt.date == secilen_gun_v].copy()
+                    periyot_etiket_v = f"{secilen_gun_v} Tarihli Günlük"
+                elif rapor_periyodu_v == "Haftalık":
+                    hafta_basi_v = bugun_v - pd.Timedelta(days=7)
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= hafta_basi_v].copy()
+                    periyot_etiket_v = "Son 7 Günlük Haftalık"
+                elif rapor_periyodu_v == "Aylık":
+                    ay_basi_v = bugun_v - pd.Timedelta(days=30)
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
+                    periyot_etiket_v = "Son 30 Günlük Aylık"
+                else:
+                    df_filtrelenmis_v = df_v_calisma.copy()
+                    periyot_etiket_v = "Tüm Zamanlar"
 
-                st.markdown("---")
-                if "Ders" in df_v_calisma.columns and "Soru" in df_v_calisma.columns:
+                if not df_filtrelenmis_v.empty:
+                    gosterilecek_df_v = df_filtrelenmis_v[["tarih", "ders", "konu", "Soru", "Konu Süre (dk)", "Çözüm Süre (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"})
+                    
+                    toplam_soru_v = gosterilecek_df_v["Soru"].sum()
+                    toplam_konu_sure_v = gosterilecek_df_v["Konu Süre (dk)"].sum()
+                    toplam_cozum_sure_v = gosterilecek_df_v["Çözüm Süre (dk)"].sum()
+                    toplam_saat_v = round((toplam_konu_sure_v + toplam_cozum_sure_v) / 60, 1)
+
+                    vm1, vm2, vm3 = st.columns(3)
+                    with vm1: st.metric(label="🎯 Toplam Çözülen Soru", value=f"{int(toplam_soru_v):,}")
+                    with vm2: st.metric(label="⏱️ Toplam Çalışma Süresi", value=f"{toplam_saat_v} Saat")
+                    with vm3: st.metric(label="📝 Kayıt Adedi", value=len(gosterilecek_df_v))
+
+                    st.markdown("---")
                     st.markdown("#### 📈 Ders Bazlı Soru Dağılımı")
-                    ders_soru_df_v = df_v_calisma.groupby("Ders")["Soru"].sum().reset_index()
+                    ders_soru_df_v = gosterilecek_df_v.groupby("Ders")["Soru"].sum().reset_index()
                     st.bar_chart(ders_soru_df_v, x="Ders", y="Soru", use_container_width=True)
 
-                st.markdown("#### 📋 Ayrıntılı Çalışma Günlüğü Tablosu")
-                st.dataframe(df_v_calisma, use_container_width=True, hide_index=True)
+                    st.markdown("#### 📋 Çalışma Listesi")
+                    st.dataframe(gosterilecek_df_v, use_container_width=True, hide_index=True)
+
+                    rapor_bytes_v = calisma_raporu_html(gosterilecek_df_v, v_ad, periyot_etiket_v)
+                    st.download_button(
+                        label=f"📥 Bu {periyot_etiket_v} Raporu PDF / HTML Olarak İndir",
+                        data=rapor_bytes_v,
+                        file_name=f"{v_ad}_{periyot_etiket_v.replace(' ', '_')}_Calisma_Raporu.html",
+                        mime="text/html",
+                        use_container_width=True
+                    )
+                else:
+                    st.warning(f"⚠️ Seçilen {rapor_periyodu_v.lower()} aralığında kayıt bulunamadı.")
             else:
                 st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
 
