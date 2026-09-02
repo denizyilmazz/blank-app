@@ -120,12 +120,20 @@ def tablo_olustur():
     """)
     cur.execute("""
     CREATE TABLE IF NOT EXISTS excel_program_matris (
-        ad_soyad TEXT, saat_araligi TEXT, 
+        ad_soyad TEXT, 
+        hafta_baslangici TEXT DEFAULT '2026-09-07', 
+        saat_araligi TEXT, 
         pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', 
         persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT '', 
-        PRIMARY KEY (ad_soyad, saat_araligi)
+        PRIMARY KEY (ad_soyad, hafta_baslangici, saat_araligi)
     )
     """)
+    try:
+        cur.execute("ALTER TABLE excel_program_matris ADD COLUMN IF NOT EXISTS hafta_baslangici TEXT DEFAULT '2026-09-07'")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
     cur.execute("""
     CREATE TABLE IF NOT EXISTS program_dosyalari (
         id SERIAL PRIMARY KEY, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT
@@ -1007,26 +1015,30 @@ else:
                 st.markdown(f"""
                 <div class="program-header-box">
                     <h2 style="margin:0; font-size:22px; font-weight:800; color:white !important;">📅 {aktif_ogr.upper()} — DERS PROGRAMI MERKEZİ</h2>
-                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bugünün programını veya her günü kendi içinde düzenli listeleyen haftalık planı inceleyebilirsiniz.</p>
+                    <p style="margin:5px 0 0 0; font-size:13px; opacity:0.9; color:white !important;">Bu haftanın programını ve günlük derslerinizi buradan takip edebilirsiniz.</p>
                 </div>
                 """, unsafe_allow_html=True)
+
+                bugun_tarih = datetime.date.today()
+                bu_hafta_pazartesi = bugun_tarih - datetime.timedelta(days=bugun_tarih.weekday())
+                secilen_hafta_str = str(bu_hafta_pazartesi)
 
                 ogr_prog_alt_secim = st.radio("Program Görünümü:", ["☀️ Bugünün Programı", "📅 Tüm Haftalık Program"], horizontal=True, key="ogr_prog_alt_secim_key")
 
                 gun_indexleri = {0: "pazartesi", 1: "sali", 2: "carsamba", 3: "persembe", 4: "cuma", 5: "cumartesi", 6: "pazar"}
                 gun_isimleri_tr = {0: "Pazartesi", 1: "Salı", 2: "Çarşamba", 3: "Perşembe", 4: "Cuma", 5: "Cumartesi", 6: "Pazar"}
-                bugun_idx = datetime.date.today().weekday()
+                bugun_idx = bugun_tarih.weekday()
                 bugun_kolun = gun_indexleri[bugun_idx]
                 bugun_adi_str = gun_isimleri_tr[bugun_idx]
 
                 if ogr_prog_alt_secim == "☀️ Bugünün Programı":
-                    st.markdown(f"#### ☀️ Bugün ({bugun_adi_str} - {datetime.date.today().strftime('%d.%m.%Y')}) Programı")
+                    st.markdown(f"#### ☀️ Bugün ({bugun_adi_str} - {bugun_tarih.strftime('%d.%m.%Y')}) Programı")
                     
                     df_bugun = pd.DataFrame(columns=["Saat Aralığı", "Ders / Aktivite"])
                     try:
                         conn_bugun = get_db_connection()
-                        query_bugun = f'SELECT saat_araligi AS "Saat Aralığı", {bugun_kolun} AS "Ders / Aktivite" FROM excel_program_matris WHERE ad_soyad = %s AND {bugun_kolun} IS NOT NULL AND {bugun_kolun} != \'\' ORDER BY saat_araligi ASC'
-                        df_bugun = pd.read_sql_query(query_bugun, conn_bugun.conn, params=(aktif_ogr,))
+                        query_bugun = f'SELECT saat_araligi AS "Saat Aralığı", {bugun_kolun} AS "Ders / Aktivite" FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s AND {bugun_kolun} IS NOT NULL AND {bugun_kolun} != \'\' ORDER BY saat_araligi ASC'
+                        df_bugun = pd.read_sql_query(query_bugun, conn_bugun.conn, params=(aktif_ogr, secilen_hafta_str))
                         conn_bugun.close()
                     except Exception:
                         pass
@@ -1045,12 +1057,15 @@ else:
                             use_container_width=True
                         )
                     else:
-                        st.info(f"ℹ️ Bugün ({bugun_adi_str}) için planlanmış ders bulunmuyor.")
+                        st.info(f"ℹ️ Bu hafta ({secilen_hafta_str} haftası) için bugün ({bugun_adi_str}) planlanmış ders bulunmuyor.")
                 else:
-                    st.markdown("#### 📅 Haftalık Program (Gün Bazlı Düzenli Görünüm)")
-                    conn_p = get_db_connection()
-                    df_p_full = pd.read_sql_query('SELECT saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_p.conn, params=(aktif_ogr,))
-                    conn_p.close()
+                    st.markdown(f"#### 📅 Bu Haftanın Programı ({secilen_hafta_str} Haftası)")
+                    try:
+                        conn_p = get_db_connection()
+                        df_p_full = pd.read_sql_query('SELECT saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s ORDER BY saat_araligi ASC', conn_p.conn, params=(aktif_ogr, secilen_hafta_str))
+                        conn_p.close()
+                    except Exception:
+                        df_p_full = pd.DataFrame()
 
                     if not df_p_full.empty:
                         haftanin_gunleri = [
@@ -1080,16 +1095,16 @@ else:
                             st.markdown("---")
                             html_bytes_ogr = haftalik_program_toplu_pdf_bytes(df_p_full, aktif_ogr)
                             st.download_button(
-                                label="📥 Tüm Haftalık Programı Toplu PDF Olarak İndir / Yazdır",
+                                label="📥 Bu Haftanın Programını Toplu PDF Olarak İndir / Yazdır",
                                 data=html_bytes_ogr,
                                 file_name=f"{aktif_ogr}_Haftalik_Ders_Programi.html",
                                 mime="text/html",
                                 use_container_width=True
                             )
                         else:
-                            st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık programına ders eklemedi.")
+                            st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz bu hafta için ders eklemedi.")
                     else:
-                        st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz haftalık program kaydetmedi.")
+                        st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz bu hafta için program kaydetmedi.")
 
             with tab_ilerleme:
                 st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
@@ -1383,18 +1398,59 @@ else:
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
 
+                # Koç için Hafta Seçimi (Hangi haftayı düzenliyor?)
+                bugun_koc = datetime.date.today()
+                varsayilan_pazartesi = bugun_koc - datetime.timedelta(days=bugun_koc.weekday())
+                koc_hafta_secim = st.date_input("Düzenlenecek Haftanın Pazartesi Tarihi:", value=varsayilan_pazartesi, key="koc_hafta_tarih_secim")
+                koc_hafta_str = str(koc_hafta_secim)
+
+                # Şablondan / Geçmiş Haftadan Kopyalama Özelliği
+                with st.expander("🔄 Geçmiş Haftadan Program Kopyala (Şablon Kullan)", expanded=False):
+                    conn_havuz = get_db_connection()
+                    cur_hav = conn_havuz.cursor()
+                    cur_hav.execute("SELECT DISTINCT hafta_baslangici FROM excel_program_matris WHERE ad_soyad = %s ORDER BY hafta_baslangici DESC", (secilen_ogr,))
+                    mevcut_haftalar = [r[0] for r in cur_hav.fetchall()]
+                    conn_havuz.close()
+
+                    if mevcut_haftalar:
+                        kopyalanacak_hafta = st.selectbox("Hangi Haftanın Programı Kopyalansın?", mevcut_haftalar, key="kopya_kaynak_hafta")
+                        if st.button("Seçilen Haftayı Aktif Haftaya Kopyala", key="hafta_kopyala_islem"):
+                            if kopyalanacak_hafta != koc_hafta_str:
+                                conn_cp = get_db_connection()
+                                cur_cp = conn_cp.cursor()
+                                cur_cp.execute("SELECT saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s", (secilen_ogr, kopyalanacak_hafta))
+                                kaynak_satirlar = cur_cp.fetchall()
+                                
+                                for row in kaynak_satirlar:
+                                    s_ar, pz, sl, cr, pr, cm, cmt, pzr = row
+                                    cur_cp.execute("""
+                                        INSERT INTO excel_program_matris (ad_soyad, hafta_baslangici, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        ON CONFLICT (ad_soyad, hafta_baslangici, saat_araligi) DO UPDATE SET
+                                        pazartesi = EXCLUDED.pazartesi, sali = EXCLUDED.sali, carsamba = EXCLUDED.carsamba, 
+                                        persembe = EXCLUDED.persembe, cuma = EXCLUDED.cuma, cumartesi = EXCLUDED.cumartesi, pazar = EXCLUDED.pazar
+                                    """, (secilen_ogr, koc_hafta_str, s_ar, pz, sl, cr, pr, cm, cmt, pzr))
+                                conn_cp.commit()
+                                conn_cp.close()
+                                st.success(f"🎉 {kopyalanacak_hafta} haftasının programı başarıyla {koc_hafta_str} haftasına kopyalandı!")
+                                st.rerun()
+                            else:
+                                st.warning("⚠️ Kaynak hafta ile hedef hafta aynı olamaz!")
+                    else:
+                        st.info("ℹ️ Kopyalanabilecek geçmiş hafta kaydı bulunmuyor.")
+
                 with st.expander("✨ Gün Bazlı Özel Saat & Hazır Tablo (Excel/CSV) Yükleme ve PDF İndir", expanded=True):
                     
                     conn_kpdf = get_db_connection()
-                    df_kpdf = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_kpdf.conn, params=(secilen_ogr,))
+                    df_kpdf = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s ORDER BY saat_araligi ASC', conn_kpdf.conn, params=(secilen_ogr, koc_hafta_str))
                     conn_kpdf.close()
 
                     if not df_kpdf.empty:
                         koc_pdf_bytes = haftalik_program_toplu_pdf_bytes(df_kpdf, secilen_ogr)
                         st.download_button(
-                            label=f"📥 {secilen_ogr} Öğrencisinin Haftalık Programını Toplu PDF Olarak İndir",
+                            label=f"📥 {secilen_ogr} Öğrencisinin Bu Hafta ({koc_hafta_str}) Programını Toplu PDF Olarak İndir",
                             data=koc_pdf_bytes,
-                            file_name=f"{secilen_ogr}_Haftalik_Ders_Programi.html",
+                            file_name=f"{secilen_ogr}_{koc_hafta_str}_Haftalik_Program.html",
                             mime="text/html",
                             key=f"koc_down_pdf_{secilen_ogr}",
                             use_container_width=True
@@ -1417,18 +1473,18 @@ else:
                         conn_gb = get_db_connection()
                         cur_gb = conn_gb.cursor()
                         cur_gb.execute(f"""
-                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, {col_adi})
-                            VALUES (%s, %s, %s)
-                            ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET {col_adi} = EXCLUDED.{col_adi}
-                        """, (secilen_ogr, gb_saat, hucre_metin))
+                            INSERT INTO excel_program_matris (ad_soyad, hafta_baslangici, saat_araligi, {col_adi})
+                            VALUES (%s, %s, %s, %s)
+                            ON CONFLICT (ad_soyad, hafta_baslangici, saat_araligi) DO UPDATE SET {col_adi} = EXCLUDED.{col_adi}
+                        """, (secilen_ogr, koc_hafta_str, gb_saat, hucre_metin))
                         conn_gb.commit()
                         conn_gb.close()
-                        st.success(f"🎉 {gb_gun} günü için {gb_saat} saatine ders başarıyla eklendi!")
+                        st.success(f"🎉 {koc_hafta_str} haftası {gb_gun} günü için {gb_saat} saatine ders başarıyla eklendi!")
                         st.rerun()
 
                     st.markdown("---")
                     st.markdown("#### 2️⃣ Hazır Excel / CSV Tablosu Yükle")
-                    st.caption("💡 Elinde hazır haftalık program tablosu varsa (.xlsx veya .csv), buraya yükleyerek tüm matrisi tek seferde güncelleyebilirsin.")
+                    st.caption(f"💡 {koc_hafta_str} haftası için hazır program tablosu yükleyebilirsiniz.")
                     yuklenen_prog_dosya = st.file_uploader("Ders programı dosyası seçin:", type=["xlsx", "csv"], key=f"prog_upl_{secilen_ogr}")
                     if yuklenen_prog_dosya is not None:
                         try:
@@ -1442,15 +1498,15 @@ else:
                                 saat_kolonu = "Saat Aralığı" if "Saat Aralığı" in df_yuklenen.columns else "Saat"
                                 conn_upl = get_db_connection()
                                 cur_upl = conn_upl.cursor()
-                                cur_upl.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s", (secilen_ogr,))
+                                cur_upl.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s", (secilen_ogr, koc_hafta_str))
                                 for _, r_u in df_yuklenen.iterrows():
                                     s_ar_u = str(r_u.get(saat_kolonu, "")).strip()
                                     if s_ar_u and s_ar_u != "nan":
                                         cur_upl.execute("""
-                                            INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                            INSERT INTO excel_program_matris (ad_soyad, hafta_baslangici, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                                         """, (
-                                            secilen_ogr, s_ar_u,
+                                            secilen_ogr, koc_hafta_str, s_ar_u,
                                             str(r_u.get("Pazartesi", "") if pd.notna(r_u.get("Pazartesi")) else ""),
                                             str(r_u.get("Salı", "") if pd.notna(r_u.get("Salı")) else ""),
                                             str(r_u.get("Çarşamba", "") if pd.notna(r_u.get("Çarşamba")) else ""),
@@ -1461,38 +1517,38 @@ else:
                                         ))
                                 conn_upl.commit()
                                 conn_upl.close()
-                                st.success("🎉 Hazır program tablosu başarıyla yüklendi!")
+                                st.success(f"🎉 {koc_hafta_str} haftası program tablosu başarıyla yüklendi!")
                                 st.rerun()
                             else:
                                 st.error("❌ Yüklenen dosyada 'Saat Aralığı' veya 'Saat' sütunu bulunamadı!")
                         except Exception as e:
                             st.error(f"❌ Dosya okunurken hata oluştu: {e}")
 
-                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici")
+                st.markdown(f"#### 📊 {secilen_ogr} — Canlı Program Tablosu Düzenleyici ({koc_hafta_str} Haftası)")
                 conn_m = get_db_connection()
-                df_matris = pd.read_sql_query('SELECT saat_araligi AS "Saat Aralığı", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_m.conn, params=(secilen_ogr,))
+                df_matris = pd.read_sql_query('SELECT saat_araligi AS "Saat Aralığı", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s ORDER BY saat_araligi ASC', conn_m.conn, params=(secilen_ogr, koc_hafta_str))
                 conn_m.close()
                 
                 if df_matris.empty:
                     df_matris = pd.DataFrame([{"Saat Aralığı": "08:00 - 09:00", "Pazartesi": "", "Salı": "", "Çarşamba": "", "Perşembe": "", "Cuma": "", "Cumartesi": "", "Pazar": ""}])
 
-                edited_matris = st.data_editor(df_matris, num_rows="dynamic", use_container_width=True, height=450, key=f"excel_matris_editor_{secilen_ogr}")
+                edited_matris = st.data_editor(df_matris, num_rows="dynamic", use_container_width=True, height=450, key=f"excel_matris_editor_{secilen_ogr}_{koc_hafta_str}")
 
                 if st.button("💾 Tablodaki Tüm Değişiklikleri Kaydet", type="primary", use_container_width=True, key="koc_matris_kaydet_btn"):
                     conn_sv2 = get_db_connection()
                     cur_sv2 = conn_sv2.cursor()
-                    cur_sv2.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s", (secilen_ogr,))
+                    cur_sv2.execute("DELETE FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s", (secilen_ogr, koc_hafta_str))
                     for _, row in edited_matris.iterrows():
                         s_ar = str(row.get("Saat Aralığı", "")).strip()
                         if s_ar and s_ar != "nan":
                             cur_sv2.execute("""
-                                INSERT INTO excel_program_matris (ad_soyad, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
-                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                                ON CONFLICT (ad_soyad, saat_araligi) DO UPDATE SET
+                                INSERT INTO excel_program_matris (ad_soyad, hafta_baslangici, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                ON CONFLICT (ad_soyad, hafta_baslangici, saat_araligi) DO UPDATE SET
                                 pazartesi = EXCLUDED.pazartesi, sali = EXCLUDED.sali, carsamba = EXCLUDED.carsamba, 
                                 persembe = EXCLUDED.persembe, cuma = EXCLUDED.cuma, cumartesi = EXCLUDED.cumartesi, pazar = EXCLUDED.pazar
                             """, (
-                                secilen_ogr, s_ar,
+                                secilen_ogr, koc_hafta_str, s_ar,
                                 str(row.get("Pazartesi", "") if pd.notna(row.get("Pazartesi")) else ""),
                                 str(row.get("Salı", "") if pd.notna(row.get("Salı")) else ""),
                                 str(row.get("Çarşamba", "") if pd.notna(row.get("Çarşamba")) else ""),
@@ -1503,7 +1559,7 @@ else:
                             ))
                     conn_sv2.commit()
                     conn_sv2.close()
-                    st.success("🎉 Program güncellendi!")
+                    st.success(f"🎉 {koc_hafta_str} haftası programı güncellendi!")
                     st.rerun()
 
     with main_tab3:
@@ -1552,14 +1608,19 @@ else:
                 st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
 
             st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
+            
+            bugun_v_tarih = datetime.date.today()
+            veli_hafta_pazartesi = bugun_v_tarih - datetime.timedelta(days=bugun_v_tarih.weekday())
+            veli_hafta_str = str(veli_hafta_pazartesi)
+
             conn_vp = get_db_connection()
-            df_veli_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s ORDER BY saat_araligi ASC', conn_vp.conn, params=(v_ad,))
+            df_veli_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s ORDER BY saat_araligi ASC', conn_vp.conn, params=(v_ad, veli_hafta_str))
             conn_vp.close()
 
             if not df_veli_p.empty:
                 st.dataframe(df_veli_p, use_container_width=True, height=350)
             else:
-                st.info("ℹ️ Koç henüz bu öğrenci için haftalık program kaydetmemiş.")
+                st.info(f"ℹ️ Koç henüz bu hafta ({veli_hafta_str}) için haftalık program kaydetmemiş.")
 
             st.markdown(f"### ✅ Konu İlerleme Durumu")
             conn_vi = get_db_connection()
