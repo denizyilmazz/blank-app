@@ -59,7 +59,7 @@ def tablo_olustur():
     )
     """)
     try:
-        cur.execute("ALTER TABLE ogrenciler ADD COLUMN sinif_grubu TEXT DEFAULT '12. Sınıf ve Mezun (2027 YKS)'")
+        cur.execute("ALTER TABLE ogrenciler ADD COLUMN IF NOT EXISTS sinif_grubu TEXT DEFAULT '12. Sınıf ve Mezun (2027 YKS)'")
         conn.commit()
     except Exception:
         conn.rollback()
@@ -124,12 +124,13 @@ def tablo_olustur():
         hafta_baslangici TEXT DEFAULT '2026-09-07', 
         saat_araligi TEXT, 
         pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', 
-        persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT '', 
-        PRIMARY KEY (ad_soyad, hafta_baslangici, saat_araligi)
+        persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT ''
     )
     """)
     try:
         cur.execute("ALTER TABLE excel_program_matris ADD COLUMN IF NOT EXISTS hafta_baslangici TEXT DEFAULT '2026-09-07'")
+        cur.execute("ALTER TABLE excel_program_matris DROP CONSTRAINT IF EXISTS excel_program_matris_pkey;")
+        cur.execute("ALTER TABLE excel_program_matris ADD PRIMARY KEY (ad_soyad, hafta_baslangici, saat_araligi);")
         conn.commit()
     except Exception:
         conn.rollback()
@@ -641,7 +642,7 @@ HAM_DERS_KONULARI = {
         "Kimyasal Tepkimelerde Enerji",
         "Kimyasal Tepkimelerde Hız",
         "Kimyasal Denge",
-        "Sulu Çözeltilerde Denge (Asit-Baz ve KÇ)",
+        "Sulu Çözeltilerde Dengede (Asit-Baz ve KÇ)",
         "Elektrokimya (Piller ve Elektroliz)",
         "Organik Kimyaya Giriş",
         "Hidrokarbonlar",
@@ -1398,13 +1399,11 @@ else:
                 st.divider()
                 st.markdown(f"### 🗓️ {secilen_ogr} — Kişiye Özel Haftalık Program Düzenleyici")
 
-                # Koç için Hafta Seçimi (Hangi haftayı düzenliyor?)
                 bugun_koc = datetime.date.today()
                 varsayilan_pazartesi = bugun_koc - datetime.timedelta(days=bugun_koc.weekday())
                 koc_hafta_secim = st.date_input("Düzenlenecek Haftanın Pazartesi Tarihi:", value=varsayilan_pazartesi, key="koc_hafta_tarih_secim")
                 koc_hafta_str = str(koc_hafta_secim)
 
-                # Şablondan / Geçmiş Haftadan Kopyalama Özelliği
                 with st.expander("🔄 Geçmiş Haftadan Program Kopyala (Şablon Kullan)", expanded=False):
                     conn_havuz = get_db_connection()
                     cur_hav = conn_havuz.cursor()
