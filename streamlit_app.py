@@ -642,7 +642,7 @@ HAM_DERS_KONULARI = {
         "Kimyasal Tepkimelerde Enerji",
         "Kimyasal Tepkimelerde Hız",
         "Kimyasal Denge",
-        "Sulu Çözeltilerde Dengede (Asit-Baz ve KÇ)",
+        "Sulu Çözeltilerde Denge (Asit-Baz ve KÇ)",
         "Elektrokimya (Piller ve Elektroliz)",
         "Organik Kimyaya Giriş",
         "Hidrokarbonlar",
@@ -1183,6 +1183,40 @@ else:
                     conn_g.commit()
                     conn_g.close()
                     st.success(f"🎉 Başarıyla kaydedildi! ({secilen_ders} — {secilen_konu})")
+                    st.rerun()
+
+                # --- YENİ EKLENEN ÖZELLİK: Yanlış/Hatalı Kaydı Silme ---
+                st.markdown("---")
+                st.markdown("#### 🗑️ Son Çalışma Kayıtlarım ve Hatalı Giriş Silme")
+                conn_del_q = get_db_connection()
+                df_son_calismalar = pd.read_sql_query('SELECT id, tarih, ders, konu, soru_sayisi FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY id DESC LIMIT 15', conn_del_q.conn, params=(aktif_ogr,))
+                conn_del_q.close()
+
+                if not df_son_calismalar.empty:
+                    kayit_secenekleri = []
+                    for _, r_row in df_son_calismalar.iterrows():
+                        k_str = f"ID: {r_row['id']} | Tarih: {r_row['tarih']} | Ders: {r_row['ders']} | Konu: {r_row['konu']} (Soru: {r_row['soru_sayisi']})"
+                        kayit_secenekleri.append((r_row['id'], k_str))
+
+                    secilen_sil_kayit = st.selectbox("Silmek İstediğiniz Kaydı Seçin:", options=[k[1] for k in kayit_secenekleri], key="silinecek_kayit_secim")
+                    
+                    if st.button("🗑️ Seçilen Yanlış Kaydı Sil", type="secondary", use_container_width=True):
+                        secilen_id = None
+                        for kid, ktext in kayit_secenekleri:
+                            if ktext == secilen_sil_kayit:
+                                secilen_id = kid
+                                break
+                        
+                        if secilen_id:
+                            conn_del = get_db_connection()
+                            cur_del = conn_del.cursor()
+                            cur_del.execute("DELETE FROM gunluk_calisma WHERE id = %s AND ad_soyad = %s", (secilen_id, aktif_ogr))
+                            conn_del.commit()
+                            conn_del.close()
+                            st.success("🎉 Seçilen çalışma kaydı başarıyla silindi!")
+                            st.rerun()
+                else:
+                    st.info("ℹ️ Henüz silinebilecek bir çalışma kaydı bulunmuyor.")
 
             with tab_deneme:
                 st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
