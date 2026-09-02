@@ -361,6 +361,11 @@ def html_to_pdf_bytes(df, ogrenci_adi):
     return html_content.encode('utf-8')
 
 def haftalik_program_toplu_pdf_bytes(df_full, ogrenci_adi):
+    df_n = df_full.copy()
+    df_n.columns = [str(c).strip().lower() for c in df_n.columns]
+    
+    saat_col = "saat_araligi" if "saat_araligi" in df_n.columns else ("saat" if "saat" in df_n.columns else df_n.columns[0])
+
     gunler = [
         ("Pazartesi", "pazartesi"),
         ("Salı", "sali"),
@@ -373,17 +378,18 @@ def haftalik_program_toplu_pdf_bytes(df_full, ogrenci_adi):
     
     gun_htmls = ""
     for g_adi, g_col in gunler:
-        df_g = df_full[["saat_araligi", g_col]].copy()
-        df_g = df_g[df_g[g_col].notna() & (df_g[g_col].astype(str).str.strip() != "")]
-        if not df_g.empty:
-            df_g.columns = ["Saat Aralığı", "Ders / Aktivite"]
-            table_html = df_g.to_html(index=False, classes='table', border=0)
-            gun_htmls += f"""
-            <div style="margin-bottom: 25px;">
-                <h3 style="color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; margin-bottom: 10px;">📌 {g_adi}</h3>
-                {table_html}
-            </div>
-            """
+        if g_col in df_n.columns:
+            df_g = df_n[[saat_col, g_col]].copy()
+            df_g = df_g[df_g[g_col].notna() & (df_g[g_col].astype(str).str.strip() != "")]
+            if not df_g.empty:
+                df_g.columns = ["Saat Aralığı", "Ders / Aktivite"]
+                table_html = df_g.to_html(index=False, classes='table', border=0)
+                gun_htmls += f"""
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; margin-bottom: 10px;">📌 {g_adi}</h3>
+                    {table_html}
+                </div>
+                """
 
     html_content = f"""
     <!DOCTYPE html>
@@ -1586,7 +1592,7 @@ else:
                     periyot_etiket_v = "Son 7 Günlük Haftalık"
                 elif rapor_periyodu_v == "Aylık":
                     ay_basi_v = bugun_v - pd.Timedelta(days=30)
-                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["t_dt"] >= ay_basi_v].copy() if "t_dt" in df_v_calisma.columns else df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
                     periyot_etiket_v = "Son 30 Günlük Aylık"
                 else:
                     df_filtrelenmis_v = df_v_calisma.copy()
