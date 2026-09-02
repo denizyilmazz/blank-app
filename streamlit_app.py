@@ -327,6 +327,39 @@ def pdf_goster_html(pdf_path):
     except Exception:
         return "<p style='color:red;'>PDF dosyası okunamadı.</p>"
 
+def html_to_pdf_bytes(df, ogrenci_adi):
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>{ogrenci_adi} - Ders Programı</title>
+        <style>
+            @media print {{
+                body {{ padding: 0; }}
+                button {{ display: none; }}
+            }}
+            body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
+            h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
+            p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 8px; overflow: hidden; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            th {{ background-color: #0284c7; color: white; font-weight: bold; }}
+            tr:nth-child(even) {{ background-color: #f8fafc; }}
+        </style>
+    </head>
+    <body>
+        <h2>🎓 YKS KOÇLUK — {ogrenci_adi.upper()} DERS PROGRAMI</h2>
+        <p>Deniz Yılmaz Gelişim Platformu | {datetime.date.today().strftime('%d.%m.%Y')}</p>
+        {df.to_html(index=False, classes='table', border=0)}
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="window.print()" style="background: #0284c7; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer;">🖨️ PDF Olarak Kaydet / Yazdır</button>
+        </div>
+    </body>
+    </html>
+    """
+    return html_content.encode('utf-8')
+
 def haftalik_program_toplu_pdf_bytes(df_full, ogrenci_adi):
     gunler = [
         ("Pazartesi", "pazartesi"),
@@ -1553,7 +1586,7 @@ else:
                     periyot_etiket_v = "Son 7 Günlük Haftalık"
                 elif rapor_periyodu_v == "Aylık":
                     ay_basi_v = bugun_v - pd.Timedelta(days=30)
-                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["t_dt"] >= ay_basi_v].copy() if "t_dt" in df_v_calisma.columns else df_v_calisma[df_v_calisma["tarih_dt"] >= ay_basi_v].copy()
                     periyot_etiket_v = "Son 30 Günlük Aylık"
                 else:
                     df_filtrelenmis_v = df_v_calisma.copy()
