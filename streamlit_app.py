@@ -982,10 +982,15 @@ else:
 
                 if ogr_prog_alt_secim == "☀️ Bugünün Programı":
                     st.markdown(f"#### ☀️ Bugün ({bugun_adi_str} - {datetime.date.today().strftime('%d.%m.%Y')}) Programı")
-                    conn_bugun = get_db_connection()
-                    query_bugun = f'SELECT saat_araligi AS "Saat Aralığı", {bugun_kolun} AS "Ders / Aktivite" FROM excel_program_matris WHERE ad_soyad = %s AND {bugun_kolun} IS NOT NULL AND {bugun_kolun} != \'\' ORDER BY saat_araligi ASC'
-                    df_bugun = pd.read_sql_query(query_bugun, conn_bugun.conn, params=(aktif_ogr,))
-                    conn_bugun.close()
+                    
+                    df_bugun = pd.DataFrame(columns=["Saat Aralığı", "Ders / Aktivite"])
+                    try:
+                        conn_bugun = get_db_connection()
+                        query_bugun = f'SELECT saat_araligi AS "Saat Aralığı", {bugun_kolun} AS "Ders / Aktivite" FROM excel_program_matris WHERE ad_soyad = %s AND {bugun_kolun} IS NOT NULL AND {bugun_kolun} != \'\' ORDER BY saat_araligi ASC'
+                        df_bugun = pd.read_sql_query(query_bugun, conn_bugun.conn, params=(aktif_ogr,))
+                        conn_bugun.close()
+                    except Exception:
+                        pass
 
                     if not df_bugun.empty:
                         st.dataframe(df_bugun, use_container_width=True, hide_index=True)
