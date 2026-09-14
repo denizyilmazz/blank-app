@@ -19,7 +19,9 @@ st.set_page_config(
 )
 
 KARNE_DIR = "karne_yuklemeleri"
+COZULEMEYEN_DIR = "cozulemeyen_sorular"
 os.makedirs(KARNE_DIR, exist_ok=True)
+os.makedirs(COZULEMEYEN_DIR, exist_ok=True)
 
 SUPABASE_URI = "postgresql://postgres.ypftcgbwgcctaeljsvxf:DenizMelis160625.@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
 
@@ -95,6 +97,14 @@ def tablo_olustur():
         soru_cozum_sure INTEGER DEFAULT 0
     )
     """)
+    try:
+        cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS dogru INTEGER DEFAULT 0")
+        cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS yanlis INTEGER DEFAULT 0")
+        cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS bos INTEGER DEFAULT 0")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
     cur.execute("""
     CREATE TABLE IF NOT EXISTS konu_ilerleme (
         ad_soyad TEXT, ders TEXT, konu_adi TEXT, 
@@ -582,7 +592,7 @@ HAM_DERS_KONULARI = {
     "🌍 TYT Coğrafya": [
         "Doğa ve İnsan & Harita Bilgisi",
         "Dünyanın Şekli ve Hareketleri",
-        "İklim Bilgisi",
+        "İкlim Bilgisi",
         "İç ve Dış Kuvvetler",
         "Nüfus ve Yerleşme",
         "Ulaşım Yolları ve Göç",
@@ -692,7 +702,7 @@ HAM_DERS_KONULARI = {
         "Türkiye Ekonomisi (Tarım, Maden, Sanayi, Ulaşım)",
         "Türkiye'nin Jeopolitik Konumu",
         "Küresel ve Bölgesel Örgütler",
-        "Çevre Sorunları ve Küresel İklim Değişikliği"
+        "Çevre Sorunları ve Küresel İкlim Değişikliği"
     ]
 }
 
@@ -1168,24 +1178,58 @@ else:
                 konu_listesi_secim = EVRENSEL_DERS_KONULARI.get(secilen_ders, ["Genel Konu Çalışması"])
                 secilen_konu = st.selectbox("Konu Seçin:", konu_listesi_secim, key="gunluk_konu_secim")
 
-                col_gc1, col_gc2, col_gc3 = st.columns(3)
-                with col_gc1: girilen_soru = st.number_input("Çözülen Soru Sayısı:", 0, 500, 20, step=1, key="gunluk_soru_inp")
+                col_nb1, col_nb2, col_nb3 = st.columns(3)
+                with col_nb1: girilen_dogru = st.number_input("Doğru Sayısı:", 0, 500, 15, step=1, key="gunluk_dogru_inp")
+                with col_nb2: girilen_yanlis = st.number_input("Yanlış Sayısı:", 0, 500, 3, step=1, key="gunluk_yanlis_inp")
+                with col_nb3: girilen_bos = st.number_input("Boş Sayısı:", 0, 500, 2, step=1, key="gunluk_bos_inp")
+                
+                otomatik_soru = girilen_dogru + girilen_yanlis + girilen_bos
+                st.info(f"📊 Toplam Çözülen Soru (Doğru + Yanlış + Boş): **{otomatik_soru} Soru**")
+
+                col_gc2, col_gc3 = st.columns(2)
                 with col_gc2: girilen_konu_sure = st.number_input("Konu Anlatımı Süresi (Dakika):", 0, 1440, 45, step=1, key="gunluk_konu_sure_inp")
                 with col_gc3: girilen_cozum_sure = st.number_input("Soru Çözümü Süresi (Dakika):", 0, 1440, 45, step=1, key="gunluk_cozum_sure_inp")
 
-                if st.button("🚀 Çalışmayı Kaydet", type="primary", use_container_width=True, key="gunluk_kaydet_btn"):
+                st.markdown(f"#### 📸 {secilen_ders} — Boş ve Yapılamayan Sorular (Çoklu Fotoğraf / Galeri)")
+                st.caption("Telefonunuzla çekerek veya galeriden birden fazla fotoğraf seçerek yükleyebilirsiniz.")
+                yapilamayan_fotolar = st.file_uploader(
+                    "Boş/Yapılamayan Soru Görselleri (Çoklu Seçim):", 
+                    type=["png", "jpg", "jpeg"], 
+                    accept_multiple_files=True, 
+                    key=f"upl_yapilamayan_{secilen_ders}"
+                )
+
+                if st.button("🚀 Çalışmayı ve Soruları Kaydet", type="primary", use_container_width=True, key="gunluk_kaydet_btn"):
                     conn_g = get_db_connection()
                     cur_g = conn_g.cursor()
                     cur_g.execute("""
-                        INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, int(girilen_soru), int(girilen_konu_sure), int(girilen_cozum_sure)))
+                        INSERT INTO gunluk_calisma (ad_soyad, tarih, ders, konu, soru_sayisi, konu_anlatim_sure, soru_cozum_sure, dogru, yanlis, bos)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, 
+                        int(otomatik_soru), int(girilen_konu_sure), int(girilen_cozum_sure),
+                        int(girilen_dogru), int(girilen_yanlis), int(girilen_bos)
+                    ))
+                    
+                    saved_photo_count = 0
+                    if yapilamayan_fotolar:
+                        for photo in yapilamayan_fotolar:
+                            p_name = photo.name
+                            p_path = os.path.join(COZULEMEYEN_DIR, f"{datetime.date.today()}_{aktif_ogr}_{secilen_ders}_{random.randint(1000,9999)}_{p_name}")
+                            with open(p_path, "wb") as f:
+                                f.write(photo.getbuffer())
+                            cur_g.execute("""
+                                INSERT INTO yapilamayan_sorular (ad_soyad, tarih, ders, konu, dosya_yolu, dosya_adi)
+                                VALUES (%s, %s, %s, %s, %s, %s)
+                            """, (aktif_ogr, str(s_tarih), secilen_ders, secilen_konu, p_path, p_name))
+                            saved_photo_count += 1
+
                     conn_g.commit()
                     conn_g.close()
-                    st.success(f"🎉 Başarıyla kaydedildi! ({secilen_ders} — {secilen_konu})")
+                    st.success(f"🎉 Çalışmanız kaydedildi! ({secilen_ders} — {otomatik_soru} soru, {saved_photo_count} adet boş/yapılamayan soru eklendi)")
                     st.rerun()
 
-                # --- YENİ EKLENEN ÖZELLİK: Yanlış/Hatalı Kaydı Silme ---
+                # Yanlış/Hatalı Kayıt Silme
                 st.markdown("---")
                 st.markdown("#### 🗑️ Son Çalışma Kayıtlarım ve Hatalı Giriş Silme")
                 conn_del_q = get_db_connection()
@@ -1693,11 +1737,11 @@ else:
                     periyot_etiket_v = "Tüm Zamanlar"
 
                 if not df_filtrelenmis_v.empty:
-                    gosterilecek_df_v = df_filtrelenmis_v[["tarih", "ders", "konu", "Soru", "Konu Süre (dk)", "Çözüm Süre (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"})
+                    gosterilecek_df_v = df_filtrelenmis_v[["tarih", "ders", "konu", "Soru", "Konu Süре (dk)", "Çözüm Süре (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"}) if "Konu Süре (dk)" in df_filtrelenmis_v.columns else df_filtrelenmis_v[["tarih", "ders", "konu", "Soru", "Konu Süre (dk)", "Çözüm Süre (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"})
                     
                     toplam_soru_v = gosterilecek_df_v["Soru"].sum()
                     toplam_konu_sure_v = gosterilecek_df_v["Konu Süre (dk)"].sum()
-                    toplam_cozum_sure_v = gosterilecek_df_v["Çözüm Süre (dk)"].sum()
+                    toplam_cozum_sure_v = gosterilecek_df_v["Çözüm Süре (dk)"].sum() if "Çözüm Süре (dk)" in gosterilecek_df_v.columns else gosterilecek_df_v["Çözüm Süre (dk)"].sum()
                     toplam_saat_v = round((toplam_konu_sure_v + toplam_cozum_sure_v) / 60, 1)
 
                     vm1, vm2, vm3 = st.columns(3)
@@ -1735,7 +1779,7 @@ else:
                         use_container_width=True
                     )
                 else:
-                    st.warning(f"⚠️ Seçilen {rapor_periyodu_v.lower()} aralığında kayıt bulunamadı.")
+                    st.warning(f"⚠️ Seçilen {periyot_etiket_v.lower()} aralığında kayıt bulunamadı.")
             else:
                 st.info("ℹ️ Öğrenci henüz günlük çalışma kaydı girmemiş.")
 
