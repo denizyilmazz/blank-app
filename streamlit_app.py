@@ -158,6 +158,17 @@ def tablo_olustur():
         id SERIAL PRIMARY KEY, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT
     )
     """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS uyku_takibi (
+        ad_soyad TEXT,
+        tarih TEXT,
+        uyku_suresi FLOAT,
+        uyku_kalitesi TEXT,
+        notlar TEXT,
+        PRIMARY KEY (ad_soyad, tarih)
+    )
+    """)
     
     conn.commit()
     conn.close()
@@ -538,7 +549,7 @@ HAM_DERS_KONULARI = {
         "Köklü İfadeler",
         "Çarpanlara Ayırma",
         "Oran - Orantı",
-        "Denкlem Çözme",
+        "Denklem Çözme",
         "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)",
         "Kümeler ve Kartezyen Çarpım",
         "Mantık",
@@ -710,7 +721,7 @@ HAM_DERS_KONULARI = {
         "Türkiye Ekonomisi (Tarım, Maden, Sanayi, Ulaşım)",
         "Türkiye'nin Jeopolitik Konumu",
         "Küresel ve Bölgesel Örgütler",
-        "Çevre Sorunları ve Küresel İкlim Değişikliği"
+        "Çevre Sorunları ve Küresel İklim Değişikliği"
     ]
 }
 
@@ -944,13 +955,14 @@ else:
                         del st.query_params["hatirla_ogr"]
                     st.rerun()
 
-            tab_hedef, tab_program, tab_ilerleme, tab_gunluk, tab_deneme, tab_konular = st.tabs([
+            tab_hedef, tab_program, tab_ilerleme, tab_gunluk, tab_deneme, tab_konular, tab_uyku = st.tabs([
                 "🎯 YÖK ATLAS & ÖSYM",
                 "📅 DERS PROGRAMI",
                 "✅ İLERLEME TAKİBİ",
                 "📝 GÜNLÜK ÇALIŞMA",
                 "📊 DENEME YÜKLEME",
-                "🗺️ KONU HAKİMİYETİ"
+                "🗺️ KONU HAKİMİYETİ",
+                "😴 UYKU TAKİBİ"
             ])
 
             with tab_hedef:
@@ -1325,6 +1337,43 @@ else:
                     for kn in k_list[:2]:
                         st.select_slider(kn, options=[1, 2, 3, 4, 5], value=3, key=f"kp_{aktif_ogr}_{kn}")
 
+            with tab_uyku:
+                st.markdown(f"### 😴 Günlük Uyku Takibi — {aktif_ogr}")
+                with st.form("uyku_kayit_formu"):
+                    u_tarih = st.date_input("Uyandığın Tarih:", datetime.date.today(), key="uyku_tarih_inp")
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        uyku_saati = st.number_input("Uyku Süresi (Saat):", 0.0, 16.0, 7.5, step=0.5)
+                    with c2:
+                        kalite = st.selectbox("Uyku Kalitesi:", ["Dinç / Süper ⚡", "Normal 👍", "Yorgun 🥱", "Kötü 👎"])
+                    
+                    u_not = st.text_input("Not (Örn: Geç yattım, deneme öncesi heyecan vb.):")
+                    
+                    if st.form_submit_button("🛌 Uyku Verisini Kaydet", type="primary", use_container_width=True):
+                        conn_u = get_db_connection()
+                        cur_u = conn_u.cursor()
+                        cur_u.execute("""
+                            INSERT INTO uyku_takibi (ad_soyad, tarih, uyku_suresi, uyku_kalitesi, notlar)
+                            VALUES (%s, %s, %s, %s, %s)
+                            ON CONFLICT (ad_soyad, tarih) DO UPDATE SET 
+                                uyku_suresi = EXCLUDED.uyku_suresi,
+                                uyku_kalitesi = EXCLUDED.uyku_kalitesi,
+                                notlar = EXCLUDED.notlar
+                        """, (aktif_ogr, str(u_tarih), float(uyku_saati), kalite, u_not))
+                        conn_u.commit()
+                        conn_u.close()
+                        st.success("🎉 Uyku süren kaydedildi!")
+                        st.rerun()
+
+                conn_uh = get_db_connection()
+                df_uyku_list = pd.read_sql_query('SELECT tarih AS "Tarih", uyku_suresi AS "Uyku (Saat)", uyku_kalitesi AS "Kalite", notlar AS "Not" FROM uyku_takibi WHERE ad_soyad = %s ORDER BY tarih DESC LIMIT 7', conn_uh.conn, params=(aktif_ogr,))
+                conn_uh.close()
+
+                if not df_uyku_list.empty:
+                    ort_uyku = round(df_uyku_list["Uyku (Saat)"].mean(), 1)
+                    st.markdown(f"📊 **Son 7 Günlük Ortalama Uyku Süren:** `{ort_uyku} Saat`")
+                    st.dataframe(df_uyku_list, use_container_width=True, hide_index=True)
+
     with main_tab2:
         st.markdown("## 👨‍🏫 Koç Yönetim Paneli")
         if "aktif_koc" not in st.session_state: st.session_state["aktif_koc"] = None
@@ -1403,6 +1452,18 @@ else:
                     st.dataframe(df_koc_ilerleme, use_container_width=True)
                 else:
                     st.info("ℹ️ Öğrenci henüz ilerleme tablosunda işaretleme yapmamış.")
+
+                st.markdown(f"### 😴 {secilen_ogr} — Uyku & Dinlenme Analizi")
+                conn_ku = get_db_connection()
+                df_koc_uyku = pd.read_sql_query('SELECT tarih AS "Tarih", uyku_suresi AS "Uyku (Saat)", uyku_kalitesi AS "Kalite", notlar AS "Not" FROM uyku_takibi WHERE ad_soyad = %s ORDER BY tarih DESC LIMIT 14', conn_ku.conn, params=(secilen_ogr,))
+                conn_ku.close()
+
+                if not df_koc_uyku.empty:
+                    koc_ort_uyku = round(df_koc_uyku["Uyku (Saat)"].mean(), 1)
+                    st.info(f"💡 Öğrencinin son 14 günlük ortalama uyku süresi: **{koc_ort_uyku} saat**. (YKS/LGS için önerilen: 7-8 saat)")
+                    st.dataframe(df_koc_uyku, use_container_width=True, hide_index=True)
+                else:
+                    st.info("ℹ️ Öğrenci henüz uyku kaydı girmemiş.")
 
                 st.markdown(f"### 📝 {secilen_ogr} — Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
                 
