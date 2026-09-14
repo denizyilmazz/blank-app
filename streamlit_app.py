@@ -112,14 +112,6 @@ def tablo_olustur():
         PRIMARY KEY (ad_soyad, ders, konu_adi)
     )
     """)
-    try:
-        cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS dogru INTEGER DEFAULT 0")
-        cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS yanlis INTEGER DEFAULT 0")
-        cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS bos INTEGER DEFAULT 0")
-        conn.commit()
-    except Exception:
-        conn.rollback()
-
     cur.execute("""
     CREATE TABLE IF NOT EXISTS yapilamayan_sorular (
         id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, dosya_yolu TEXT, dosya_adi TEXT
@@ -538,7 +530,7 @@ HAM_DERS_KONULARI = {
         "Köklü İfadeler",
         "Çarpanlara Ayırma",
         "Oran - Orantı",
-        "Denкlem Çözme",
+        "Denklem Çözme",
         "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)",
         "Kümeler ve Kartezyen Çarpım",
         "Mantık",
@@ -600,7 +592,7 @@ HAM_DERS_KONULARI = {
     "🌍 TYT Coğrafya": [
         "Doğa ve İnsan & Harita Bilgisi",
         "Dünyanın Şekli ve Hareketleri",
-        "İklim Bilgisi",
+        "İкlim Bilgisi",
         "İç ve Dış Kuvvetler",
         "Nüfus ve Yerleşme",
         "Ulaşım Yolları ve Göç",
@@ -1126,7 +1118,7 @@ else:
                         st.info(f"ℹ️ Sevgili {aktif_ogr}, koçun henüz bu hafta için program kaydetmedi.")
 
             with tab_ilerleme:
-                st.markdown(f"### ✅ Konu İlerleme, Soru/Net Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
+                st.markdown(f"### ✅ Konu İlerleme, Soru Takibi & ÖSYM Soru Dağılımı — {aktif_ogr}")
                 secilen_takip_ders = st.selectbox("İlerlemesini Görmek / Düzenlemek İstediğiniz Dersi Seçin:", list(HAM_DERS_KONULARI.keys()), key="takip_ders_secim")
                 konu_listesi_ogrenci = HAM_DERS_KONULARI[secilen_takip_ders]
 
@@ -1134,20 +1126,10 @@ else:
                 cur_t = conn_t.cursor()
                 takip_verileri = []
                 for konu in konu_listesi_ogrenci:
-                    try:
-                        cur_t.execute("SELECT tamamlandi, soru_miktari, dogru, yanlis, bos FROM konu_ilerleme WHERE ad_soyad = %s AND ders = %s AND konu_adi = %s", (aktif_ogr, secilen_takip_ders, konu))
-                        res = cur_t.fetchone()
-                    except Exception:
-                        conn_t.rollback()
-                        cur_t.execute("SELECT tamamlandi, soru_miktari FROM konu_ilerleme WHERE ad_soyad = %s AND ders = %s AND konu_adi = %s", (aktif_ogr, secilen_takip_ders, konu))
-                        res_old = cur_t.fetchone()
-                        res = (res_old[0], res_old[1], 0, 0, 0) if res_old else None
-
+                    cur_t.execute("SELECT tamamlandi, soru_miktari FROM konu_ilerleme WHERE ad_soyad = %s AND ders = %s AND konu_adi = %s", (aktif_ogr, secilen_takip_ders, konu))
+                    res = cur_t.fetchone()
                     t_val = bool(res[0]) if res else False
-                    d_val = int(res[2]) if (res and len(res) > 2 and res[2] is not None) else 0
-                    y_val = int(res[3]) if (res and len(res) > 3 and res[3] is not None) else 0
-                    b_val = int(res[4]) if (res and len(res) > 4 and res[4] is not None) else 0
-                    s_val = int(res[1]) if (res and res[1] is not None) else (d_val + y_val + b_val)
+                    s_val = int(res[1]) if res else 0
                     
                     osym_bilgi = OSYM_SORU_DAGILIMLARI.get(konu, "ÖSYM Ort. 1-2 Soru")
                     
@@ -1155,10 +1137,7 @@ else:
                         "Konu Adı": konu,
                         "ÖSYM Çıkmış Soru Dağılımı": osym_bilgi,
                         "Tamamlandı ✅": t_val,
-                        "Doğru": d_val,
-                        "Yanlış": y_val,
-                        "Boş": b_val,
-                        "Toplam Çözülen": d_val + y_val + b_val
+                        "Çözülen Soru Miktarı": s_val
                     })
                 conn_t.close()
 
@@ -1170,32 +1149,23 @@ else:
                         use_container_width=True,
                         hide_index=True,
                         num_rows="fixed",
-                        disabled=["Konu Adı", "ÖSYM Çıkmış Soru Dağılımı", "Toplam Çözülen"],
                         key=f"editor_takip_{secilen_takip_ders}"
                     )
-                    if st.form_submit_button("💾 İlerlemeyi ve Doğru/Yanlış/Boş Dağılımını Kaydet", type="primary", use_container_width=True):
+                    if st.form_submit_button("💾 İlerlemeyi Kaydet", type="primary", use_container_width=True):
                         conn_sv = get_db_connection()
                         cur_sv = conn_sv.cursor()
                         for _, row in edited_takip.iterrows():
                             k_adi = row["Konu Adı"]
                             tamam = 1 if row["Tamamlandı ✅"] else 0
-                            d_val = int(row["Doğru"]) if pd.notna(row["Doğru"]) else 0
-                            y_val = int(row["Yanlış"]) if pd.notna(row["Yanlış"]) else 0
-                            b_val = int(row["Boş"]) if pd.notna(row["Boş"]) else 0
-                            s_val = d_val + y_val + b_val
+                            soru_m = int(row["Çözülen Soru Miktarı"]) if pd.notna(row["Çözülen Soru Miktarı"]) else 0
                             cur_sv.execute("""
-                                INSERT INTO konu_ilerleme (ad_soyad, ders, konu_adi, tamamlandi, soru_miktari, dogru, yanlis, bos)
-                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                                ON CONFLICT(ad_soyad, ders, konu_adi) DO UPDATE SET 
-                                    tamamlandi = EXCLUDED.tamamlandi, 
-                                    soru_miktari = EXCLUDED.soru_miktari,
-                                    dogru = EXCLUDED.dogru,
-                                    yanlis = EXCLUDED.yanlis,
-                                    bos = EXCLUDED.bos
-                            """, (aktif_ogr, secilen_takip_ders, k_adi, tamam, s_val, d_val, y_val, b_val))
+                                INSERT INTO konu_ilerleme (ad_soyad, ders, konu_adi, tamamlandi, soru_miktari)
+                                VALUES (%s, %s, %s, %s, %s)
+                                ON CONFLICT(ad_soyad, ders, konu_adi) DO UPDATE SET tamamlandi = EXCLUDED.tamamlandi, soru_miktari = EXCLUDED.soru_miktari
+                            """, (aktif_ogr, secilen_takip_ders, k_adi, tamam, soru_m))
                         conn_sv.commit()
                         conn_sv.close()
-                        st.success("🎉 İlerlemeniz ve doğru/yanlış/boş dağılımınız kaydedildi!")
+                        st.success("🎉 İlerlemeniz başarıyla kaydedildi!")
                         st.rerun()
 
             with tab_gunluk:
@@ -1259,6 +1229,7 @@ else:
                     st.success(f"🎉 Çalışmanız kaydedildi! ({secilen_ders} — {otomatik_soru} soru, {saved_photo_count} adet boş/yapılamayan soru eklendi)")
                     st.rerun()
 
+                # Yanlış/Hatalı Kayıt Silme
                 st.markdown("---")
                 st.markdown("#### 🗑️ Son Çalışma Kayıtlarım ve Hatalı Giriş Silme")
                 conn_del_q = get_db_connection()
@@ -1390,13 +1361,9 @@ else:
             if ogrs:
                 secilen_ogr = st.selectbox("Yönetilecek Öğrenci:", ogrs)
                 
-                st.markdown(f"### 📈 {secilen_ogr} — Öğrenci İlerleme, Soru/Net Dağılımı ve Çalışma Takibi")
+                st.markdown(f"### 📈 {secilen_ogr} — Öğrenci İlerleme ve Çalışma Takibi")
                 conn_ki = get_db_connection()
-                try:
-                    df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", dogru AS "Doğru", yanlis AS "Yanlış", bos AS "Boş", soru_miktari AS "Toplam Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
-                except Exception:
-                    conn_ki.rollback()
-                    df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
+                df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
                 conn_ki.close()
 
                 if not df_koc_ilerleme.empty:
@@ -1409,7 +1376,7 @@ else:
                 rapor_periyodu = st.radio("Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="koc_rapor_periyot_unique")
 
                 conn_kc = get_db_connection()
-                df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, dogru, yanlis, bos, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süре (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
+                df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
                 conn_kc.close()
 
                 if not df_koc_calisma.empty:
@@ -1433,12 +1400,11 @@ else:
                         periyot_etiket = "Tüm Zamanlar"
 
                     if not df_filtrelenmis.empty:
-                        cols_to_show = [c for c in ["tarih", "ders", "konu", "dogru", "yanlis", "bos", "Soru", "Konu Süре (dk)", "Çözüm Süre (dk)"] if c in df_filtrelenmis.columns]
-                        gosterilecek_df = df_filtrelenmis[cols_to_show].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu", "dogru": "Doğru", "yanlis": "Yanlış", "bos": "Boş"})
+                        gosterilecek_df = df_filtrelenmis[["tarih", "ders", "konu", "Soru", "Konu Süre (dk)", "Çözüm Süre (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"})
                         
                         toplam_soru = gosterilecek_df["Soru"].sum()
-                        toplam_konu_sure = gosterilecek_df["Konu Süре (dk)"].sum() if "Konu Süре (dk)" in gosterilecek_df.columns else 0
-                        toplam_cozum_sure = gosterilecek_df["Çözüm Süre (dk)"].sum() if "Çözüm Süre (dk)" in gosterilecek_df.columns else 0
+                        toplam_konu_sure = gosterilecek_df["Konu Süre (dk)"].sum()
+                        toplam_cozum_sure = gosterilecek_df["Çözüm Süre (dk)"].sum()
                         toplam_saat = round((toplam_konu_sure + toplam_cozum_sure) / 60, 1)
 
                         cm1, cm2, cm3 = st.columns(3)
@@ -1735,11 +1701,7 @@ else:
 
             st.markdown(f"### ✅ Konu İlerleme Durumu")
             conn_vi = get_db_connection()
-            try:
-                df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", dogru AS "Doğru", yanlis AS "Yanlış", bos AS "Boş", soru_miktari AS "Toplam Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
-            except Exception:
-                conn_vi.rollback()
-                df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
+            df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
             conn_vi.close()
 
             if not df_v_ilerleme.empty:
@@ -1751,7 +1713,7 @@ else:
             rapor_periyodu_v = st.radio("Veli Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="veli_rapor_periyot_unique")
 
             conn_vc = get_db_connection()
-            df_v_calisma = pd.read_sql_query('SELECT tarih, ders, konu, dogru, yanlis, bos, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süре (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_vc.conn, params=(v_ad,))
+            df_v_calisma = pd.read_sql_query('SELECT tarih, ders, konu, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süre (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_vc.conn, params=(v_ad,))
             conn_vc.close()
 
             if not df_v_calisma.empty:
@@ -1775,12 +1737,11 @@ else:
                     periyot_etiket_v = "Tüm Zamanlar"
 
                 if not df_filtrelenmis_v.empty:
-                    cols_v = [c for c in ["tarih", "ders", "konu", "dogru", "yanlis", "bos", "Soru", "Konu Süре (dk)", "Çözüm Süre (dk)"] if c in df_filtrelenmis_v.columns]
-                    gosterilecek_df_v = df_filtrelenmis_v[cols_v].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu", "dogru": "Doğru", "yanlis": "Yanlış", "bos": "Boş"})
+                    gosterilecek_df_v = df_filtrelenmis_v[["tarih", "ders", "konu", "Soru", "Konu Süре (dk)", "Çözüm Süре (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"}) if "Konu Süре (dk)" in df_filtrelenmis_v.columns else df_filtrelenmis_v[["tarih", "ders", "konu", "Soru", "Konu Süre (dk)", "Çözüm Süre (dk)"]].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu"})
                     
                     toplam_soru_v = gosterilecek_df_v["Soru"].sum()
-                    toplam_konu_sure_v = gosterilecek_df_v["Konu Süре (dk)"].sum() if "Konu Süре (dk)" in gosterilecek_df_v.columns else 0
-                    toplam_cozum_sure_v = gosterilecek_df_v["Çözüm Süre (dk)"].sum() if "Çözüm Süre (dk)" in gosterilecek_df_v.columns else 0
+                    toplam_konu_sure_v = gosterilecek_df_v["Konu Süre (dk)"].sum()
+                    toplam_cozum_sure_v = gosterilecek_df_v["Çözüm Süре (dk)"].sum() if "Çözüm Süре (dk)" in gosterilecek_df_v.columns else gosterilecek_df_v["Çözüm Süre (dk)"].sum()
                     toplam_saat_v = round((toplam_konu_sure_v + toplam_cozum_sure_v) / 60, 1)
 
                     vm1, vm2, vm3 = st.columns(3)
