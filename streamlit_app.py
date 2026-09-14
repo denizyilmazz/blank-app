@@ -456,7 +456,7 @@ HAM_DERS_KONULARI = {
     "📊 Branş Denemeleri": ["Matematik Branş Denemesi", "Fen Branş Denemesi", "Sosyal Branş Denemesi", "Türkçe Branş Denemesi", "Geometri Branş Denemesi"],
     "👨‍🏫 Özel Ders": ["Özel Ders - Birebir Konu Anlatımı", "Özel Ders - Soru Çözüm Kampı", "Özel Ders - Ödev Kontrolü & Tekrar"],
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Bağlaç)", "Fiiller, Ek Fiil ve Fiilimsi", "Cümlenin Ögeleri", "Cümle Çeşitleri", "Anlatım Bozuklukları"],
-    "📐 TYT Matematik": ["Temel Kavramlar ve Sayı Kümeleri", "Sayı Basamakları", "Bölme ve Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)", "Kümeler ve Kartezyen Çarpım", "Mantık", "Fonksiyonlar", "Polinomlar", "Veri, Sayma ve Olasılık"],
+    "📐 TYT Matematik": ["Temel Kavramlar ve Sayı Kümeleri", "Sayı Basamakları", "Bölme ve Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Denкlem Çözme", "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)", "Kümeler ve Kartezyen Çarpım", "Mantık", "Fonksiyonlar", "Polinomlar", "Veri, Sayma ve Olasılık"],
     "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler (Dik, İkizkenar, Eşkenar)", "Üçgende Açıortay, Kenarortay ve Benzerlik", "Üçgende Alan ve Açı-Kenar Bağıntıları", "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Paralelkenar, Eşkenar Dörtgen, Dikdörtgen, Kare, Yamuk)", "Çember ve Daire", "Katı Cisimler (Prizma, Piramit, Silindir, Koni, Küre)", "Analitik Geometri (Nokta ve Doğru Analitiği)"],
     "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet (Newton Yasaları)", "İş, Güç ve Enerji", "Elektrostatik ve Elektrik Akımı", "Manyetizma", "Dalgalar", "Optik"],
     "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Kimyanın Temel Kanunları ve Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar", "Kimya Her Yerde"],
@@ -522,7 +522,7 @@ def akilli_taslak_olustur_matris(alan="SAY (Sayısal)"):
     if "SAY" in alan:
         ders_havuzu = ["📐 TYT Matematik\n↳ Fonksiyonlar — Konu Çalışması", "⚡ TYT Fizik\n↳ Hareket ve Kuvvet — Soru Çözümü", "🧪 TYT Kimya\n↳ Atom ve Periyodik Sistem", "🧬 TYT Biyoloji\n↳ Hücre ve Organelleri"]
     else:
-        ders_havuzu = ["📖 TYT Türkçe\n↳ Paragrafta Anlam ve Yapı", "📜 TYT Tarih\n↳ İlk Çağ Medeniyetleri", "🌍 TYT Coğrafya\n↳ İкlim Bilgisi", "EA (Eşit Ağırlık)\n↳ Hukuk / Matematik Tekrar"]
+        ders_havuzu = ["📖 TYT Türkçe\n↳ Paragrafta Anlam ve Yapı", "📜 TYT Tarih\n↳ İlk Çağ Medeniyetleri", "🌍 TYT Coğrafya\n↳ İklim Bilgisi", "EA (Eşit Ağırlık)\n↳ Hukuk / Matematik Tekrar"]
 
     for s in saatler:
         row = {"Saat Aralığı": s}
@@ -832,15 +832,31 @@ else:
                         st.success("Silindi!"); st.rerun()
 
             with tab_deneme:
-                st.markdown(f"### 📊 Deneme Yükleme — {aktif_ogr}")
-                with st.form("deneme_form"):
-                    dyay = st.text_input("Yayın:")
-                    dnet = st.number_input("Net:", 0.0, 120.0, 75.0)
-                    if st.form_submit_button("Gönder", type="primary"):
+                st.markdown(f"### 📊 Deneme Sınavı Sonuç Belgesi Yükleme — {aktif_ogr}")
+                with st.form("deneme_yukleme_formu"):
+                    dyayin = st.text_input("Deneme Yayın Adı:")
+                    dnet = st.number_input("Toplam Net:", 0.0, 120.0, 75.0)
+                    yuklenen_karne = st.file_uploader("Deneme Sonuç Belgesi (JPG, PNG, PDF):", type=["png", "jpg", "jpeg", "pdf"])
+                    
+                    if st.form_submit_button("📤 Denemeyi ve Karnemi Koçuma Gönder", type="primary", use_container_width=True) and dyayin:
+                        dosya_yolu_db = ""
+                        dosya_adi_db = ""
+                        if yuklenen_karne is not None:
+                            dosya_adi_db = yuklenen_karne.name
+                            dosya_yolu_db = os.path.join(KARNE_DIR, f"{datetime.date.today()}_{aktif_ogr}_{dosya_adi_db}")
+                            with open(dosya_yolu_db, "wb") as f:
+                                f.write(yuklenen_karne.getbuffer())
+
                         conn_dn = get_db_connection()
-                        conn_dn.cursor().execute("INSERT INTO denemeler (ad_soyad, tarih, yayin, toplam_net, koc_notu) VALUES (%s,%s,%s,%s,%s)", (aktif_ogr, str(datetime.date.today()), dyay, float(dnet), "Bekliyor"))
-                        conn_dn.commit(); conn_dn.close()
-                        st.success("Gönderildi!"); st.rerun()
+                        cur_dn = conn_dn.cursor()
+                        cur_dn.execute("""
+                            INSERT INTO denemeler (ad_soyad, tarih, yayin, tur, toplam_net, dosya_yolu, dosya_adi, koc_notu)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        """, (aktif_ogr, str(datetime.date.today()), dyayin, "Genel Deneme", float(dnet), dosya_yolu_db, dosya_adi_db, "Koç değerlendirmesi bekleniyor."))
+                        conn_dn.commit()
+                        conn_dn.close()
+                        st.success("🎉 Deneme sonucu ve karne belgeniz koçunuza gönderildi!")
+                        st.rerun()
 
             with tab_konular:
                 st.markdown(f"### 🗺️ Konu Hakimiyeti — {aktif_ogr}")
@@ -887,6 +903,33 @@ else:
                 bugun_koc = datetime.date.today()
                 koc_hafta_secim = st.date_input("Hafta (Pazartesi):", value=bugun_koc - datetime.timedelta(days=bugun_koc.weekday()))
                 koc_hafta_str = str(koc_hafta_secim)
+
+                # Şablon / Geçmiş Hafta Kopyalama
+                with st.expander("🔄 Geçmiş Haftadan Program Kopyala (Şablon Kullan)", expanded=False):
+                    conn_havuz = get_db_connection()
+                    cur_hav = conn_havuz.cursor()
+                    cur_hav.execute("SELECT DISTINCT hafta_baslangici FROM excel_program_matris WHERE ad_soyad = %s ORDER BY hafta_baslangici DESC", (secilen_ogr,))
+                    mevcut_haftalar = [r[0] for r in cur_hav.fetchall()]
+                    conn_havuz.close()
+                    if mevcut_haftalar:
+                        kopyalanacak_hafta = st.selectbox("Hangi Haftanın Programı Kopyalansın?", mevcut_haftalar, key="kopya_kaynak_hafta")
+                        if st.button("Seçilen Haftayı Aktif Haftaya Kopyala", key="hafta_kopyala_islem"):
+                            if kopyalanacak_hafta != koc_hafta_str:
+                                conn_cp = get_db_connection()
+                                cur_cp = conn_cp.cursor()
+                                cur_cp.execute("SELECT saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s", (secilen_ogr, kopyalanacak_hafta))
+                                kaynak_satirlar = cur_cp.fetchall()
+                                for row in kaynak_satirlar:
+                                    s_ar, pz, sl, cr, pr, cm, cmt, pzr = row
+                                    cur_cp.execute("""
+                                        INSERT INTO excel_program_matris (ad_soyad, hafta_baslangici, saat_araligi, pazartesi, sali, carsamba, persembe, cuma, cumartesi, pazar)
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        ON CONFLICT (ad_soyad, hafta_baslangici, saat_araligi) DO UPDATE SET
+                                        pazartesi = EXCLUDED.pazartesi, sali = EXCLUDED.sali, carsamba = EXCLUDED.carsamba, 
+                                        persembe = EXCLUDED.persembe, cuma = EXCLUDED.cuma, cumartesi = EXCLUDED.cumartesi, pazar = EXCLUDED.pazar
+                                    """, (secilen_ogr, koc_hafta_str, s_ar, pz, sl, cr, pr, cm, cmt, pzr))
+                                conn_cp.commit(); conn_cp.close()
+                                st.success(f"🎉 Program kopyalandı!"); st.rerun()
 
                 mod_secim = st.radio("Çalışma Modu:", ["📊 Excel Matris Editör", "⚡ AI Akıllı Taslak Üretici", "🔄 Hızlı Blok Swap / Taşıma"], horizontal=True)
                 
@@ -943,6 +986,16 @@ else:
                     conn_sv2.commit(); conn_sv2.close()
                     st.success("🎉 Kaydedildi!"); st.rerun()
 
+                st.markdown(f"### 📈 {secilen_ogr} — Öğrenci İlerleme, Soru/Net Dağılımı ve Çalışma Takibi")
+                conn_ki = get_db_connection()
+                try:
+                    df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", dogru AS "Doğru", yanlis AS "Yanlış", bos AS "Boş", soru_miktari AS "Toplam Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
+                except Exception:
+                    conn_ki.rollback()
+                    df_koc_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_ki.conn, params=(secilen_ogr,))
+                conn_ki.close()
+                if not df_koc_ilerleme.empty: st.dataframe(df_koc_ilerleme, use_container_width=True)
+
                 st.markdown(f"### 😴 {secilen_ogr} — Uyku Analizi")
                 conn_ku = get_db_connection()
                 df_koc_uyku = pd.read_sql_query('SELECT tarih AS "Tarih", uyku_suresi AS "Saat", uyku_kalitesi AS "Kalite" FROM uyku_takibi WHERE ad_soyad = %s ORDER BY tarih DESC LIMIT 14', conn_ku.conn, params=(secilen_ogr,))
@@ -951,13 +1004,142 @@ else:
                     st.info(f"💡 Ortalama uyku: {round(df_koc_uyku['Saat'].mean(), 1)} saat")
                     st.dataframe(df_koc_uyku, use_container_width=True, hide_index=True)
 
+                st.markdown(f"### 📝 {secilen_ogr} — Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
+                rapor_periyodu = st.radio("Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="koc_rapor_periyot_unique")
+                conn_kc = get_db_connection()
+                df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, dogru, yanlis, bos, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süре (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
+                conn_kc.close()
+                if not df_koc_calisma.empty:
+                    df_koc_calisma["tarih_dt"] = pd.to_datetime(df_koc_calisma["tarih"], errors="coerce")
+                    bugun = pd.Timestamp(datetime.date.today())
+                    if rapor_periyodu == "Günlük (Tarih Bazlı)":
+                        secilen_gun = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="koc_gun_secim_unique")
+                        df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"].dt.date == secilen_gun].copy()
+                        periyot_etiket = f"{secilen_gun} Tarihli Günlük"
+                    elif rapor_periyodu == "Haftalık":
+                        df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"] >= (bugun - pd.Timedelta(days=7))].copy()
+                        periyot_etiket = "Son 7 Günlük Haftalık"
+                    elif rapor_periyodu == "Aylık":
+                        df_filtrelenmis = df_koc_calisma[df_koc_calisma["tarih_dt"] >= (bugun - pd.Timedelta(days=30))].copy()
+                        periyot_etiket = "Son 30 Günlük Aylık"
+                    else:
+                        df_filtrelenmis = df_koc_calisma.copy()
+                        periyot_etiket = "Tüm Zamanlar"
+                    if not df_filtrelenmis.empty:
+                        cols_to_show = [c for c in ["tarih", "ders", "konu", "dogru", "yanlis", "bos", "Soru", "Konu Süре (dk)", "Çözüm Süre (dk)"] if c in df_filtrelenmis.columns]
+                        gosterilecek_df = df_filtrelenmis[cols_to_show].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu", "dogru": "Doğru", "yanlis": "Yanlış", "bos": "Boş"})
+                        st.dataframe(gosterilecek_df, use_container_width=True, hide_index=True)
+                        rapor_bytes = calisma_raporu_html(gosterilecek_df, secilen_ogr, periyot_etiket)
+                        st.download_button(label=f"📥 Bu {periyot_etiket} Raporu PDF / HTML İndir", data=rapor_bytes, file_name=f"{secilen_ogr}_rapor.html", mime="text/html", use_container_width=True)
+
+                st.markdown(f"### 📊 {secilen_ogr} — Deneme Sınavları ve Koç Notları")
+                conn_kdc = get_db_connection()
+                df_koc_deneme = pd.read_sql_query('SELECT id, tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", dosya_yolu, dosya_adi, koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_kdc.conn, params=(secilen_ogr,))
+                conn_kdc.close()
+                if not df_koc_deneme.empty:
+                    for _, kd in df_koc_deneme.iterrows():
+                        st.markdown(f"**{kd['Tarih']}** | {kd['Yayın']} — **Net: {kd['Toplam Net']}**")
+                        if kd['dosya_yolu'] and os.path.exists(kd['dosya_yolu']):
+                            if kd['dosya_yolu'].lower().endswith(('png', 'jpg', 'jpeg')): st.image(kd['dosya_yolu'], width=300)
+                            elif kd['dosya_yolu'].lower().endswith('.pdf'): st.markdown(pdf_goster_html(kd['dosya_yolu']), unsafe_allow_html=True)
+                        with st.form(f"koc_not_form_{kd['id']}"):
+                            yeni_koc_notu = st.text_input("Koç Değerlendirme Notu:", value=kd['Koç Notu'] if kd['Koç Notu'] else "", key=f"koc_not_inp_{kd['id']}")
+                            if st.form_submit_button("Notu Güncelle"):
+                                conn_kn = get_db_connection()
+                                conn_kn.cursor().execute("UPDATE denemeler SET koc_notu = %s WHERE id = %s", (yeni_koc_notu, kd['id']))
+                                conn_kn.commit(); conn_kn.close()
+                                st.success("Not güncellendi!"); st.rerun()
+
     with main_tab3:
         st.markdown("## 👨‍👩‍👧‍👦 Veli Takip Ekranı")
-        with st.form("v_f"):
-            vad = st.text_input("Öğrenci Adı:").strip().title()
-            vpin = st.text_input("Veli PIN:", type="password")
-            if st.form_submit_button("Giriş Yap", type="primary"):
-                st.session_state[f"v_{vad}"] = True; st.rerun()
-        for k in [k for k in st.session_state if k.startswith("v_") and st.session_state[k]]:
-            vad = k.replace("v_", "")
-            st.success(f"Veli Paneli: {vad}")
+        with st.form("veli_giris_formu"):
+            v_ad = st.text_input("Öğrenci Adı ve Soyadı:").strip().title()
+            v_sifre = st.text_input("Öğrencinin Verdiği Veli Şifresi (PIN):", type="password")
+            veli_giris_buton = st.form_submit_button("Veli Paneline Giriş Yap", type="primary", use_container_width=True)
+
+        if veli_giris_buton:
+            if v_ad and v_sifre:
+                conn_v = get_db_connection()
+                cur_v = conn_v.cursor()
+                cur_v.execute("SELECT veli_pin, onaylandi FROM ogrenciler WHERE ad_soyad = %s", (v_ad,))
+                ogr_kayit = cur_v.fetchone()
+                conn_v.close()
+
+                if ogr_kayit and v_sifre == (ogr_kayit[0] if ogr_kayit[0] else "123456"):
+                    if ogr_kayit[1] == 1:
+                        st.session_state[f"veli_dogrulanmis_{v_ad}"] = True
+                        st.success(f"🔓 Giriş Başarılı! **{v_ad}** adlı öğrencinin paneli açılıyor...")
+                        st.rerun()
+                    else: st.warning("⏳ Bu öğrencinin hesabı henüz koç tarafından onaylanmamıştır.")
+                else: st.error("❌ Hatalı Veli Şifresi veya Öğrenci Adı!")
+
+        giris_yapilan_ogrenciler = [k.replace("veli_dogrulanmis_", "") for k, v in st.session_state.items() if k.startswith("veli_dogrulanmis_") and v == True]
+        
+        for v_ad in giris_yapilan_ogrenciler:
+            st.markdown("---")
+            c_vhead1, c_vhead2 = st.columns([0.8, 0.2])
+            with c_vhead1: st.success(f"👨‍👩‍👧‍👦 Görüntülenen Öğrenci: **{v_ad}**")
+            with c_vhead2:
+                if st.button("🔒 Oturumu Kapat", key=f"veli_cikis_{v_ad}"):
+                    st.session_state[f"veli_dogrulanmis_{v_ad}"] = False
+                    st.rerun()
+
+            conn_vh = get_db_connection()
+            cur_vh = conn_vh.cursor()
+            cur_vh.execute("SELECT hedef_uni, hedef_bolum, hedef_net FROM ogrenciler WHERE ad_soyad = %s", (v_ad,))
+            h_bilgi = cur_vh.fetchone()
+            conn_vh.close()
+
+            if h_bilgi: st.markdown(f"🎯 **Hedef Üniversite / Bölüm:** {h_bilgi[0]} — {h_bilgi[1]} (Hedef Net: {h_bilgi[2]})")
+
+            st.markdown(f"### 📅 {v_ad.upper()} — Haftalık Ders Programı")
+            bugun_v_tarih = datetime.date.today()
+            veli_hafta_str = str(bugun_v_tarih - datetime.timedelta(days=bugun_v_tarih.weekday()))
+            conn_vp = get_db_connection()
+            df_veli_p = pd.read_sql_query('SELECT saat_araligi AS "Saat", pazartesi AS "Pazartesi", sali AS "Salı", carsamba AS "Çarşamba", persembe AS "Perşembe", cuma AS "Cuma", cumartesi AS "Cumartesi", pazar AS "Pazar" FROM excel_program_matris WHERE ad_soyad = %s AND hafta_baslangici = %s ORDER BY saat_araligi ASC', conn_vp.conn, params=(v_ad, veli_hafta_str))
+            conn_vp.close()
+            if not df_veli_p.empty: st.dataframe(df_veli_p, use_container_width=True, height=350)
+            else: st.info(f"ℹ️ Koç henüz bu hafta için program kaydetmemiş.")
+
+            st.markdown(f"### ✅ Konu İlerleme Durumu")
+            conn_vi = get_db_connection()
+            try: df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", dogru AS "Doğru", yanlis AS "Yanlış", bos AS "Boş", soru_miktari AS "Toplam Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
+            except Exception:
+                conn_vi.rollback()
+                df_v_ilerleme = pd.read_sql_query('SELECT ders AS "Ders", konu_adi AS "Konu", CASE WHEN tamamlandi=1 THEN \'✅ Tamamlandı\' ELSE \'⏳ Devam Ediyor\' END AS "Durum", soru_miktari AS "Çözülen Soru" FROM konu_ilerleme WHERE ad_soyad = %s', conn_vi.conn, params=(v_ad,))
+            conn_vi.close()
+            if not df_v_ilerleme.empty: st.dataframe(df_v_ilerleme, use_container_width=True)
+
+            st.markdown(f"### 📝 Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
+            rapor_periyodu_v = st.radio("Veli Rapor Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="veli_rapor_periyot_unique")
+            conn_vc = get_db_connection()
+            df_v_calisma = pd.read_sql_query('SELECT tarih, ders, konu, dogru, yanlis, bos, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süре (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_vc.conn, params=(v_ad,))
+            conn_vc.close()
+            if not df_v_calisma.empty:
+                df_v_calisma["tarih_dt"] = pd.to_datetime(df_v_calisma["tarih"], errors="coerce")
+                bugun_v = pd.Timestamp(datetime.date.today())
+                if rapor_periyodu_v == "Günlük (Tarih Bazlı)":
+                    secilen_gun_v = st.date_input("İncelenecek Tarihi Seçin:", datetime.date.today(), key="veli_gun_secim_unique")
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"].dt.date == secilen_gun_v].copy()
+                    periyot_etiket_v = f"{secilen_gun_v} Tarihli Günlük"
+                elif rapor_periyodu_v == "Haftalık":
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= (bugun_v - pd.Timedelta(days=7))].copy()
+                    periyot_etiket_v = "Son 7 Günlük Haftalık"
+                elif rapor_periyodu_v == "Aylık":
+                    df_filtrelenmis_v = df_v_calisma[df_v_calisma["tarih_dt"] >= (bugun_v - pd.Timedelta(days=30))].copy()
+                    periyot_etiket_v = "Son 30 Günlük Aylık"
+                else:
+                    df_filtrelenmis_v = df_v_calisma.copy()
+                    periyot_etiket_v = "Tüm Zamanlar"
+                if not df_filtrelenmis_v.empty:
+                    cols_v = [c for c in ["tarih", "ders", "konu", "dogru", "yanlis", "bos", "Soru", "Konu Süре (dk)", "Çözüm Süre (dk)"] if c in df_filtrelenmis_v.columns]
+                    gosterilecek_df_v = df_filtrelenmis_v[cols_v].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu", "dogru": "Doğru", "yanlis": "Yanlış", "bos": "Boş"})
+                    st.dataframe(gosterilecek_df_v, use_container_width=True, hide_index=True)
+                    rapor_bytes_v = calisma_raporu_html(gosterilecek_df_v, v_ad, periyot_etiket_v)
+                    st.download_button(label=f"📥 Bu {periyot_etiket_v} Raporu PDF / HTML İndir", data=rapor_bytes_v, file_name=f"{v_ad}_rapor.html", mime="text/html", use_container_width=True)
+
+            st.markdown(f"### 📊 Deneme Sınavı Sonuçları ve Koç Notları")
+            conn_vd = get_db_connection()
+            df_v_deneme = pd.read_sql_query('SELECT tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_vd.conn, params=(v_ad,))
+            conn_vd.close()
+            if not df_v_deneme.empty: st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
