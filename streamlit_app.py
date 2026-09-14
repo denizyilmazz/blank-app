@@ -27,7 +27,7 @@ SUPABASE_URI = "postgresql://postgres.ypftcgbwgcctaeljsvxf:DenizMelis160625.@aws
 
 @st.cache_resource
 def get_connection_pool():
-    return pool.ThreadedConnectionPool(1, 20, SUPABASE_URI)
+    return pool.ThreadedConnectionPool(1, 10, SUPABASE_URI, connect_timeout=5)
 
 class PooledConnection:
     def __init__(self, db_pool):
@@ -42,136 +42,139 @@ def get_db_connection():
     return PooledConnection(get_connection_pool())
 
 def tablo_olustur():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS ogrenciler (
-        ad_soyad TEXT PRIMARY KEY,
-        sifre TEXT,
-        veli_pin TEXT DEFAULT '123456',
-        sinav_turu TEXT DEFAULT 'YKS (TYT + AYT)',
-        alan TEXT DEFAULT 'SAY (Sayısal)',
-        hedef_uni TEXT DEFAULT '',
-        hedef_bolum TEXT DEFAULT '',
-        hedef_net FLOAT DEFAULT 80.0,
-        hedef_sira TEXT DEFAULT '',
-        koc_adi TEXT DEFAULT '',
-        onaylandi INTEGER DEFAULT 0
-    )
-    """)
     try:
-        cur.execute("ALTER TABLE ogrenciler ADD COLUMN IF NOT EXISTS sinif_grubu TEXT DEFAULT '12. Sınıf ve Mezun (2027 YKS)'")
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS ogrenciler (
+            ad_soyad TEXT PRIMARY KEY,
+            sifre TEXT,
+            veli_pin TEXT DEFAULT '123456',
+            sinav_turu TEXT DEFAULT 'YKS (TYT + AYT)',
+            alan TEXT DEFAULT 'SAY (Sayısal)',
+            hedef_uni TEXT DEFAULT '',
+            hedef_bolum TEXT DEFAULT '',
+            hedef_net FLOAT DEFAULT 80.0,
+            hedef_sira TEXT DEFAULT '',
+            koc_adi TEXT DEFAULT '',
+            onaylandi INTEGER DEFAULT 0
+        )
+        """)
+        try:
+            cur.execute("ALTER TABLE ogrenciler ADD COLUMN IF NOT EXISTS sinif_grubu TEXT DEFAULT '12. Sınıf ve Mezun (2027 YKS)'")
+            conn.commit()
+        except Exception:
+            conn.rollback()
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS ozel_universiteler (
+            id SERIAL PRIMARY KEY,
+            universite_adi TEXT,
+            bolum_adi TEXT,
+            kategori TEXT,
+            taban_net FLOAT,
+            taban_sira TEXT,
+            tyt_net FLOAT,
+            ayt_net FLOAT
+        )
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS koclar (
+            kullanici_adi TEXT PRIMARY KEY,
+            sifre TEXT,
+            onaylandi INTEGER DEFAULT 1
+        )
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS gunluk_calisma (
+            id SERIAL PRIMARY KEY, 
+            ad_soyad TEXT, 
+            tarih TEXT, 
+            ders TEXT, 
+            konu TEXT, 
+            soru_sayisi INTEGER DEFAULT 0, 
+            konu_anlatim_sure INTEGER DEFAULT 0, 
+            soru_cozum_sure INTEGER DEFAULT 0
+        )
+        """)
+        try:
+            cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS dogru INTEGER DEFAULT 0")
+            cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS yanlis INTEGER DEFAULT 0")
+            cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS bos INTEGER DEFAULT 0")
+            conn.commit()
+        except Exception:
+            conn.rollback()
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS konu_ilerleme (
+            ad_soyad TEXT, ders TEXT, konu_adi TEXT, 
+            tamamlandi INTEGER DEFAULT 0, soru_miktari INTEGER DEFAULT 0, 
+            PRIMARY KEY (ad_soyad, ders, konu_adi)
+        )
+        """)
+        try:
+            cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS dogru INTEGER DEFAULT 0")
+            cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS yanlis INTEGER DEFAULT 0")
+            cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS bos INTEGER DEFAULT 0")
+            conn.commit()
+        except Exception:
+            conn.rollback()
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS yapilamayan_sorular (
+            id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, dosya_yolu TEXT, dosya_adi TEXT
+        )
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS denemeler (
+            id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, yayin TEXT, tur TEXT, 
+            toplam_net FLOAT, dosya_yolu TEXT DEFAULT '', dosya_adi TEXT DEFAULT '', koc_notu TEXT DEFAULT ''
+        )
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS konu_puanlari (
+            ad_soyad TEXT, konu_adi TEXT, puan INTEGER, PRIMARY KEY (ad_soyad, konu_adi)
+        )
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS excel_program_matris (
+            ad_soyad TEXT, 
+            hafta_baslangici TEXT DEFAULT '2026-09-07', 
+            saat_araligi TEXT, 
+            pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', 
+            persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT ''
+        )
+        """)
+        try:
+            cur.execute("ALTER TABLE excel_program_matris ADD COLUMN IF NOT EXISTS hafta_baslangici TEXT DEFAULT '2026-09-07'")
+            cur.execute("ALTER TABLE excel_program_matris DROP CONSTRAINT IF EXISTS excel_program_matris_pkey;")
+            cur.execute("ALTER TABLE excel_program_matris ADD PRIMARY KEY (ad_soyad, hafta_baslangici, saat_araligi);")
+            conn.commit()
+        except Exception:
+            conn.rollback()
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS program_dosyalari (
+            id SERIAL PRIMARY KEY, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT
+        )
+        """)
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS uyku_takibi (
+            ad_soyad TEXT,
+            tarih TEXT,
+            uyku_suresi FLOAT,
+            uyku_kalitesi TEXT,
+            notlar TEXT,
+            PRIMARY KEY (ad_soyad, tarih)
+        )
+        """)
+        
         conn.commit()
-    except Exception:
-        conn.rollback()
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS ozel_universiteler (
-        id SERIAL PRIMARY KEY,
-        universite_adi TEXT,
-        bolum_adi TEXT,
-        kategori TEXT,
-        taban_net FLOAT,
-        taban_sira TEXT,
-        tyt_net FLOAT,
-        ayt_net FLOAT
-    )
-    """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS koclar (
-        kullanici_adi TEXT PRIMARY KEY,
-        sifre TEXT,
-        onaylandi INTEGER DEFAULT 1
-    )
-    """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS gunluk_calisma (
-        id SERIAL PRIMARY KEY, 
-        ad_soyad TEXT, 
-        tarih TEXT, 
-        ders TEXT, 
-        konu TEXT, 
-        soru_sayisi INTEGER DEFAULT 0, 
-        konu_anlatim_sure INTEGER DEFAULT 0, 
-        soru_cozum_sure INTEGER DEFAULT 0
-    )
-    """)
-    try:
-        cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS dogru INTEGER DEFAULT 0")
-        cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS yanlis INTEGER DEFAULT 0")
-        cur.execute("ALTER TABLE gunluk_calisma ADD COLUMN IF NOT EXISTS bos INTEGER DEFAULT 0")
-        conn.commit()
-    except Exception:
-        conn.rollback()
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS konu_ilerleme (
-        ad_soyad TEXT, ders TEXT, konu_adi TEXT, 
-        tamamlandi INTEGER DEFAULT 0, soru_miktari INTEGER DEFAULT 0, 
-        PRIMARY KEY (ad_soyad, ders, konu_adi)
-    )
-    """)
-    try:
-        cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS dogru INTEGER DEFAULT 0")
-        cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS yanlis INTEGER DEFAULT 0")
-        cur.execute("ALTER TABLE konu_ilerleme ADD COLUMN IF NOT EXISTS bos INTEGER DEFAULT 0")
-        conn.commit()
-    except Exception:
-        conn.rollback()
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS yapilamayan_sorular (
-        id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, ders TEXT, konu TEXT, dosya_yolu TEXT, dosya_adi TEXT
-    )
-    """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS denemeler (
-        id SERIAL PRIMARY KEY, ad_soyad TEXT, tarih TEXT, yayin TEXT, tur TEXT, 
-        toplam_net FLOAT, dosya_yolu TEXT DEFAULT '', dosya_adi TEXT DEFAULT '', koc_notu TEXT DEFAULT ''
-    )
-    """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS konu_puanlari (
-        ad_soyad TEXT, konu_adi TEXT, puan INTEGER, PRIMARY KEY (ad_soyad, konu_adi)
-    )
-    """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS excel_program_matris (
-        ad_soyad TEXT, 
-        hafta_baslangici TEXT DEFAULT '2026-09-07', 
-        saat_araligi TEXT, 
-        pazartesi TEXT DEFAULT '', sali TEXT DEFAULT '', carsamba TEXT DEFAULT '', 
-        persembe TEXT DEFAULT '', cuma TEXT DEFAULT '', cumartesi TEXT DEFAULT '', pazar TEXT DEFAULT ''
-    )
-    """)
-    try:
-        cur.execute("ALTER TABLE excel_program_matris ADD COLUMN IF NOT EXISTS hafta_baslangici TEXT DEFAULT '2026-09-07'")
-        cur.execute("ALTER TABLE excel_program_matris DROP CONSTRAINT IF EXISTS excel_program_matris_pkey;")
-        cur.execute("ALTER TABLE excel_program_matris ADD PRIMARY KEY (ad_soyad, hafta_baslangici, saat_araligi);")
-        conn.commit()
-    except Exception:
-        conn.rollback()
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS program_dosyalari (
-        id SERIAL PRIMARY KEY, ad_soyad TEXT, yukleyen TEXT, tarih TEXT, dosya_yolu TEXT, dosya_adi TEXT
-    )
-    """)
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS uyku_takibi (
-        ad_soyad TEXT,
-        tarih TEXT,
-        uyku_suresi FLOAT,
-        uyku_kalitesi TEXT,
-        notlar TEXT,
-        PRIMARY KEY (ad_soyad, tarih)
-    )
-    """)
-    
-    conn.commit()
-    conn.close()
+        conn.close()
+    except Exception as e:
+        st.error(f"⚠️ Veritabanı bağlantı hatası oluştu: {e}")
 
 tablo_olustur()
 
@@ -488,7 +491,7 @@ HAM_DERS_KONULARI = {
     "🧪 AYT Kimya": ["Modern Atom Teorisi", "Gazlar", "Sıvı Çözeltiler ve Koligatif Özellikler", "Kimyasal Tepkimelerde Enerji", "Kimyasal Tepkimelerde Hız", "Kimyasal Denge", "Sulu Çözeltilerde Denge (Asit-Baz ve KÇ)", "Elektrokimya (Piller ve Elektroliz)", "Organik Kimyaya Giriş", "Hidrokarbonlar", "Fonksiyonel Gruplar ve Organik Bileşikler"],
     "🧬 AYT Biyoloji": ["Sinir Sistemi ve Endokrin Sistem", "Duyu Organları", "Destek ve Hareket Sistemi", "Sindirim, Dolaşım ve Solunum Sistemi", "Boşaltım Sistemi ve Üreme Sistemi", "Nükleik Asitler ve Protein Sentezi", "Fotosentez ve Kemosentez", "Hücresel Solunum", "Bitki Biyolojisi", "Canlılar ve Çevre (Ekoloji AYT)"],
     "📖 AYT Türk Dili ve Edebiyatı": ["İslamiyet Öncesi Türk Edebiyatı ve Geçiş Dönemi", "Halk Edebiyatı", "Divan Edebiyatı", "Tanzimat Dönemi Edebiyatı", "Servet-i Fünun ve Fecr-i Âti Edebiyatı", "Milli Edebiyat Dönemi", "Cumhuriyet Dönemi Şiir", "Cumhuriyet Dönemi Roman ve Hikaye", "Tiyatro, Mektup, Anı, Makale ve Söyleşi"],
-    "📜 AYT Tarih": ["Dünya Gücü Osmanlı (1453-1600)", "Arayış Yılları (17. Yüzyıl)", "18. Yüzyılda Değişim ve Diplomasi", "En Uzun Yüzyıl (19. Yüzyıl)", "20. Yüzyılda Osmanlı Devleti", "I. Dünya Savaşı ve Mondros", "Kurtuluş Savaşı Hazırlık Dönemi", "I. TBMM Dönemi ve Kurtuluş Savaşı Muharebeleri", "Atatürkçülük ve Türk İnkılabı", "İki Savaş Arası Dönem (1929 Krizi vb.)", "II. Dünya Savaşı Dönemi ve Soğuk Savaş"],
+    "📜 AYT Tarih": ["Dünya Gücü Osmanlı (1453-1600)", "Arayış Yılları (17. Yüzyıl)", "18. Yüzyılda Değişim ve Diplomasi", "En Uzun Yüzyıl (19. Yüzyıl)", "20. Yüzyılda Osmanlı Devleti", "I. Dünya Savaşı ve Mondros", "Kurtuluş Savaşı Hazırlık Dönemi", "I. TBMM Dönemi ve Kurtuluş Savaşı Muharebeleri", "Atatürkçülük ve Türk İnkılabı", "Iki Savaş Arası Dönem (1929 Krizi vb.)", "II. Dünya Savaşı Dönemi ve Soğuk Savaş"],
     "🌍 AYT Coğrafya": ["Ekosistem ve Madde Döngüleri", "Biyomlar", "Türkiye'nin Su ve Toprak Varlığı", "Geçmişten Geleceğe Şehir ve Ekonomi", "Türkiye Ekonomisi (Tarım, Maden, Sanayi, Ulaşım)", "Türkiye'nin Jeopolitik Konumu", "Küresel ve Bölgesel Örgütler", "Çevre Sorunları ve Küresel İklim Değişikliği"]
 }
 
@@ -921,7 +924,6 @@ else:
                 koc_hafta_secim = st.date_input("Hafta (Pazartesi):", value=bugun_koc - datetime.timedelta(days=bugun_koc.weekday()))
                 koc_hafta_str = str(koc_hafta_secim)
 
-                # Şablon / Geçmiş Hafta Kopyalama
                 with st.expander("🔄 Geçmiş Haftadan Program Kopyala (Şablon Kullan)", expanded=False):
                     conn_havuz = get_db_connection()
                     cur_hav = conn_havuz.cursor()
@@ -1024,7 +1026,7 @@ else:
                 st.markdown(f"### 📝 {secilen_ogr} — Günlük, Haftalık ve Aylık Çalışma Takibi & Raporlama")
                 rapor_periyodu = st.radio("Rapor Görünüm Periyodu Seçin:", ["Günlük (Tarih Bazlı)", "Haftalık", "Aylık", "Tüm Zamanlar"], horizontal=True, key="koc_rapor_periyot_unique")
                 conn_kc = get_db_connection()
-                df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, dogru, yanlis, bos, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süре (dk)", soru_cozum_sure AS "Çözüm Süre (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
+                df_koc_calisma = pd.read_sql_query('SELECT tarih, ders, konu, dogru, yanlis, bos, soru_sayisi AS "Soru", konu_anlatim_sure AS "Konu Süре (dk)", soru_cozum_sure AS "Çözüm Süре (dk)" FROM gunluk_calisma WHERE ad_soyad = %s ORDER BY tarih DESC', conn_kc.conn, params=(secilen_ogr,))
                 conn_kc.close()
                 if not df_koc_calisma.empty:
                     df_koc_calisma["tarih_dt"] = pd.to_datetime(df_koc_calisma["tarih"], errors="coerce")
@@ -1149,7 +1151,7 @@ else:
                     df_filtrelenmis_v = df_v_calisma.copy()
                     periyot_etiket_v = "Tüm Zamanlar"
                 if not df_filtrelenmis_v.empty:
-                    cols_v = [c for c in ["tarih", "ders", "konu", "dogru", "yanlis", "bos", "Soru", "Konu Süре (dk)", "Çözüm Süre (dk)"] if c in df_filtrelenmis_v.columns]
+                    cols_v = [c for c in ["tarih", "ders", "konu", "dogru", "yanlis", "bos", "Soru", "Konu Süре (dk)", "Çözüm Süре (dk)"] if c in df_filtrelenmis_v.columns]
                     gosterilecek_df_v = df_filtrelenmis_v[cols_v].rename(columns={"tarih": "Tarih", "ders": "Ders", "konu": "Konu", "dogru": "Doğru", "yanlis": "Yanlış", "bos": "Boş"})
                     st.dataframe(gosterilecek_df_v, use_container_width=True, hide_index=True)
                     rapor_bytes_v = calisma_raporu_html(gosterilecek_df_v, v_ad, periyot_etiket_v)
@@ -1159,4 +1161,4 @@ else:
             conn_vd = get_db_connection()
             df_v_deneme = pd.read_sql_query('SELECT tarih AS "Tarih", yayin AS "Yayın", toplam_net AS "Toplam Net", koc_notu AS "Koç Notu" FROM denemeler WHERE ad_soyad = %s ORDER BY id DESC', conn_vd.conn, params=(v_ad,))
             conn_vd.close()
-            if not df_v_deneme.empty: st.dataframe(df_v_deneme, use_container_width=True, hide_index=True)
+            if not df_v_deneme.empty: st.dataframe(df_v_deneme, use_keyword=True, hide_index=True)
