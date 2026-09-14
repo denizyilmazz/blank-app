@@ -431,17 +431,34 @@ def haftalik_program_toplu_pdf_bytes(df_full, ogrenci_adi):
     return html_content.encode('utf-8')
 
 def calisma_raporu_html(df, ogrenci_adi, periyot_adi):
-    return f"""
+    html_content = f"""
     <!DOCTYPE html>
     <html lang="tr">
-    <head><meta charset="UTF-8"><title>{ogrenci_adi} - Çalışma Raporu</title></head>
-    <body style="font-family:'Plus Jakarta Sans',sans-serif; padding:30px; color:#0f172a;">
-        <h2 style="text-align:center; color:#0284c7;">📊 {ogrenci_adi.upper()} — {periyot_adi.upper()} ÇALIŞMA RAPORU</h2>
-        <p style="text-align:center; color:#64748b; font-size:12px;">Rapor Tarihi: {datetime.date.today().strftime('%d.%m.%Y')}</p>
-        {df.to_html(index=False, border=0, class_name='table')}
+    <head>
+        <meta charset="UTF-8">
+        <title>{ogrenci_adi} - Çalışma Raporu</title>
+        <style>
+            @media print {{ body {{ padding: 0; }} button {{ display: none; }} }}
+            body {{ font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; }}
+            h2 {{ text-align: center; color: #0284c7; margin-bottom: 5px; }}
+            p {{ text-align: center; color: #64748b; font-size: 12px; margin-bottom: 25px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 8px; overflow: hidden; }}
+            th, td {{ border: 1px solid #cbd5e1; padding: 10px 12px; text-align: center; font-size: 11px; vertical-align: middle; }}
+            th {{ background-color: #0284c7; color: white; font-weight: bold; }}
+            tr:nth-child(even) {{ background-color: #f8fafc; }}
+        </style>
+    </head>
+    <body>
+        <h2>📊 {ogrenci_adi.upper()} — {periyot_adi.upper()} ÇALIŞMA RAPORU</h2>
+        <p>Deniz Yılmaz Gelişim Platformu | Rapor Tarihi: {datetime.date.today().strftime('%d.%m.%Y')}</p>
+        {df.to_html(index=False, border=0, classes='table')}
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="window.print()" style="background: #0284c7; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer;">🖨️ PDF Olarak Kaydet / Yazdır</button>
+        </div>
     </body>
     </html>
-    """.encode('utf-8')
+    """
+    return html_content.encode('utf-8')
 
 MOTIVASYON_SOZLERI = [
     "🌿 Sakin ol, derin bir nefes al ve adım adım ilerle. Disiplin başarıyı getirir!",
@@ -456,7 +473,7 @@ HAM_DERS_KONULARI = {
     "📊 Branş Denemeleri": ["Matematik Branş Denemesi", "Fen Branş Denemesi", "Sosyal Branş Denemesi", "Türkçe Branş Denemesi", "Geometri Branş Denemesi"],
     "👨‍🏫 Özel Ders": ["Özel Ders - Birebir Konu Anlatımı", "Özel Ders - Soru Çözüm Kampı", "Özel Ders - Ödev Kontrolü & Tekrar"],
     "📖 TYT Türkçe": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Ses Bilgisi", "Yazım Kuralları", "Noktalama İşaretleri", "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Bağlaç)", "Fiiller, Ek Fiil ve Fiilimsi", "Cümlenin Ögeleri", "Cümle Çeşitleri", "Anlatım Bozuklukları"],
-    "📐 TYT Matematik": ["Temel Kavramlar ve Sayı Kümeleri", "Sayı Basamakları", "Bölme ve Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Denкlem Çözme", "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)", "Kümeler ve Kartezyen Çarpım", "Mantık", "Fonksiyonlar", "Polinomlar", "Veri, Sayma ve Olasılık"],
+    "📐 TYT Matematik": ["Temel Kavramlar ve Sayı Kümeleri", "Sayı Basamakları", "Bölme ve Bölünebilme", "EBOB - EKOK", "Rasyonel Sayılar", "Basit Eşitsizlikler", "Mutlak Değer", "Üslü İfadeler", "Köklü İfadeler", "Çarpanlara Ayırma", "Oran - Orantı", "Denklem Çözme", "Problemler (Sayı, Kesir, Yaş, İşçi, Hız, Yüzde, Karışım, Grafik)", "Kümeler ve Kartezyen Çarpım", "Mantık", "Fonksiyonlar", "Polinomlar", "Veri, Sayma ve Olasılık"],
     "📏 TYT Geometri": ["Doğruda ve Üçgende Açılar", "Özel Üçgenler (Dik, İkizkenar, Eşkenar)", "Üçgende Açıortay, Kenarortay ve Benzerlik", "Üçgende Alan ve Açı-Kenar Bağıntıları", "Çokgenler ve Dörtgenler", "Özel Dörtgenler (Paralelkenar, Eşkenar Dörtgen, Dikdörtgen, Kare, Yamuk)", "Çember ve Daire", "Katı Cisimler (Prizma, Piramit, Silindir, Koni, Küre)", "Analitik Geometri (Nokta ve Doğru Analitiği)"],
     "⚡ TYT Fizik": ["Fizik Bilimine Giriş", "Madde ve Özellikleri", "Basınç ve Kaldırma Kuvveti", "Isı, Sıcaklık ve Genleşme", "Hareket ve Kuvvet (Newton Yasaları)", "İş, Güç ve Enerji", "Elektrostatik ve Elektrik Akımı", "Manyetizma", "Dalgalar", "Optik"],
     "🧪 TYT Kimya": ["Kimya Bilimi", "Atom ve Periyodik Sistem", "Türler Arası Etkileşimler", "Maddenin Halleri", "Kimyanın Temel Kanunları ve Kimyasal Hesaplamalar", "Karışımlar", "Asitler, Bazlar ve Tuzlar", "Kimya Her Yerde"],
